@@ -1,2 +1,2 @@
 # smartwear
-fyp
+Our Final Year Project
