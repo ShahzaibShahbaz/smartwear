@@ -4,6 +4,7 @@ function Register() {
   return (
     <>
       <h1>Register here!</h1>
+      <h2>shahzaib herew!!</h2>
     </>
   );
 }
