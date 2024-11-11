@@ -12,15 +12,15 @@ function SignIn(props) {
                 <h1>Email</h1>
                 <input
                   placeholder="Email"
-                  className=" text-black pl-1"
+                  className=" w-[100%] text-black pl-1 rounded-md"
                   type="email"
                 ></input>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-2 justify-center ">
                 <h1>Password</h1>
                 <input
                   placeholder="Password"
-                  className="w-[100%] text-black pl-1"
+                  className="w-[100%] text-black pl-1 rounded-md"
                   type="password"
                 ></input>
                 <a className="text-right text-sm">Forgot password?</a>
