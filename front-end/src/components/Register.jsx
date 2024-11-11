@@ -3,8 +3,9 @@ import react, { useState } from "react";
 function Register() {
   return (
     <>
-      <h1>Register here!</h1>
-      <h2>shahzaib herew!!</h2>
+      <div className="bg-zinc-600 h-32 w-16">
+        <div className="bg-">Welcome!</div>
+      </div>
     </>
   );
 }
