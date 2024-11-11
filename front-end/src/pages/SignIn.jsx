@@ -1,5 +1,5 @@
 import react, { useState } from "react";
-
+import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 function SignIn(props) {
   return (
     <>
@@ -38,7 +38,7 @@ function SignIn(props) {
         </div>
 
         <div className="w-[45%] max-h-screen overflow-hidden">
-          <img src={props.imageprop} alt="Aesthetic" className="object-cover" />
+          <img src={modelsImage} alt="Aesthetic" className="object-cover" />
         </div>
       </div>
     </>

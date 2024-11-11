@@ -6,7 +6,8 @@ import modelsImage from "./Assets/photoshootaesthetic.jpeg";
 function App() {
   return (
     <>
-      <SignIn imageprop={modelsImage} />
+      {/* <SignIn imageprop={modelsImage} /> */}
+      <SignIn />
     </>
   );
 }
