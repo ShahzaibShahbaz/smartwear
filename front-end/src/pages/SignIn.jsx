@@ -1,5 +1,5 @@
 import react, { useState } from "react";
-import Navbar from '../components/Navbar';
+import Navbar from "../components/Navbar";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 function SignIn(props) {
   return (
@@ -8,7 +8,7 @@ function SignIn(props) {
         <div className="w-[55%] flex justify-center items-center bg-zinc-200 h-screen">
           <div className="w-[70%] flex flex-col gap-12 h-[70%] text-white bg-[#515151] shadow-2xl rounded-md">
             <h1 className="text-4xl font-bold mt-12 ml-12">Welcome.</h1>
-            <div className="flex flex-col gap-8 ml-16 mr-44">
+            <div className="flex flex-col gap-8 ml-16 mr-44 w-[78%]">
               <div className="flex flex-col gap-2 justify-center">
                 <h1>Email</h1>
                 <input
@@ -40,6 +40,14 @@ function SignIn(props) {
 
         <div className="w-[45%] max-h-screen overflow-hidden">
           <img src={modelsImage} alt="Aesthetic" className="object-cover" />
+          <div className="absolute ml-6 top-2 right-2 text-black">
+            <h1 className=" ml-[5.5%] text-6xl font-extrabold leading-none">
+              SMART
+            </h1>
+            <h1 className="tracking-[0.9em] text-5xl font-bold leading-tight -mt-2">
+              Wear
+            </h1>
+          </div>
         </div>
       </div>
     </>
