@@ -1,4 +1,5 @@
 import react, { useState } from "react";
+import Navbar from '../components/Navbar';
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 function SignIn(props) {
   return (
