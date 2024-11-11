@@ -1,6 +1,6 @@
 import react, { useState } from "react";
 
-function Register(props) {
+function SignIn(props) {
   return (
     <>
       <div className="flex">
@@ -45,4 +45,4 @@ function Register(props) {
   );
 }
 
-export default Register;
+export default SignIn;

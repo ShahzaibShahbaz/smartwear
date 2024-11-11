@@ -1,12 +1,12 @@
 import logo from "./logo.svg";
 import "./App.css";
-import Register from "./components/Register";
+import SignIn from "./components/SignIn";
 import modelsImage from "./Assets/photoshootaesthetic.jpeg";
 
 function App() {
   return (
     <>
-      <Register imageprop={modelsImage} />
+      <SignIn imageprop={modelsImage} />
     </>
   );
 }
