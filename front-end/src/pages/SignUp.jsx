@@ -9,7 +9,7 @@ function SignUp() {
             <h1 className=" ml-[5.5%] text-6xl font-extrabold leading-none">
               SMART
             </h1>
-            <h1 className="tracking-[0.9em] text-5xl font-bold leading-tight -mt-2">
+            <h1 className="tracking-[1.1em]  text-4xl ml-[7%] font-bold leading-tight -mt-2">
               Wear
             </h1>
           </div>
@@ -56,7 +56,7 @@ function SignUp() {
                 <div className="border-black border-2 p-2 bg-black text-white text-center w-[20%] rounded-md ">
                   <button>Register</button>
                 </div>
-                <a href="" className="mt-[2.5%]">
+                <a href="" className="mt-[2.5%]  text-white">
                   Already have an account? Click here to <b>login</b>
                 </a>
               </div>
