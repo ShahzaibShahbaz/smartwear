@@ -4,11 +4,7 @@ import SignIn from "./pages/SignIn";
 import Product from "./pages/Product";
 
 function App() {
-  return (
-    <>
-      <Product />
-    </>
-  );
+  return <></>;
 }
 
 export default App;
