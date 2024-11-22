@@ -4,12 +4,15 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Footer from "./components/Footer";
 import Product from "./pages/Product";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <>
-      <SignIn />
-    </>
+    <div>
+      <Routes>
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </div>
   );
 }
 
