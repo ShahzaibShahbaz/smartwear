@@ -4,7 +4,7 @@ import SignIn from "./pages/SignIn";
 import Product from "./pages/Product";
 import Homepage from "./pages/Homepage";
 import Footer from "./components/Footer";
-import Product from "./pages/Product";
+import SignUp from "./pages/SignUp";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
