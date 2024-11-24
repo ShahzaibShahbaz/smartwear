@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -27,22 +28,14 @@ function SignUp() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          confirm_password: confirmPassword, // Changed to match backend schema
-        }),
+      const response = await axios.post("http://localhost:8000/users/signup", {
+        username,
+        email,
+        password,
+        confirm_password: confirmPassword, // Changed to match backend schema
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setSuccess("Signup successful! You can now log in.");
         setEmail("");
         setUsername("");
@@ -53,13 +46,13 @@ function SignUp() {
         }, 1500);
       } else {
         // Handle validation errors from backend
-        if (data.detail) {
-          if (Array.isArray(data.detail)) {
+        if (response.data.detail) {
+          if (Array.isArray(response.data.detail)) {
             // Handle validation error array
-            setError(data.detail[0].msg);
+            setError(response.data.detail[0].msg);
           } else {
             // Handle string error message
-            setError(data.detail);
+            setError(response.data.detail);
           }
         } else {
           setError("Signup failed! Please try again.");

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -24,23 +25,25 @@ function SignIn() {
       formData.append("username", email); // Backend expects email in username field
       formData.append("password", password);
 
-      const response = await fetch("http://localhost:8000/users/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData,
-      });
+      // Send request with axios
+      const response = await axios.post(
+        "http://localhost:8000/users/signin",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded", // Make sure the server knows the data format
+          },
+        }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
+      // Handle response
+      if (response.status === 200 || response.status === 201) {
         // Store the token in localStorage
-        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("token", response.data.access_token);
         // Redirect to dashboard or home page
         navigate("/"); // Adjust the route as needed
       } else {
-        setError(data.detail || "Invalid email or password");
+        setError(response.data.detail || "Invalid email or password");
       }
     } catch (err) {
       setError("An error occurred. Please try again later.");
