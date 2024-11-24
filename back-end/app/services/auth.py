@@ -1,74 +1,61 @@
-import bcrypt
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from typing import Union
-from app.database import get_db
-
-
-from app.schemas.user import UserCreate, UserInDB, UserResponse
+from typing import Optional
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+from jose import jwt
+from passlib.context import CryptContext
 from bson import ObjectId
 
-SECRET_KEY = "mysecretkey"  # Should be in environment variable or config
+SECRET_KEY = "your-secret-key-keep-it-secret"  # In production, use environment variable
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+class AuthService:
+    def __init__(self, database):
+        self.database = database
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    def get_password_hash(self, password: str) -> str:
+        return pwd_context.hash(password)
 
-async def get_user_by_email(email: str) -> Union[UserInDB, None]:
-    db = get_db()  # Call get_db() to get the database instance
-    user = await db.users.find_one({"email": email})
+    def create_access_token(self, data: dict, expires_delta: Optional[timedelta] = None) -> str:
+        to_encode = data.copy()
+        expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+        to_encode.update({"exp": expire})
+        return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-    if user:
-        return UserInDB(**user)
+    async def create_user(self, user_data: dict) -> dict:
+        user_data["hashed_password"] = self.get_password_hash(user_data.pop("password"))
+        user_data.pop("confirm_password", None)
+        
+        existing_user = await self.database.users.find_one({
+            "$or": [
+                {"email": user_data["email"]},
+                {"username": user_data["username"]}
+            ]
+        })
+        
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email or username already registered"
+            )
 
-async def get_user_by_id(user_id: str) -> Union[UserInDB, None]:
-    db = get_db()
-    user = await db.users.find_one({"_id": ObjectId(user_id)})
-    if user:
-        return UserInDB(**user)
+        result = await self.database.users.insert_one(user_data)
+        created_user = await self.database.users.find_one({"_id": result.inserted_id})
+        created_user["id"] = str(created_user.pop("_id"))
+        return created_user
 
-async def create_user(user: UserCreate) -> UserResponse:
-    db = get_db()
-    existing_user = await db.users.find_one({"email": user.email})
-    if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
-    
-    hashed_password = hash_password(user.password)
-    user_dict = user.dict()
-    user_dict["hashed_password"] = hashed_password
-    del user_dict["password"]
-
-    result = await db.users.insert_one(user_dict)
-    new_user = await db.users.find_one({"_id": result.inserted_id})
-    return UserResponse(id=str(new_user["_id"]), **new_user)
-
-async def authenticate_user(email: str, password: str) -> UserInDB:
-    user = await get_user_by_email(email)
-    if user is None or not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    return user
-
-async def login_for_access_token(email: str, password: str):
-    user = await authenticate_user(email, password)
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    async def authenticate_user(self, email: str, password: str) -> dict:
+        user = await self.database.users.find_one({"email": email})
+        if not user or not self.verify_password(password, user["hashed_password"]):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password"
+            )
+        
+        access_token = self.create_access_token(data={"sub": email})
+        return {"access_token": access_token, "token_type": "bearer"}
