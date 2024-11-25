@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Router, Link, Navigate } from "react-router-dom";
 import {
   IconName,
@@ -14,9 +14,11 @@ function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Handle window resize
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth < 768);
     };
@@ -25,13 +27,40 @@ function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Handle scroll
+  useEffect(() => {
+    const controlNavbar = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        // Scrolling UP or at top of page
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        // Scrolling DOWN and not at top
+        setIsVisible(false);
+        // Close mobile menu and search when hiding navbar
+        setMobileMenuOpen(false);
+        setIsSearchOpen(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", controlNavbar);
+    return () => window.removeEventListener("scroll", controlNavbar);
+  }, [lastScrollY]);
+
   // Handle search toggle
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
   };
 
   return (
-    <nav className="relative flex justify-between items-center px-6 py-4 bg-white shadow-md">
+    <nav
+      className={`fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-4 bg-white shadow-md transition-transform duration-300 z-50 ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="text-2xl font-bold">
         <Link to="/">
           SMART <span className="font-normal">wear</span>
@@ -85,9 +114,13 @@ function Navbar() {
         <button>
           <AiOutlineCamera />
         </button>
+
         <button>
-          <AiOutlineShoppingCart />
+          <Link to="/Cart">
+            <AiOutlineShoppingCart />
+          </Link>
         </button>
+
         <button>
           <AiOutlineUser />
         </button>
