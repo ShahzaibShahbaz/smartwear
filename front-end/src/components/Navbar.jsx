@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Router, Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
-  IconName,
   AiOutlineShoppingCart,
   AiOutlineSearch,
   AiOutlineCamera,
@@ -116,7 +115,7 @@ function Navbar() {
         </button>
 
         <button>
-          <Link to="/Cart">
+          <Link to="/cart">
             <AiOutlineShoppingCart />
           </Link>
         </button>

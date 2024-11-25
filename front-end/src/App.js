@@ -1,14 +1,11 @@
-import logo from "./logo.svg";
 import "./App.css";
 import SignIn from "./pages/SignIn";
 import Product from "./pages/Product";
 import Collections from "./pages/Collections";
-import Footer from "./components/Footer";
 import SignUp from "./pages/SignUp";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import ProductCart from "./components/ProductCart";
+import Cart from "./pages/Cart";
 
 function App() {
   return (
@@ -20,6 +17,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </div>
   );
