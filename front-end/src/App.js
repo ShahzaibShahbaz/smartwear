@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
+import Chatbot from "./pages/Chatbot";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/product" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/Chatbot" element={<Chatbot />} />
+        
       </Routes>
     </div>
   );
