@@ -1,11 +1,13 @@
+// src/pages/Home.jsx
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 // Import all images
 import kids from "../Assets/kids.jpg";
 import women from "../Assets/women.jpg";
 import men from "../Assets/men.jpg";
+
 function Home() {
   // Array of images - Add your actual imported images here
   const images = [kids, women, men];
@@ -54,6 +56,15 @@ function Home() {
           <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black text-6xl font-bold ">
             Shop Now!
           </h1>
+        </Link>
+
+        {/* Chatbot Navigation Button */}
+        <Link to="/chatbot">
+          <button
+            className="fixed bottom-8 right-8 bg-[#515151] text-white p-4 rounded-full shadow-lg"
+          >
+            🗨️
+          </button>
         </Link>
       </div>
     </>
