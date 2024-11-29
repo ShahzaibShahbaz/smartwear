@@ -1,38 +1,44 @@
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import ProductCart from "../components/ProductCart";
 import Checkout from "../components/Checkout";
+import { setCartItems, updateQuantity } from "../store/cartSlice";
 
 function Cart() {
-  const [products, setProducts] = useState([]); // State to store products in the cart
-  const [userId] = useState("12345"); // Replace with dynamic user ID if available
+  const dispatch = useDispatch();
+  const { items: products } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth);
 
   // Fetch cart data from the backend
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/cart/${userId}`); // Adjust backend URL as needed
-        setProducts(response.data.items); // Set products from backend response
+        // Use dynamic user ID from Redux state
+        const response = await axios.get(
+          `http://127.0.0.1:8000/cart/${user?.id}`
+        );
+        dispatch(setCartItems(response.data.items)); // Update cart in Redux store
       } catch (error) {
         console.error("Error fetching cart:", error);
       }
     };
-    fetchCart();
-  }, [userId]);
+
+    if (user) {
+      fetchCart();
+    }
+  }, [user, dispatch]);
 
   // Function to update product quantity
-  const updateQuantity = async (productId, quantity) => {
-    const updatedProducts = products.map((product) =>
-      product.product_id === productId ? { ...product, quantity } : product
-    );
-    setProducts(updatedProducts); // Update state optimistically
+  const handleUpdateQuantity = async (productId, quantity) => {
+    dispatch(updateQuantity({ product_id: productId, quantity }));
 
     // Sync with the backend
     try {
-      await axios.put(`http://127.0.0.1:8000/cart/${userId}`, {
-        user_id: userId,
-        items: updatedProducts,
+      await axios.put(`http://127.0.0.1:8000/cart/${user?.id}`, {
+        user_id: user?.id,
+        items: products,
       });
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -42,7 +48,9 @@ function Cart() {
   return (
     <>
       <Navbar />
-      <h1 className="mt-20 text-5xl items-center text-center font-bold">My Cart</h1>
+      <h1 className="mt-20 text-5xl items-center text-center font-bold">
+        My Cart
+      </h1>
       <div className="flex">
         {/* Left Section: Product List */}
         <div className="flex flex-col">
@@ -51,7 +59,7 @@ function Cart() {
               <ProductCart
                 key={product.product_id}
                 product={product}
-                updateQuantity={updateQuantity}
+                updateQuantity={handleUpdateQuantity}
               />
             ))}
           </div>

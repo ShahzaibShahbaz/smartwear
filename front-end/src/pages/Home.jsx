@@ -60,9 +60,7 @@ function Home() {
 
         {/* Chatbot Navigation Button */}
         <Link to="/chatbot">
-          <button
-            className="fixed bottom-8 right-8 bg-[#515151] text-white p-4 rounded-full shadow-lg"
-          >
+          <button className="fixed bottom-8 right-8 bg-[#515151] text-white p-4 rounded-full shadow-lg">
             🗨️
           </button>
         </Link>

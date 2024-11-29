@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../store/authSlice";
 import axios from "axios";
 
 function SignIn() {
@@ -8,6 +10,7 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -38,8 +41,14 @@ function SignIn() {
 
       // Handle response
       if (response.status === 200 || response.status === 201) {
-        // Store the token in localStorage
-        localStorage.setItem("token", response.data.access_token);
+        // Dispatch credentials to Redux store
+        dispatch(
+          setCredentials({
+            token: response.data.access_token,
+            user: { email }, // Add more user details if available
+          })
+        );
+
         // Redirect to dashboard or home page
         navigate("/"); // Adjust the route as needed
       } else {

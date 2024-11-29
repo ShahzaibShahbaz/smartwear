@@ -19,8 +19,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/product" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/Chatbot" element={<Chatbot />} />
-        
+        <Route path="/chatbot" element={<Chatbot />} />
       </Routes>
     </div>
   );
