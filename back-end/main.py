@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import users
-from app.database import connect_to_mongo
+from app.routes import users, cart, images, products
+from app.database import connect_to_mongo  # Ensure this exists
 
 app = FastAPI(title="SmartWear API", version="1.0.0")
 
-# Configure CORS
+# Configure CORS dynamically
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your front-end URL here
+    allow_origins=["http://localhost:3000"],  # Add environment-based URLs
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,7 +26,11 @@ async def shutdown_db():
     if hasattr(app, "mongodb_client"):
         app.mongodb_client.close()
 
+# Include routers
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(cart.router, prefix="/cart", tags=["cart"])
+app.include_router(products.router, prefix="/products", tags=["products"])
+app.include_router(images.router, prefix="/images", tags=["images"])
 
 @app.get("/health")
 async def health_check():

@@ -1,11 +1,16 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import HTTPException, status
-from jose import jwt
+from fastapi import HTTPException, status, Depends
+from jose import jwt, JWTError
 import bcrypt
 from bson import ObjectId
+from app.database import get_database
 
-SECRET_KEY = "your-secret-key-keep-it-secret"  # In production, use environment variable
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
+
+
+SECRET_KEY = "your-secret-key-keep-it-secret"  
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -69,3 +74,36 @@ class AuthService:
         
         access_token = self.create_access_token(data={"sub": email})
         return {"access_token": access_token, "token_type": "bearer"}
+    
+    def decode_token(self, token: str):
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            return payload
+        except JWTError:
+            raise HTTPException(
+                status_code=401, 
+                detail="Could not validate credentials"
+            )
+
+async def get_current_user(token: str = Depends(oauth2_scheme), database=Depends(get_database)):
+    try:
+        # Decode the token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        
+        if email is None:
+            raise HTTPException(status_code=401, detail="Could not validate credentials")
+        
+        # Fetch user from database
+        user = await database.users.find_one({"email": email})
+        
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        return {
+            "id": str(user["_id"]),
+            "email": user["email"],
+            "username": user["username"]
+        }
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")

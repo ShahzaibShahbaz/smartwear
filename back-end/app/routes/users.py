@@ -34,12 +34,23 @@ async def signin(
     request: Request = None
 ):
     try:
-        print(f"Received signin request for user: {form_data.username}")  # Debug print
         db = await get_database(request)
         auth_service = AuthService(db)
-        result = await auth_service.authenticate_user(form_data.username, form_data.password)
-        print(f"User authenticated successfully")  # Debug print
-        return result
+        
+        # Authenticate user
+        user = await auth_service.authenticate_user(form_data.username, form_data.password)
+        
+        # Find user details
+        user_details = await db.users.find_one({"email": form_data.username})
+        
+        return {
+            "access_token": user["access_token"],
+            "token_type": "bearer",
+            "user": {
+                "id": str(user_details["_id"]),
+                "username": user_details["username"],
+                "email": user_details["email"]
+            }
+        }
     except Exception as e:
-        print(f"Error in signin: {str(e)}")  # Debug print
         raise HTTPException(status_code=401, detail=str(e))
