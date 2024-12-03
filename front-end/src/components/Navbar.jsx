@@ -8,6 +8,8 @@ import {
   AiOutlineMenu,
   AiOutlineClose,
 } from "react-icons/ai";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../store/authSlice"; // Import the logout action
 
 function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,6 +17,10 @@ function Navbar() {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Redux state
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   // Handle window resize
   useEffect(() => {
@@ -54,6 +60,11 @@ function Navbar() {
     setIsSearchOpen(!isSearchOpen);
   };
 
+  // Handle logout
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-4 bg-white shadow-md transition-transform duration-300 z-50 ${
@@ -87,6 +98,16 @@ function Navbar() {
             Contact Us
           </a>
         </li>
+        {isAuthenticated && (
+          <li className="p-4 md:p-0">
+            <button
+              onClick={handleLogout}
+              className="text-gray-700 hover:text-black"
+            >
+              Logout
+            </button>
+          </li>
+        )}
       </ul>
 
       {/* Icons with Search */}
@@ -120,9 +141,24 @@ function Navbar() {
           </Link>
         </button>
 
-        <button>
-          <AiOutlineUser />
-        </button>
+        {!isAuthenticated ? (
+          <>
+            <button>
+              <Link to="/signin" className="text-gray-700 hover:text-black">
+                Login
+              </Link>
+            </button>
+            <button>
+              <Link to="/signup" className="text-gray-700 hover:text-black">
+                Signup
+              </Link>
+            </button>
+          </>
+        ) : (
+          <button>
+            <AiOutlineUser />
+          </button>
+        )}
       </div>
 
       {/* Mobile Menu Toggle */}

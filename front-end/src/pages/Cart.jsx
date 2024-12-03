@@ -1,76 +1,79 @@
-import { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import ProductCart from "../components/ProductCart";
+import ProductCard from "../components/ProductCard";
 import Checkout from "../components/Checkout";
 import { setCartItems, updateQuantity } from "../store/cartSlice";
 
 function Cart() {
   const dispatch = useDispatch();
   const { items: products } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.auth);
+  const { user, token } = useSelector((state) => state.auth);
 
-  // Fetch cart data from the backend
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        // Use dynamic user ID from Redux state
-        const response = await axios.get(
-          `http://127.0.0.1:8000/cart/${user?.id}`
-        );
-        dispatch(setCartItems(response.data.items)); // Update cart in Redux store
+        const response = await axios.get("http://127.0.0.1:8000/cart", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        dispatch(setCartItems(response.data.items));
       } catch (error) {
         console.error("Error fetching cart:", error);
       }
     };
 
-    if (user) {
+    if (user && token) {
       fetchCart();
     }
-  }, [user, dispatch]);
+  }, [user, token, dispatch]);
 
-  // Function to update product quantity
-  const handleUpdateQuantity = async (productId, quantity) => {
-    dispatch(updateQuantity({ product_id: productId, quantity }));
-
-    // Sync with the backend
+  const handleUpdateQuantity = async (productId, quantity, size) => {
     try {
-      await axios.put(`http://127.0.0.1:8000/cart/${user?.id}`, {
-        user_id: user?.id,
-        items: products,
-      });
+      await axios.put(
+        `http://127.0.0.1:8000/cart`,
+        { product_id: productId, quantity, size },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      dispatch(updateQuantity({ product_id: productId, quantity }));
     } catch (error) {
       console.error("Error updating cart:", error);
     }
   };
 
   return (
-    <>
+    <div className="bg-gray-50 min-h-screen">
       <Navbar />
-      <h1 className="mt-20 text-5xl items-center text-center font-bold">
-        My Cart
-      </h1>
-      <div className="flex">
-        {/* Left Section: Product List */}
-        <div className="flex flex-col">
-          <div className="mt-12">
-            {products.map((product) => (
-              <ProductCart
-                key={product.product_id}
-                product={product}
-                updateQuantity={handleUpdateQuantity}
-              />
-            ))}
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-10">My Cart</h1>
+        {products.length === 0 ? (
+          <div className="text-center text-xl text-gray-600">
+            Your cart is empty
           </div>
-        </div>
-
-        {/* Right Section: Checkout Summary */}
-        <div>
-          <Checkout products={products} />
-        </div>
+        ) : (
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-grow">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.product_id}
+                  product={product}
+                  updateQuantity={handleUpdateQuantity}
+                />
+              ))}
+            </div>
+            <div className="w-full md:w-96">
+              <Checkout />
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,42 +1,59 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../store/cartSlice";
+import { useLocation } from "react-router-dom";
 
-function ProductDetails({ product }) {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const [selectedImage, setImage] = useState(product.images[0]);
+function Buying({ userId }) {
+  const { state } = useLocation(); // Access the passed state
+  const product = state?.product; // Retrieve the product object
+
+  // Call hooks unconditionally
+  const [selectedImage, setImage] = useState(
+    product?.images?.[0] || product?.image_url || ""
+  );
   const [selectedSize, setSize] = useState(null);
-  const [isPopupVisible, setPopupVisible] = useState(false); // New state for the popup
+  const [quantity, setQuantity] = useState(1);
 
-  const handleAddToCart = () => {
-    if (!user) {
-      alert("Please log in to add items to cart");
-      return;
-    }
-
+  const handleAddToCart = async () => {
     if (!selectedSize) {
-      alert("Please select a size");
+      alert("Please select a size before adding to cart.");
       return;
     }
 
-    dispatch(
-      addToCart({
-        product_id: product.id,
-        name: product.name,
-        price: product.price,
-        imageUrl: selectedImage,
-        quantity: 1,
-        size: selectedSize,
-      })
-    );
+    // Construct the cart item payload
+    const cartItem = {
+      user_id: String(userId), // Ensure user_id is a string
+      items: [
+        {
+          product_id: String(product._id), // Ensure product_id is a string
+          quantity: parseInt(quantity), // Ensure quantity is an integer
+        },
+      ],
+    };
 
-    // Show the success popup and hide it after 2 seconds
-    setPopupVisible(true);
-    setTimeout(() => {
-      setPopupVisible(false);
-    }, 2000);
+    try {
+      const response = await fetch("http://localhost:8000/cart/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cartItem),
+      });
+
+      if (response.ok) {
+        alert("Item added to cart successfully!");
+      } else {
+        const error = await response.json();
+        alert(`Failed to add to cart: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("An error occurred while adding to cart.");
+    }
   };
+
+  // Render a fallback if the product is missing
+  if (!product) {
+    return <p>Product not found. Please go back to the product page.</p>;
+  }
 
   return (
     <div className="flex flex-col lg:flex-row p-8 gap-10 justify-center">
@@ -51,7 +68,7 @@ function ProductDetails({ product }) {
 
       {/* Thumbnails Section */}
       <div className="flex flex-row lg:flex-col gap-2 mt-4 lg:mt-0 lg:ml-4">
-        {product.images.map((img, index) => (
+        {product.images?.map((img, index) => (
           <img
             key={index}
             src={img}
@@ -66,13 +83,7 @@ function ProductDetails({ product }) {
 
       {/* Product Details Section */}
       <div className="max-w-lg flex flex-col">
-        {/* Product Name and Price */}
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl md:text-3xl font-semibold">{product.name}</h1>
-          <button className="text-gray-500 hover:text-red-500 text-xl md:text-2xl">
-            ❤️
-          </button>
-        </div>
+        <h1 className="text-2xl md:text-3xl font-semibold">{product.name}</h1>
         <p className="text-xl md:text-2xl text-gray-700 mb-4">
           ${product.price}
         </p>
@@ -82,7 +93,7 @@ function ProductDetails({ product }) {
         <div className="mb-6">
           <p className="text-gray-700 font-semibold">Size</p>
           <div className="flex flex-wrap gap-3 mt-2">
-            {product.sizes.map((size, index) => (
+            {product.size?.map((size, index) => (
               <button
                 key={index}
                 onClick={() => setSize(size)}
@@ -98,7 +109,6 @@ function ProductDetails({ product }) {
           </div>
         </div>
 
-        {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
           className="w-full px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
@@ -106,15 +116,8 @@ function ProductDetails({ product }) {
           Add to Cart
         </button>
       </div>
-
-      {/* Success Popup */}
-      {isPopupVisible && (
-        <div className="fixed bottom-10 right-10 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg">
-          Item successfully added to cart!
-        </div>
-      )}
     </div>
   );
 }
 
-export default ProductDetails;
+export default Buying;

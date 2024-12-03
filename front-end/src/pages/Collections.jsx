@@ -7,17 +7,17 @@ import kidsImage from "../Assets/kids.jpg";
 
 const Homepage = () => {
   const categories = [
-    { title: "MEN", image: menImage, link: "/men" },
+    { title: "MEN", image: menImage, link: "/products" },
     { title: "WOMEN", image: womenImage, link: "/women" },
     { title: "KIDS", image: kidsImage, link: "/kids" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-gradient-to-b from-white via-white to-white">
       <Navbar />
 
-      <main className="container mx-auto px-4 min-h-[calc(100vh-80px)] mt-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl w-full">
+      <main className="mx-auto px-4 mt-24">
+        <div className="flex justify-center gap-8 w-full">
           {categories.map((category, index) => (
             <motion.div
               key={index}
@@ -39,7 +39,7 @@ const Homepage = () => {
                   <img
                     src={category.image}
                     alt={category.title}
-                    className="w-full h-full object-cover"
+                    className="w-96 h-96 object-cover"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
                 </div>

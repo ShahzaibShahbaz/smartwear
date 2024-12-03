@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../store/authSlice";
 import axios from "axios";
+import axiosInstance from "../api/axiosConfig";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -29,7 +30,8 @@ function SignIn() {
       formData.append("password", password);
 
       // Send request with axios
-      const response = await axios.post(
+
+      const response = await axiosInstance.post(
         "http://localhost:8000/users/signin",
         formData,
         {

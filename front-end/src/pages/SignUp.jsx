@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import axiosInstance from "../api/axiosConfig";
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -28,12 +29,15 @@ function SignUp() {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/users/signup", {
-        username,
-        email,
-        password,
-        confirm_password: confirmPassword, // Changed to match backend schema
-      });
+      const response = await axiosInstance.post(
+        "http://localhost:8000/users/signup",
+        {
+          username,
+          email,
+          password,
+          confirm_password: confirmPassword, // Changed to match backend schema
+        }
+      );
 
       if (response.status === 200 || response.status === 201) {
         setSuccess("Signup successful! You can now log in.");
