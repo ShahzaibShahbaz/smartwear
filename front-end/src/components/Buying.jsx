@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
 
 function Buying({ userId }) {
   const { state } = useLocation(); // Access the passed state
   const product = state?.product; // Retrieve the product object
+  const dispatch = useDispatch(); // Initialize dispatch
 
-  // Call hooks unconditionally
   const [selectedImage, setImage] = useState(
     product?.images?.[0] || product?.image_url || ""
   );
@@ -25,11 +27,13 @@ function Buying({ userId }) {
         {
           product_id: String(product._id), // Ensure product_id is a string
           quantity: parseInt(quantity), // Ensure quantity is an integer
+          size: selectedSize, // Include size if necessary
         },
       ],
     };
 
     try {
+      // Send API request to add item to cart
       const response = await fetch("http://localhost:8000/cart/", {
         method: "POST",
         headers: {
@@ -39,6 +43,18 @@ function Buying({ userId }) {
       });
 
       if (response.ok) {
+        // Update Redux state after successful API call
+        dispatch(
+          addToCart({
+            product_id: String(product._id),
+            name: product.name,
+            price: product.price,
+            imageUrl: selectedImage,
+            quantity: parseInt(quantity),
+            size: selectedSize,
+          })
+        );
+
         alert("Item added to cart successfully!");
       } else {
         const error = await response.json();

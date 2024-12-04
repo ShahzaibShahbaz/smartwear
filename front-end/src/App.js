@@ -18,8 +18,9 @@ function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/products" element={<ProductPage />} />
-        <Route path="/product" element={<Product />} />
+        <Route path="/products/:category" element={<ProductPage />} />
+
+        <Route path="/product/:productname" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/chatbot" element={<Chatbot />} />
       </Routes>

@@ -9,7 +9,7 @@ import json
 driver = webdriver.Chrome() 
 
 # Open the URL
-url = "https://laam.pk/nodes/men-21"  # Replace with the actual URL
+url = "https://laam.pk/nodes/women-eastern-ready-to-wear-3"  # Replace with the actual URL
 driver.get(url)
 
 # Wait for the page to load
@@ -91,6 +91,13 @@ if product_list:
 
             product_data = {}
 
+            # Initialize variables with default values to ensure they are always defined
+            description = "NA"
+            gender = "NA"
+            subcategory = "NA"
+            color = "NA"
+            product_type = "NA"
+
             # Iterate over all the p_tags
             for p_tag in p_tags:
                 # Get the text and clean it
@@ -102,37 +109,37 @@ if product_list:
                     description = text.replace('Additional Description:', '').strip()
                     product_data['description'] = description
                 
-                elif "Gender:" in text:
+                if "Gender:" in text:
                     # Extract gender part
                     gender = text.replace('Gender:', '').strip()
                     product_data['gender'] = gender
                 
-                elif "Sub-Category:" in text:
+                if "Sub-Category:" in text:
                     # Extract subcategory part
                     subcategory = text.replace('Sub-Category:', '').strip()
                     product_data['subcategory'] = subcategory
                 
-                elif "Color Type:" in text:
+                if "Color Type:" in text:
                     # Extract color part
                     color = text.replace('Color Type:', '').strip()
                     product_data['color'] = color
                 
-                elif "Product Type:" in text:
+                if "Product Type:" in text:
                     # Extract product type part
                     product_type = text.replace('Product Type:', '').strip()
                     product_data['product_type'] = product_type
-            print("productLink", product_link)
+            
             data.append(
                 {
                     "name": product_title if product_title else "NA",
                     "price": product_price if product_price else "NA",
                     "image_url": product_image_url[0] if product_image_url else "NA",
                     "size": sizes if sizes else "NA",
-                    "description": description if description else "NA",
-                    "gender": gender if gender else "NA",
-                    "subcategory": subcategory if subcategory else "NA",
-                    "color": color if color else "NA",
-                    "product_type": product_type if product_type else "NA"
+                    "description": description,  # Use initialized variables
+                    "gender": gender,
+                    "subcategory": subcategory,
+                    "color": color,
+                    "product_type": product_type,
                 }
             )
             print("data:", data)

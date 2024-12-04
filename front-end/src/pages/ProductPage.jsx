@@ -3,10 +3,12 @@ import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import ProductGrid from "../components/ProductGrid";
 import Navbar from "../components/Navbar";
+import { useParams } from "react-router-dom";
 
 const ProductPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({});
+  const { category } = useParams();
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -27,7 +29,11 @@ const ProductPage = () => {
           <div className="mb-6">
             <SearchBar onSearch={handleSearch} />
           </div>
-          <ProductGrid searchTerm={searchTerm} filters={filters} />
+          <ProductGrid
+            searchTerm={searchTerm}
+            filters={filters}
+            category={category}
+          />
         </div>
       </div>
     </div>

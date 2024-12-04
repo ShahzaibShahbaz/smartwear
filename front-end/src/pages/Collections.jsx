@@ -7,9 +7,9 @@ import kidsImage from "../Assets/kids.jpg";
 
 const Homepage = () => {
   const categories = [
-    { title: "MEN", image: menImage, link: "/products" },
-    { title: "WOMEN", image: womenImage, link: "/women" },
-    { title: "KIDS", image: kidsImage, link: "/kids" },
+    { title: "MEN", image: menImage, link: "/products/Men" },
+    { title: "WOMEN", image: womenImage, link: "/products/Women" },
+    { title: "KIDS", image: kidsImage, link: "/products/kids" },
   ];
 
   return (
