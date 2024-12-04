@@ -1,18 +1,19 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import time
+import os
+import json
 
-# Set up Selenium WebDriver (Chrome example)
-driver = webdriver.Chrome()  # Adjust path
+#Selenium WebDriver 
+driver = webdriver.Chrome() 
 
 # Open the URL
-url = "https://laam.pk/nodes/men-21"
+url = "https://laam.pk/nodes/men-21"  # Replace with the actual URL
 driver.get(url)
 
 # Wait for the page to load
-time.sleep(25)  # Adjust this based on how long the page takes to load
+time.sleep(15)  
 
 # Get the page source after it has fully loaded
 page_source = driver.page_source
@@ -22,28 +23,136 @@ soup = BeautifulSoup(page_source, 'html.parser')
 
 # Find the product list container
 product_list = soup.find('div', class_='product_list_container')
-
+data = []
 if product_list:
-    
-    products = product_list.find_all('a')
+    products = product_list.find_all('a')  # Find all links in the product list
 
-    # Loop through each product
-    for product in products:
-        product_card = product.find('div', class_='product_card')
+    # Loop through each product link
+    for i, product in enumerate(products[:5]):
+        product_link = product.get('href')  # Extract the href attribute
+        if product_link:
+            
+            if not product_link.startswith("http"):
+                product_link = f"https://laam.pk{product_link}"
 
-        if product_card:
-            image_box = product_card.find('div', class_='image-box')
-            if image_box:
-                image_tag = image_box.find('img')
-                image_url = image_tag['src'] if image_tag else 'No image found'
-                print(f"Image URL: {image_url}")
-            grow = product_card.find('div', class_='grow')
-            if grow:
-                display_price = grow.find('div', class_ = 'display-price')
-                price = display_price
-                print(f"price: {price}")
+            # Open the product page
+            driver.get(product_link)
+            time.sleep(10)  # Wait for the page to load
+
+            # Get the page source of the product page
+            product_page_source = driver.page_source
+
+            # Parse the product page
+            product_soup = BeautifulSoup(product_page_source, 'html.parser')
+
+            # get images
+            div_img = product_soup.find('div', class_ ="temp__product-detail-container")
+            product_image_div = div_img.find('div', class_="gap-7xl flex flex-col lg:col-span-6")
+
+            product_image_url = [img['src'] for img in product_image_div.find_all('img')]
+
+
+
+            # Extract details from the product page
+            div_text = product_soup.find('div', class_="lg:col-span-6 gap-xl lg:gap-3xl flex flex-col")
+            #title
+            product_title = div_text.find('h1', class_="text-md font-semibold text-gray-800 capitalize").text
+          
+
+            # price
+            price_card = div_text.find('div', class_ = "pdp__price")
+            if price_card:
+              
+                product_price_currency = price_card.find('span', class_="price-currency")
+                product_price_amount = price_card.find('span', class_="price-amount")                
+            else:
+                print("Price card not found.")
+
+            product_price = product_price_currency.text + product_price_amount.text
+
+            #size
+            sizes = []
+            size_div = div_text.find('form', class_="pdp__form")
+            
+            size_div1 = size_div.find('div', class_="space-y-sm pdp--form-item gap-3xl lg:gap-md px-3xl lg:p-0 flex flex-col")
+          
+            size_card = size_div1.find('div', id = "radix-siNM9WAguS:11-form-item")
+            
+            btns = size_card.find_all('button', class_='flex p-xl gap-md text-sm text-gray-500 font-semibold rounded-small data-[state=checked]:bg-gray-50 data-[state=checked]:text-gray-800 pdp__form-options-button')
+            
+            for btn in btns:
+                value = btn.get('value')
+                sizes.append(value)
+                
+            #description
+            des_dic = div_text.find('div', class_="pdp__description gap-xl flex flex-col relative px-3xl lg:p-none")
+            des_div1 = des_dic.find('div', class_="pb-3xl pt-none p-xl lg:p-3xl pt-none gap-xl flex flex-col")
+            p_tags = des_div1.find_all("p")
+
+            product_data = {}
+
+            # Iterate over all the p_tags
+            for p_tag in p_tags:
+                # Get the text and clean it
+                text = p_tag.get_text(separator=' ', strip=True)
+                
+                # Check if the text contains certain keywords and extract accordingly
+                if "Additional Description:" in text:
+                    # Extract the description part (after the label)
+                    description = text.replace('Additional Description:', '').strip()
+                    product_data['description'] = description
+                
+                elif "Gender:" in text:
+                    # Extract gender part
+                    gender = text.replace('Gender:', '').strip()
+                    product_data['gender'] = gender
+                
+                elif "Sub-Category:" in text:
+                    # Extract subcategory part
+                    subcategory = text.replace('Sub-Category:', '').strip()
+                    product_data['subcategory'] = subcategory
+                
+                elif "Color Type:" in text:
+                    # Extract color part
+                    color = text.replace('Color Type:', '').strip()
+                    product_data['color'] = color
+                
+                elif "Product Type:" in text:
+                    # Extract product type part
+                    product_type = text.replace('Product Type:', '').strip()
+                    product_data['product_type'] = product_type
+            print("productLink", product_link)
+            data.append(
+                {
+                    "name": product_title if product_title else "NA",
+                    "price": product_price if product_price else "NA",
+                    "image_url": product_image_url[0] if product_image_url else "NA",
+                    "size": sizes if sizes else "NA",
+                    "description": description if description else "NA",
+                    "gender": gender if gender else "NA",
+                    "subcategory": subcategory if subcategory else "NA",
+                    "color": color if color else "NA",
+                    "product_type": product_type if product_type else "NA"
+                }
+            )
+            print("data:", data)
+            
+            print("-" * 50)
+
 else:
     print("Product list not found.")
 
+
 # Close the driver
 driver.quit()
+directory = os.path.join(os.getcwd(), 'output')  # or specify any folder path you want
+if not os.path.exists(directory):
+    os.makedirs(directory)  # Create the folder if it doesn't exist
+
+json_file_path = os.path.join(directory, 'products.json')
+
+# Save data to the specified path
+with open(json_file_path, 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=4)
+
+print(f"Scraping completed. Data saved to '{json_file_path}'.")

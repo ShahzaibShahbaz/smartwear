@@ -1,0 +1,88 @@
+[
+    {
+        "name": "Ivory Self Texture Simple Sherwani -  ",
+        "price": "PKR 11,070",
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1f750cf133653cb2170132c812248363.jpg?v=1698061488&width=300",
+        "size": [
+            "L",
+            "M",
+            "S",
+            "XL",
+            "XS",
+            "XXL"
+        ],
+        "description": "Self Texture Ivory color simple sherwani with Golden Buttons",
+        "gender": "Men",
+        "subcategory": "Sherwani",
+        "color": "White",
+        "product_type": "Bride/Groom Wear"
+    },
+    {
+        "name": "Prince Coat 86 (3 Piece) -  ",
+        "price": "PKR 22,015",
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1c6e1dba73f2c61b548bf24485af9c1d.jpg?v=1702990274&width=300",
+        "size": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "description": "Men's Formal Prince Coat on Jamawar Fabric with Chikan Embroidery With Blended Kurta Pyjama",
+        "gender": "Men",
+        "subcategory": "Prince Coat",
+        "color": "Cream",
+        "product_type": "Wedding/Guest Wear - Formal"
+    },
+    {
+        "name": "TGM - Bone Black -  ",
+        "price": "PKR 10,280",
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/0041_BoneBlack_3.jpg?v=1728474279&width=300",
+        "size": [
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "description": "Men's Formal Kurta Pyjama on Maesuri with Computer Embroidery",
+        "gender": "Men",
+        "subcategory": "Kurta Set",
+        "color": "Black",
+        "product_type": "Festive/Party Wear"
+    },
+    {
+        "name": "All Navy Blue -  ",
+        "price": "PKR 8,778",
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/large-3_2c1f578c-14f3-4886-8e68-de1b61db0ed5.jpg?v=1722486882&width=300",
+        "size": [
+            "L",
+            "M",
+            "S",
+            "XL",
+            "XXL"
+        ],
+        "description": "Fabric:\nBlended Kameez Shalwar\nSuiting Waistcoat",
+        "gender": "Men",
+        "subcategory": "Waistcoat",
+        "color": "Navy Blue",
+        "product_type": "Festive/Party Wear"
+    },
+    {
+        "name": "Tom - Men's Brown Pebble Grain Loafer -  ",
+        "price": "PKR 21,500",
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/Tom_3.jpg?v=1733293905&width=300",
+        "size": [
+            "PK 5 | EU 39",
+            "PK 6 | EU 40",
+            "PK 7 | EU 41",
+            "PK 8 | EU 42",
+            "PK 9 | EU 43",
+            "PK 10 | EU 44",
+            "PK 11 | EU 45"
+        ],
+        "description": "Fabric:\nBlended Kameez Shalwar\nSuiting Waistcoat",
+        "gender": "Men",
+        "subcategory": "Waistcoat",
+        "color": "Navy Blue",
+        "product_type": "Festive/Party Wear"
+    }
+]
