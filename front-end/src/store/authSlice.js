@@ -12,19 +12,21 @@ const authSlice = createSlice({
   },
   reducers: {
     setCredentials: (state, action) => {
-      const { token, user } = action.payload;
+      const { token, token_type, user } = action.payload;
       state.token = token;
+      state.token_type = token_type;
       state.user = user;
       state.isAuthenticated = true;
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user)); // Store user info in localStorage
+      localStorage.setItem("token_type", token_type);
+      localStorage.setItem("user", JSON.stringify(user));
     },
     logout: (state) => {
       state.token = null;
       state.user = null;
       state.isAuthenticated = false;
       localStorage.removeItem("token");
-      localStorage.removeItem("user"); // Remove user info from localStorage
+      localStorage.removeItem("user");
     },
   },
 });

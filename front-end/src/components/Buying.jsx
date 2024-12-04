@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux"; // Import useSelector
 import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
 
-function Buying({ userId }) {
+function Buying() {
   const { state } = useLocation(); // Access the passed state
   const product = state?.product; // Retrieve the product object
   const dispatch = useDispatch(); // Initialize dispatch
+  const { user, token } = useSelector((state) => state.auth); // Access user and token from Redux store
 
   const [selectedImage, setImage] = useState(
     product?.images?.[0] || product?.image_url || ""
@@ -20,9 +21,15 @@ function Buying({ userId }) {
       return;
     }
 
+    // Ensure user is authenticated
+    if (!user || !token) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+
     // Construct the cart item payload
     const cartItem = {
-      user_id: String(userId), // Ensure user_id is a string
+      user_id: String(user.id), // Use the user ID from Redux state
       items: [
         {
           product_id: String(product._id), // Ensure product_id is a string
@@ -38,6 +45,7 @@ function Buying({ userId }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include the token in the header for authentication
         },
         body: JSON.stringify(cartItem),
       });

@@ -9,7 +9,7 @@ import json
 driver = webdriver.Chrome() 
 
 # Open the URL
-url = "https://laam.pk/nodes/women-eastern-ready-to-wear-3"  # Replace with the actual URL
+url = "https://laam.pk/nodes/men-21"  # Replace with the actual URL
 driver.get(url)
 
 # Wait for the page to load
@@ -48,7 +48,7 @@ if product_list:
             # get images
             div_img = product_soup.find('div', class_ ="temp__product-detail-container")
             product_image_div = div_img.find('div', class_="gap-7xl flex flex-col lg:col-span-6")
-
+            
             product_image_url = [img['src'] for img in product_image_div.find_all('img')]
 
 
@@ -57,7 +57,7 @@ if product_list:
             div_text = product_soup.find('div', class_="lg:col-span-6 gap-xl lg:gap-3xl flex flex-col")
             #title
             product_title = div_text.find('h1', class_="text-md font-semibold text-gray-800 capitalize").text
-          
+            
 
             # price
             price_card = div_text.find('div', class_ = "pdp__price")

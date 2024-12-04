@@ -16,13 +16,10 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
     const fetchProducts = async () => {
       try {
         // Fetch products and images concurrently
-        console.log("Category: ", category);
 
-        console.log("Making request for category:", category);
         const productsResponse = await axios.get(
           `http://localhost:8000/products?gender=${category}`
         );
-        console.log("API Response:", productsResponse);
 
         // Map images to products
         const productsWithImages = productsResponse.data.products.map(
@@ -32,7 +29,6 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
             image_url: product.image_url || "https://via.placeholder.com/150",
           })
         );
-        console.log("hehe", productsWithImages);
 
         setProducts(productsWithImages);
       } catch (error) {

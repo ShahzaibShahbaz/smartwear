@@ -21,14 +21,14 @@ db = client["smartwear"]  # Database name
 collection = db["products"]  # Collection name
 
 # Function to upload image to Cloudinary
-def upload_to_cloudinary(image_path):
-    """
-    Uploads an image to Cloudinary and returns the image URL.
-    :param image_path: Path to the local image file.
-    :return: URL of the uploaded image.
-    """
-    response = cloudinary.uploader.upload(image_path)
-    return response.get("url")
+# def upload_to_cloudinary(image_path):
+#     """
+#     Uploads an image to Cloudinary and returns the image URL.
+#     :param image_path: Path to the local image file.
+#     :return: URL of the uploaded image.
+#     """
+#     response = cloudinary.uploader.upload(image_path)
+#     return response.get("url")
 
 # Function to save product data to MongoDB
 def save_product_to_mongo(product):
@@ -49,10 +49,10 @@ def process_products(json_data):
     """
     for product in json_data:
         try:
-            # Upload image to Cloudinary if image_url is missing
-            if not product.get("image_url"):
-                print(f"Uploading image for product: {product['name']}")
-                product["image_url"] = upload_to_cloudinary(product["local_image_path"])
+            # # Upload image to Cloudinary if image_url is missing
+            # if not product.get("image_url"):
+            #     print(f"Uploading image for product: {product['name']}")
+            #     product["image_url"] = upload_to_cloudinary(product["local_image_path"])
             
             # Remove local image path before saving to MongoDB
             product.pop("local_image_path", None)

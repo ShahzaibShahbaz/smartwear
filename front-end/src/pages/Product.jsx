@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import ProductDetails from "../components/ProductDetails";
 import Buying from "../components/Buying";
 
 // Mock data or replace with API call

@@ -10,6 +10,8 @@ import {
 } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../store/authSlice"; // Import the logout action
+import { resetCart } from "../store/cartSlice";
+import { persistor } from "../store/store"; // Import persistor
 
 function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -62,7 +64,14 @@ function Navbar() {
 
   // Handle logout
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logout()); // Dispatch logout action
+    dispatch(resetCart()); // Dispatch resetCart action to clear Redux cart state
+    localStorage.removeItem("persist:cart");
+    // Purge persisted state (cart) from localStorage
+    persistor.purge().then(() => {
+      // Optional: Flush any changes made to persisted state
+      persistor.flush();
+    });
   };
 
   return (

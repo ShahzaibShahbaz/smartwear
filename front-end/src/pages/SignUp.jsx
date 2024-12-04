@@ -38,7 +38,7 @@ function SignUp() {
           confirm_password: confirmPassword, // Changed to match backend schema
         }
       );
-
+      console.log(response);
       if (response.status === 200 || response.status === 201) {
         setSuccess("Signup successful! You can now log in.");
         setEmail("");

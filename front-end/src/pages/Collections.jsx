@@ -5,7 +5,7 @@ import menImage from "../Assets/men.jpg";
 import womenImage from "../Assets/women.jpg";
 import kidsImage from "../Assets/kids.jpg";
 
-const Homepage = () => {
+const Collections = () => {
   const categories = [
     { title: "MEN", image: menImage, link: "/products/Men" },
     { title: "WOMEN", image: womenImage, link: "/products/Women" },
@@ -52,4 +52,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default Collections;

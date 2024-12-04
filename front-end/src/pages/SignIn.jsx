@@ -3,8 +3,9 @@ import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../store/authSlice";
-import axios from "axios";
+import { setCartItems } from "../store/cartSlice";
 import axiosInstance from "../api/axiosConfig";
+import axios from "axios";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -17,42 +18,55 @@ function SignIn() {
     e.preventDefault();
     setError("");
 
-    // Basic validation
     if (!email || !password) {
       setError("All fields are required!");
       return;
     }
 
     try {
-      // Create URLSearchParams for form data (required by OAuth2 password flow)
       const formData = new URLSearchParams();
-      formData.append("username", email); // Backend expects email in username field
+      formData.append("username", email);
       formData.append("password", password);
-
-      // Send request with axios
 
       const response = await axiosInstance.post(
         "http://localhost:8000/users/signin",
         formData,
         {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // Make sure the server knows the data format
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       );
 
-      // Handle response
       if (response.status === 200 || response.status === 201) {
-        // Dispatch credentials to Redux store
+        const { access_token, token_type, user } = response.data;
+
+        // Dispatch user credentials
         dispatch(
           setCredentials({
-            token: response.data.access_token,
-            user: { email }, // Add more user details if available
+            token_type: token_type,
+            token: access_token,
+            user: { id: user.id, username: user.username, email: user.email },
           })
         );
 
-        // Redirect to dashboard or home page
-        navigate("/"); // Adjust the route as needed
+        // Fetch the cart for the logged-in user
+        try {
+          const cartresponse = await axiosInstance.get("/cart", {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
+
+          // Handle empty cart response
+          const cartItems = cartresponse.data.items || [];
+          dispatch(setCartItems(cartItems));
+        } catch (cartError) {
+          console.error("Error fetching cart:", cartError);
+          // Initialize with an empty cart if cart fetch fails
+          dispatch(setCartItems([]));
+        }
+
+        // Navigate to the home page
+        navigate("/");
       } else {
         setError(response.data.detail || "Invalid email or password");
       }
@@ -68,7 +82,7 @@ function SignIn() {
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
-    navigate("/forgot-password"); // Implement this route if needed
+    navigate("/forgot-password");
   };
 
   return (

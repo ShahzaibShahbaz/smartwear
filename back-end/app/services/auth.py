@@ -7,7 +7,7 @@ from bson import ObjectId
 from app.database import get_database
 
 from fastapi.security import OAuth2PasswordBearer
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/signin")
 
 
 SECRET_KEY = "your-secret-key-keep-it-secret"  
@@ -89,10 +89,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), database=Depends
     try:
         # Decode the token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
+        email: str = payload.get("sub")  # Extract email from the token
         
-        if email is None:
-            raise HTTPException(status_code=401, detail="Could not validate credentials")
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token: missing 'sub'")
         
         # Fetch user from database
         user = await database.users.find_one({"email": email})
@@ -100,10 +100,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme), database=Depends
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         
+        # Return user information
         return {
-            "id": str(user["_id"]),
-            "email": user["email"],
-            "username": user["username"]
+            "username": user["username"],  # Use username as unique identifier
+            "email": user["email"]
         }
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+    except JWTError as e:
+        print(f"JWT decoding error: {e}")  # Debugging log
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception as e:
+        print(f"Unexpected error in get_current_user: {e}")  # Debugging log
+        raise HTTPException(status_code=500, detail="Internal server error")

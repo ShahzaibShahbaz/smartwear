@@ -10,8 +10,7 @@ function Checkout() {
   const { items, total } = useSelector((state) => state.cart);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  console.log("user ", user);
-  console.log("guwgdw", isAuthenticated);
+
   const handleCheckout = async () => {
     if (!isAuthenticated) {
       alert("Please log in to proceed with checkout");
@@ -59,7 +58,7 @@ function Checkout() {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Subtotal</span>
-          <span className="font-semibold">${total.toFixed(2)}</span>
+          <span className="font-semibold">${total}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Shipping</span>
@@ -68,7 +67,7 @@ function Checkout() {
         <hr className="border-gray-200" />
         <div className="flex justify-between text-xl font-bold">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>${total}</span>
         </div>
       </div>
       <button
