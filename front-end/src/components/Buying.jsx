@@ -38,7 +38,9 @@ function Buying() {
         },
       ],
     };
+    console.log('Product Data:', product);
 
+    console.log("yooooooo", cartItem)
     try {
       // Send API request to add item to cart
       const response = await fetch("http://localhost:8000/cart/", {
@@ -49,19 +51,21 @@ function Buying() {
         },
         body: JSON.stringify(cartItem),
       });
-
+      console.log("ur mom", response)
       if (response.ok) {
         // Update Redux state after successful API call
+        console.log('yeh hai priud', product.price)
         dispatch(
           addToCart({
-            product_id: String(product._id),
-            name: product.name,
-            price: product.price,
-            imageUrl: selectedImage,
-            quantity: parseInt(quantity),
-            size: selectedSize,
+              product_id: String(product._id || product.name.replace(/\s+/g, '-').toLowerCase()), // Generate a fallback ID if _id is missing
+              name: product.name.trim(),
+              price: product.price,
+              imageUrl: product.image_url, // Map `image_url` to `imageUrl`
+              quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
+              size: selectedSize, // User-selected size
           })
-        );
+      );
+      
 
         alert("Item added to cart successfully!");
       } else {

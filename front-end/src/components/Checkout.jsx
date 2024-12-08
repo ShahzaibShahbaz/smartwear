@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { clearCart } from "../store/cartSlice";
+import { clearCart } from "../store/cartSlice"; // Assuming redux slice for cart
 import { useNavigate } from "react-router-dom";
 
 function Checkout() {
@@ -16,37 +16,58 @@ function Checkout() {
       alert("Please log in to proceed with checkout");
       return;
     }
-
+  
     if (items.length === 0) {
       alert("Your cart is empty");
       return;
     }
-
+  
+    // Calculate the total amount
+    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log("Calculated total amount:", total); // Log the total to ensure it's correct
+  
+    // Create the order data object
+    const orderData = {
+      user_id: user.id,
+      total_amount: total,  // Ensure total is passed correctly
+      items: items.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size || null, // Include size if available
+      })),
+    };
+  
+    // Log the order data before sending it
+    console.log("Sending the following data to the server:", orderData); // Log the payload
+  
     try {
-      const orderResponse = await axios.post("http://127.0.0.1:8000/orders", {
-        user_id: user.id,
-        total_amount: total,
-        items: items.map((item) => ({
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size || null, // Include size if available
-        })),
-      });
-
+      const orderResponse = await axios.post("http://127.0.0.1:8000/orders", orderData);
+  
+      // Log the response from the server after order placement
+      console.log("Order response from server:", orderResponse.data);
+  
       // Clear cart after successful order
       dispatch(clearCart());
-
+  
       // Show success message and redirect
       alert(
         `Order placed successfully! Order ID: ${orderResponse.data.order_id}`
       );
       navigate("/orders"); // Redirect to orders page
     } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Failed to place order. Please try again.");
+      if (error.response) {
+        console.error("Checkout error response:", error.response.data);
+        alert(`Failed to place order. Error: ${error.response.data.detail}`);
+      } else {
+        console.error("Checkout error:", error);
+        alert("Failed to place order. Please try again.");
+      }
     }
+    
   };
+  
+  
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md mx-auto mt-8">

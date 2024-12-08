@@ -1,23 +1,23 @@
 [
     {
-        "name": "Prince Coat 86 (3 Piece) -  ",
-        "price": "PKR 22,015",
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1c6e1dba73f2c61b548bf24485af9c1d.jpg?v=1702990274&width=300",
+        "name": "Iceberg Green (3 Pc) -  ",
+        "price": 8190.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-172241850164593_b8634ed1-48e4-4f07-a4c9-2c3067eb621d.jpg?v=1722504169&width=300",
         "size": [
             "S",
             "M",
             "L",
             "XL"
         ],
-        "description": "Men's Formal Prince Coat on Jamawar Fabric with Chikan Embroidery With Blended Kurta Pyjama",
+        "description": "Men's Formal Jute Suiting Waistcoat with Matching Blended Kameez Shalwar having Band Collar and Cuff Sleeves.",
         "gender": "Men",
-        "subcategory": "Prince Coat",
-        "color": "Cream",
-        "product_type": "Wedding/Guest Wear - Formal"
+        "subcategory": "Waistcoat",
+        "color": "Green",
+        "product_type": "Festive/Party Wear"
     },
     {
         "name": "TGM - Bone Black -  ",
-        "price": "PKR 10,280",
+        "price": 10280.0,
         "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/0041_BoneBlack_3.jpg?v=1728474279&width=300",
         "size": [
             "S",
@@ -32,50 +32,43 @@
         "product_type": "Festive/Party Wear"
     },
     {
-        "name": "Ivory Self Texture Simple Sherwani -  ",
-        "price": "PKR 11,070",
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1f750cf133653cb2170132c812248363.jpg?v=1698061488&width=300",
+        "name": "Off white Prince Coat Men YSP05 -  ",
+        "price": 10400.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/d47e401ae1fad65d2287eaeddfe2c105.jpg?v=1721631005&width=300",
         "size": [
             "L",
             "M",
             "S",
-            "XL",
-            "XS",
-            "XXL"
+            "XL"
         ],
-        "description": "Self Texture Ivory color simple sherwani with Golden Buttons",
-        "gender": "Men",
-        "subcategory": "Sherwani",
-        "color": "White",
-        "product_type": "Bride/Groom Wear"
-    },
-    {
-        "name": "Black Prince Coat Men YSP09 -  ",
-        "price": "PKR 9,900",
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/99aa9d57749f8c3403eb120419430b76.jpg?v=1721651270&width=300",
-        "size": [
-            "L",
-            "M",
-            "S",
-            "XL",
-            "XXL"
-        ],
-        "description": "LUXURY BLACK PRINCE COAT WITH SHALWAR SUIT",
+        "description": "LUXURY OFF WHITE PRINCE COAT WITH SHALWAR SUIT",
         "gender": "Men",
         "subcategory": "Prince Coat",
-        "color": "Black",
+        "color": "Off-White",
         "product_type": "Festive/Party Wear"
     },
     {
-        "name": "Joggers Knit Trouser -  ",
-        "price": "PKR 1,995",
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/IMG_3979_d365f2be-eff1-4028-b672-8b9d4d904f9b.jpg?v=1733123752&width=300",
+        "name": "Prince Coat 86 (3 Piece) -  ",
+        "price": 22015.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1c6e1dba73f2c61b548bf24485af9c1d.jpg?v=1702990274&width=300",
         "size": [
-            "SMALL",
-            "MEDIUM",
-            "LARGE",
-            "X-LARGE",
-            "XX-LARGE"
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "description": "Men's Formal Prince Coat on Jamawar Fabric with Chikan Embroidery With Blended Kurta Pyjama",
+        "gender": "Men",
+        "subcategory": "Prince Coat",
+        "color": "Cream",
+        "product_type": "Wedding/Guest Wear - Formal"
+    },
+    {
+        "name": "Lux Wool Dyed Yarn | Camel -  ",
+        "price": 8500.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/5_d93412de-1156-4560-b5c8-2767f63c0c56.jpg?v=1733122024&width=300",
+        "size": [
+            "Camel"
         ],
         "description": "NA",
         "gender": "NA",

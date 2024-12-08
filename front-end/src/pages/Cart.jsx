@@ -77,7 +77,7 @@ function Cart() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen mt-20">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-10">My Cart</h1>
@@ -99,7 +99,7 @@ function Cart() {
                     onClick={() => handleDeleteItem(product.product_id)}
                     className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-full"
                   >
-                    X
+                    delete kro ,ujhe
                   </button>
                 </div>
               ))}
