@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Chatbot from "./pages/Chatbot";
 import ProductPage from "./pages/ProductPage";
+import PlaceOrder from "./pages/PlaceOrder";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/product/:productname" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/placeorder" element={<PlaceOrder />} />
       </Routes>
     </div>
   );

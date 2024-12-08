@@ -68,7 +68,16 @@ if product_list:
             else:
                 print("Price card not found.")
 
-            product_price = product_price_currency.text + product_price_amount.text
+            product_price = product_price_currency.text + product_price_amount.text if product_price_currency and product_price_amount else "NA"
+
+            # Clean the price: Remove non-numeric characters (e.g., currency symbols and commas)
+            if product_price != "NA":
+                product_price = product_price.replace('PKR', '').replace(',', '').strip()  # Remove currency symbol and commas
+                try:
+                    product_price = float(product_price)  # Convert to float for calculations
+                except ValueError:
+                    product_price = "NA"
+            
 
             #size
             sizes = []
