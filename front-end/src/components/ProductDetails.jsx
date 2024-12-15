@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../store/cartSlice";
+import {
+  AiOutlineHeart,
+} from "react-icons/ai";
 
 function ProductDetails({ product }) {
   const dispatch = useDispatch();
@@ -98,13 +101,32 @@ function ProductDetails({ product }) {
           </div>
         </div>
 
-        {/* Add to Cart Button */}
-        <button
-          onClick={handleAddToCart}
-          className="w-full px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
-        >
-          Add to Cart
-        </button>
+        {/* Buttons Section */}
+        <div className="flex gap-4 items-center">
+          {/* Wishlist (Heart) Button */}
+          <button
+            className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
+            onClick={() => {
+              if (!user) {
+                alert("Please log in to add items to your wishlist");
+                return;
+              }
+              // Call your wishlist API here
+              alert("Added to wishlist!");
+            }}
+          >
+            <AiOutlineHeart className="text-xl text-red-500" />{" "}
+          </button>
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
+            style={{ flex: 1 }}
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
 
       {/* Success Popup */}

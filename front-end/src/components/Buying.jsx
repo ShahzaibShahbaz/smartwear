@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector
 import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
+import {
+  AiOutlineHeart,
+} from "react-icons/ai";
 
 function Buying() {
   const { state } = useLocation(); // Access the passed state
@@ -38,9 +41,9 @@ function Buying() {
         },
       ],
     };
-    console.log('Product Data:', product);
+    console.log("Product Data:", product);
 
-    console.log("yooooooo", cartItem)
+    console.log("yooooooo", cartItem);
     try {
       // Send API request to add item to cart
       const response = await fetch("http://localhost:8000/cart/", {
@@ -51,21 +54,22 @@ function Buying() {
         },
         body: JSON.stringify(cartItem),
       });
-      console.log("ur mom", response)
+      console.log("ur mom", response);
       if (response.ok) {
         // Update Redux state after successful API call
-        console.log('yeh hai priud', product.price)
+        console.log("yeh hai priud", product.price);
         dispatch(
           addToCart({
-              product_id: String(product._id || product.name.replace(/\s+/g, '-').toLowerCase()), // Generate a fallback ID if _id is missing
-              name: product.name.trim(),
-              price: product.price,
-              imageUrl: product.image_url, // Map `image_url` to `imageUrl`
-              quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
-              size: selectedSize, // User-selected size
+            product_id: String(
+              product._id || product.name.replace(/\s+/g, "-").toLowerCase()
+            ), // Generate a fallback ID if _id is missing
+            name: product.name.trim(),
+            price: product.price,
+            imageUrl: product.image_url, // Map `image_url` to `imageUrl`
+            quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
+            size: selectedSize, // User-selected size
           })
-      );
-      
+        );
 
         alert("Item added to cart successfully!");
       } else {
@@ -77,6 +81,46 @@ function Buying() {
       alert("An error occurred while adding to cart.");
     }
   };
+
+  const handleAddToWishlist = async () => {
+    if (!user) {
+      alert("Please log in to add items to your wishlist.");
+      return;
+    }
+  
+    try {
+      console.log("User ID:", user.id);
+      console.log("Product ID:", product._id);
+      console.log("Payload:", {
+        user_id: user.id,
+        product_id: product._id,
+      });
+
+      const response = await fetch("http://localhost:8000/api/wishlist/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id, // Pass the user ID from Redux
+          product_id: product._id, // Pass the product ID
+        }),
+      });
+
+      console.log("API Response:", response); // Log the raw response
+  
+      if (response.ok) {
+        alert("Product added to wishlist!");
+      } else {
+        const error = await response.json();
+        alert(`Failed to add to wishlist: ${error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      alert("An error occurred while adding to wishlist.");
+    }
+  };
+  
 
   // Render a fallback if the product is missing
   if (!product) {
@@ -137,12 +181,25 @@ function Buying() {
           </div>
         </div>
 
-        <button
-          onClick={handleAddToCart}
-          className="w-full px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
-        >
-          Add to Cart
-        </button>
+        <div className="flex gap-4 items-center">
+          {/* Wishlist (Heart) Button */}
+          <button
+            className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
+            onClick={handleAddToWishlist}
+          >
+            <AiOutlineHeart className="text-xl text-red-500" />
+          </button>
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
+            style={{ flex: 1 }}
+          >
+            Add to Cart
+          </button>
+        </div>
+
       </div>
     </div>
   );
