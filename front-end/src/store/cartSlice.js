@@ -10,8 +10,7 @@ const cartSlice = createSlice({
     setCartItems: (state, action) => {
       state.items = action.payload;
       state.total = state.items.reduce(
-        (sum, item) =>
-          sum + item.price * item.quantity,
+        (sum, item) => sum + item.price * item.quantity,
         0
       );
     },
@@ -27,11 +26,9 @@ const cartSlice = createSlice({
       }
 
       state.total = state.items.reduce(
-        (sum, item) =>
-          sum +item.price * item.quantity,
+        (sum, item) => sum + item.price * item.quantity,
         0
       );
-      console.log("Total after adding item:", state.total);  
     },
     updateQuantity: (state, action) => {
       const { product_id, quantity } = action.payload;
@@ -47,8 +44,7 @@ const cartSlice = createSlice({
       }
 
       state.total = state.items.reduce(
-        (sum, item) =>
-          sum + item.price * item.quantity,
+        (sum, item) => sum + item.price * item.quantity,
         0
       );
     },
@@ -58,8 +54,7 @@ const cartSlice = createSlice({
       );
 
       state.total = state.items.reduce(
-        (sum, item) =>
-          sum + item.price * item.quantity,
+        (sum, item) => sum + item.price * item.quantity,
         0
       );
     },

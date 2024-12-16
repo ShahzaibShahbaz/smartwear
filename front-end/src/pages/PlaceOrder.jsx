@@ -16,13 +16,17 @@ function PlaceOrder() {
       <h1 className="text-3xl font-bold text-center mb-8">Place Your Order</h1>
 
       <div className="steps-container mb-6 flex justify-between">
-        <Link to="checkout" className="step-link text-xl font-semibold">1. Checkout</Link>
-        <Link to="confirm" className="step-link text-xl font-semibold">2. Confirm Order</Link>
+        <Link to="checkout" className="step-link text-xl font-semibold">
+          1. Checkout
+        </Link>
+        <Link to="confirm" className="step-link text-xl font-semibold">
+          2. Confirm Order
+        </Link>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1">
-          <Checkout onSubmit={handleCheckoutSubmit} />
+          <Checkout showButton={false} onSubmit={handleCheckoutSubmit} />
         </div>
         <div className="flex-1">
           <ConfirmOrder orderData={orderData} />

@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { clearCart } from "../store/cartSlice"; // Assuming redux slice for cart
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 // Initial form state
 const initialFormData = {
@@ -9,299 +13,281 @@ const initialFormData = {
   lastName: "",
   country: "Pakistan",
   address: "",
-  apartment: "",
   city: "",
   zip: "",
-  shippingMethod: "",
-  paymentMethod: "",
-  paymentDetails: {
-    bankName: "",
-    accountTitle: "",
-    accountNumber: "",
-    iban: "",
-    swiftCode: "",
-    branchAddress: "",
-  },
+  paymentMethod: "COD",
 };
 
-function CheckoutForm() {
+const CheckoutForm = () => {
   const [formData, setFormData] = useState(initialFormData);
-  const [activeTab, setActiveTab] = useState("contact"); // Tab state: contact, shipping, payment
-  const [isSubmitting, setIsSubmitting] = useState(false); // Submission state
-  const [error, setError] = useState(null); // Error state
+  const [activeTab, setActiveTab] = useState("contact");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { items, total } = useSelector((state) => state.cart);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Handle tab switching
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  // Handle form field changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+  // Update form data
+  const updateFormData = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  // Handle nested payment details input changes
-  const handlePaymentDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      paymentDetails: {
-        ...prevData.paymentDetails,
-        [name]: value,
+  const validateForm = () => {
+    const allFields = [
+      { tab: "contact", fields: ["email", "phone"] },
+      {
+        tab: "shipping",
+        fields: ["firstName", "lastName", "address", "city", "zip"],
       },
-    }));
-  };
+      { tab: "payment", fields: ["paymentMethod"] },
+    ];
 
-  // Handle form submission
+    for (const section of allFields) {
+      for (const field of section.fields) {
+        // Trim the value to check for empty strings or just whitespace
+        const value = formData[field] ? formData[field].trim() : "";
+
+        if (!value) {
+          // Set active tab to the section with the missing field
+          setActiveTab(section.tab);
+
+          return `Please fill out all required fields in the ${section.tab} section.`;
+        }
+      }
+    }
+
+    return null;
+  };
+  // Submit the form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      setIsSubmitting(false);
+      return;
+    }
+    const userID = user.id;
+    const total = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const order = {
+      user_id: userID,
+      total,
+      items: items.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size || null, // Include size if available
+      })),
+      formData,
+    };
+
     try {
-      const response = await axios.post("http://127.0.0.1:8000/checkout", formData);
-      console.log("Checkout successful:", response.data);
-      alert("Checkout successful!");
-    } catch (err) {
-      console.error("Error during checkout:", err);
-      setError("An error occurred during checkout. Please try again.");
+      const orderResponse = await axios.post(
+        "http://127.0.0.1:8000/orders",
+        order
+      );
+
+      // Clear cart after successful order
+      dispatch(clearCart());
+
+      // Show success message and redirect
+      alert(
+        `Order placed successfully! Order ID: ${orderResponse.data.order_id}`
+      );
+    } catch (error) {
+      if (error.response) {
+        console.error("Checkout error response:", error.response.data);
+        alert(`Failed to place order. Error: ${error.response.data.detail}`);
+      } else {
+        console.error("Checkout error:", error);
+        alert("Failed to place order. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="checkout-form-container max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-      <h2 className="text-3xl font-bold text-center mb-6">Checkout Information</h2>
+    <>
+      <Navbar />
+      <div className="checkout-form-container max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+        <h2 className="text-3xl font-bold text-center mb-6">
+          Complete Your Order
+        </h2>
 
-      {/* Tab Navigation */}
-      <div className="tabs flex justify-center mb-6">
-        <button
-          className={`tab-btn ${activeTab === "contact" ? "active" : ""}`}
-          onClick={() => handleTabChange("contact")}
-        >
-          Contact Information
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "shipping" ? "active" : ""}`}
-          onClick={() => handleTabChange("shipping")}
-        >
-          Shipping Address
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "payment" ? "active" : ""}`}
-          onClick={() => handleTabChange("payment")}
-        >
-          Payment Method
-        </button>
+        {/* Tab Navigation */}
+        <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Error Message */}
+        {error && <ErrorMessage message={error} />}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          {activeTab === "contact" && (
+            <ContactTab formData={formData} updateFormData={updateFormData} />
+          )}
+          {activeTab === "shipping" && (
+            <ShippingTab formData={formData} updateFormData={updateFormData} />
+          )}
+          {activeTab === "payment" && (
+            <PaymentTab formData={formData} updateFormData={updateFormData} />
+          )}
+
+          {/* Submit Button */}
+          <SubmitButton isSubmitting={isSubmitting} />
+        </form>
       </div>
-
-      {/* Error Message */}
-      {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-
-      {/* Form Sections */}
-      <form onSubmit={handleSubmit}>
-        {activeTab === "contact" && (
-          <div className="contact-form space-y-4">
-            <div className="form-group">
-              <label htmlFor="email" className="block text-sm">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="phone" className="block text-sm">Phone Number</label>
-              <input
-                type="text"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === "shipping" && (
-          <div className="shipping-form space-y-4">
-            <div className="form-group">
-              <label htmlFor="firstName" className="block text-sm">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="lastName" className="block text-sm">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="address" className="block text-sm">Address</label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="city" className="block text-sm">City</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="zip" className="block text-sm">Zip Code</label>
-              <input
-                type="text"
-                id="zip"
-                name="zip"
-                value={formData.zip}
-                onChange={handleInputChange}
-                required
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === "payment" && (
-          <div className="payment-form space-y-4">
-            <div className="form-group">
-              <label htmlFor="paymentMethod" className="block text-sm">Payment Method</label>
-              <select
-                id="paymentMethod"
-                name="paymentMethod"
-                value={formData.paymentMethod}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="COD">Cash on Delivery</option>
-                <option value="Card">Credit/Debit Card</option>
-                <option value="Bank">Bank Deposit</option>
-              </select>
-            </div>
-
-            {formData.paymentMethod === "Bank" && (
-              <div className="bank-details space-y-4">
-                <div className="form-group">
-                  <label htmlFor="bankName" className="block text-sm">Bank Name</label>
-                  <input
-                    type="text"
-                    id="bankName"
-                    name="bankName"
-                    value={formData.paymentDetails.bankName}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="accountTitle" className="block text-sm">Account Title</label>
-                  <input
-                    type="text"
-                    id="accountTitle"
-                    name="accountTitle"
-                    value={formData.paymentDetails.accountTitle}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="accountNumber" className="block text-sm">Account Number</label>
-                  <input
-                    type="text"
-                    id="accountNumber"
-                    name="accountNumber"
-                    value={formData.paymentDetails.accountNumber}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="iban" className="block text-sm">IBAN</label>
-                  <input
-                    type="text"
-                    id="iban"
-                    name="iban"
-                    value={formData.paymentDetails.iban}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="swiftCode" className="block text-sm">Swift Code</label>
-                  <input
-                    type="text"
-                    id="swiftCode"
-                    name="swiftCode"
-                    value={formData.paymentDetails.swiftCode}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="branchAddress" className="block text-sm">Branch Address</label>
-                  <input
-                    type="text"
-                    id="branchAddress"
-                    name="branchAddress"
-                    value={formData.paymentDetails.branchAddress}
-                    onChange={handlePaymentDetailsChange}
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <div className="submit-btn mt-6 flex justify-center">
-          <button
-            type="submit"
-            className={`px-6 py-3 bg-black text-white rounded-lg ${isSubmitting ? "opacity-50" : ""}`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting..." : "Submit Order"}
-          </button>
-        </div>
-      </form>
-    </div>
+    </>
   );
-}
+};
+
+// Reusable Components
+
+const TabNavigation = ({ activeTab, setActiveTab }) => (
+  <div className="tabs flex justify-center mb-6 space-x-4">
+    {["contact", "shipping", "payment"].map((tab) => (
+      <button
+        key={tab}
+        className={`tab-btn ${
+          activeTab === tab ? "bg-black text-white" : "bg-gray-200 text-black"
+        } px-4 py-2 rounded`}
+        onClick={() => setActiveTab(tab)}
+      >
+        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+      </button>
+    ))}
+  </div>
+);
+
+const ErrorMessage = ({ message }) => (
+  <div className="text-red-500 text-center mb-4">{message}</div>
+);
+
+const ContactTab = ({ formData, updateFormData }) => (
+  <div className="contact-form space-y-4">
+    <InputField
+      label="Email Address"
+      name="email"
+      value={formData.email}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+    <InputField
+      label="Phone Number"
+      name="phone"
+      value={formData.phone}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+  </div>
+);
+
+const ShippingTab = ({ formData, updateFormData }) => (
+  <div className="shipping-form space-y-4">
+    <InputField
+      label="First Name"
+      name="firstName"
+      value={formData.firstName}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+    <InputField
+      label="Last Name"
+      name="lastName"
+      value={formData.lastName}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+    <InputField
+      label="Address"
+      name="address"
+      value={formData.address}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+    <InputField
+      label="City"
+      name="city"
+      value={formData.city}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+    <InputField
+      label="Zip Code"
+      name="zip"
+      value={formData.zip}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+    />
+  </div>
+);
+
+const PaymentTab = ({ formData, updateFormData }) => (
+  <div className="payment-form space-y-4">
+    <SelectField
+      label="Payment Method"
+      name="paymentMethod"
+      value={formData.paymentMethod}
+      onChange={(e) => updateFormData(e.target.name, e.target.value)}
+      options={[{ value: "COD", label: "Cash on Delivery" }]}
+    />
+  </div>
+);
+
+const InputField = ({ label, name, value, onChange, type = "text" }) => (
+  <div className="form-group">
+    <label htmlFor={name} className="block text-sm font-medium">
+      {label}
+    </label>
+    <input
+      type={type}
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full p-2 border border-gray-300 rounded"
+    />
+  </div>
+);
+
+const SelectField = ({ label, name, value, onChange, options }) => (
+  <div className="form-group">
+    <label htmlFor={name} className="block text-sm font-medium">
+      {label}
+    </label>
+    <select
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full p-2 border border-gray-300 rounded"
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const SubmitButton = ({ isSubmitting }) => (
+  <div className="submit-btn mt-6 flex justify-center">
+    <button
+      type="submit"
+      className={`px-6 py-3 bg-black text-white rounded-lg ${
+        isSubmitting ? "opacity-50" : ""
+      }`}
+      disabled={isSubmitting}
+    >
+      {isSubmitting ? "Submitting..." : "Submit Order"}
+    </button>
+  </div>
+);
 
 export default CheckoutForm;
