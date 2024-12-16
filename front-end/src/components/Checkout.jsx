@@ -1,25 +1,31 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
-import { clearCart } from "../store/cartSlice"; // Assuming redux slice for cart
+
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Checkout({ showButton = true }) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items, total } = useSelector((state) => state.cart);
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user, token } = useSelector((state) => state.auth);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  const notifyLogin = () => {
+    toast("Please log in first!");
+  };
+
   const handleCheckout = async () => {
-    if (!isAuthenticated) {
-      alert("Please log in to proceed with checkout");
+    if (!isAuthenticated || !user || !token) {
+      notifyLogin();
       return;
     }
 
     if (items.length === 0) {
-      alert("Your cart is empty");
+      toast.warn("Your cart is empty");
+
       return;
     }
 
@@ -71,6 +77,7 @@ function Checkout({ showButton = true }) {
             Proceed to Checkout
           </button>
         )}
+        <ToastContainer />
       </div>
     </>
   );

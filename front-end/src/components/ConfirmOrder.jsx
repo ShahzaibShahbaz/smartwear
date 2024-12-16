@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { clearCart } from "../store/cartSlice"; // Assuming redux slice for cart
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { toast, ToastContainer } from "react-toastify";
 
 // Initial form state
 const initialFormData = {
@@ -103,16 +104,21 @@ const CheckoutForm = () => {
       dispatch(clearCart());
 
       // Show success message and redirect
-      alert(
+
+      toast.success(
         `Order placed successfully! Order ID: ${orderResponse.data.order_id}`
       );
     } catch (error) {
       if (error.response) {
         console.error("Checkout error response:", error.response.data);
-        alert(`Failed to place order. Error: ${error.response.data.detail}`);
+
+        toast.error(
+          `Failed to place order. Error: ${error.response.data.detail}`
+        );
       } else {
         console.error("Checkout error:", error);
-        alert("Failed to place order. Please try again.");
+
+        toast.error("Failed to place order. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -146,6 +152,7 @@ const CheckoutForm = () => {
           )}
 
           {/* Submit Button */}
+
           <SubmitButton isSubmitting={isSubmitting} />
         </form>
       </div>
@@ -287,6 +294,7 @@ const SubmitButton = ({ isSubmitting }) => (
     >
       {isSubmitting ? "Submitting..." : "Submit Order"}
     </button>
+    <ToastContainer />
   </div>
 );
 

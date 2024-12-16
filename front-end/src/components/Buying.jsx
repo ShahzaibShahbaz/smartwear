@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector
 import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
 import { AiOutlineHeart } from "react-icons/ai";
-import axios from "axios";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Buying() {
+  const navigate = useNavigate();
   const { state } = useLocation(); // Access the passed state
   const product = state?.product; // Retrieve the product object
   const dispatch = useDispatch(); // Initialize dispatch
@@ -17,15 +20,28 @@ function Buying() {
   const [selectedSize, setSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+  const notifyLogin = () => {
+    toast.error("Please login to buy this product");
+  };
+
+  const notifySelectSize = () => {
+    toast.warn("Please select a size before adding to cart!");
+  };
+
+  const notifyItemAddedSuccess = () => {
+    toast.success("Item added to cart successfully");
+  };
   const handleAddToCart = async () => {
     if (!selectedSize) {
-      alert("Please select a size before adding to cart.");
+      notifySelectSize();
       return;
     }
-
-    // Ensure user is authenticated
-    if (!user || !token) {
-      alert("Please log in to add items to your cart.");
+    console.log(window.location.pathname);
+    if (!token || !user) {
+      notifyLogin();
+      navigate("/signin", {
+        state: { from: window.location.pathname, product: state?.product },
+      });
       return;
     }
 
@@ -68,30 +84,19 @@ function Buying() {
           })
         );
 
-        alert("Item added to cart successfully!");
+        notifyItemAddedSuccess();
       } else {
         const error = await response.json();
-        alert(`Failed to add to cart: ${error.detail}`);
+
+        toast.error(`Failed to add to cart: ${error.detail}`);
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
-      alert("An error occurred while adding to cart.");
+      toast.error("An error occurred while adding to cart.");
     }
   };
 
   const handleAddToWishlist = async () => {
-    if (!selectedSize) {
-      alert("Please select a size before adding to wishlist.");
-      return;
-    }
-
-    // Ensure user is authenticated
-    if (!user || !token) {
-      alert("Please log in to add items to your wishlist.");
-      return;
-    }
-    console.log(token);
-
     try {
       const product_id = product._id;
 
@@ -110,15 +115,18 @@ function Buying() {
       if (response.ok) {
         const data = await response.json();
         console.log("API Response:", data);
-        alert("Product added to wishlist!");
+
+        toast.success("Product added to wishlist!");
       } else {
         const errorData = await response.json();
         console.error("Server error:", errorData);
-        alert(`Failed to add to wishlist: ${errorData.detail}`);
+
+        toast.error(`Failed to add to wishlist: ${errorData.detail}`);
       }
     } catch (error) {
       console.error("Unknown error:", error.message);
-      alert("An unknown error occurred.");
+
+      toast.error("An unknown error occurred.");
     }
   };
 
@@ -198,6 +206,7 @@ function Buying() {
           >
             Add to Cart
           </button>
+          <ToastContainer />
         </div>
       </div>
     </div>

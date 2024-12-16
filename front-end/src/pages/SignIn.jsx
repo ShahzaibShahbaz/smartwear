@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../store/authSlice";
 import { setCartItems } from "../store/cartSlice";
@@ -13,6 +13,7 @@ function SignIn() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -64,9 +65,11 @@ function SignIn() {
           // Initialize with an empty cart if cart fetch fails
           dispatch(setCartItems([]));
         }
-
-        // Navigate to the home page
-        navigate("/");
+        const { from, product } = location.state || {};
+        navigate(from, {
+          replace: true,
+          state: { product },
+        });
       } else {
         setError(response.data.detail || "Invalid email or password");
       }

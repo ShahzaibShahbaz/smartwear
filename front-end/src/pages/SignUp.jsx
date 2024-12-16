@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import modelsImage from "../Assets/photoshootaesthetic.jpeg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import axiosInstance from "../api/axiosConfig";
 
@@ -12,6 +12,9 @@ function SignUp() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from || "/";
 
   const handleSignUp = async (e) => {
     e.preventDefault();

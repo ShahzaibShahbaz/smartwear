@@ -12,12 +12,12 @@ const ProductCard = ({ product }) => {
   const image_url = product.image_url || "https://via.placeholder.com/150";
 
   const handleCardClick = () => {
-    const cleanedProductName = product.name.trim();
+    const cleanedProductName = product.name.replace(/\s+/g, "");
 
-    // URL-encode the cleaned product name
-    const encodedProductName = encodeURIComponent(cleanedProductName);
+    console.log("productclean", cleanedProductName);
+
     // Navigate to the Buying page and pass the product as state
-    navigate(`/product/${encodedProductName}`, { state: { product } });
+    navigate(`/product/${cleanedProductName}`, { state: { product } });
   };
 
   return (
