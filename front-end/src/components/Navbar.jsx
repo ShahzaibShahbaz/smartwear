@@ -20,8 +20,8 @@ function Navbar() {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
-  // Redux state
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -41,12 +41,9 @@ function Navbar() {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        // Scrolling UP or at top of page
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        // Scrolling DOWN and not at top
         setIsVisible(false);
-        // Close mobile menu and search when hiding navbar
         setMobileMenuOpen(false);
         setIsSearchOpen(false);
       }
@@ -65,14 +62,13 @@ function Navbar() {
 
   // Handle logout
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch logout action
-    dispatch(resetCart()); // Dispatch resetCart action to clear Redux cart state
+    dispatch(logout());
+    dispatch(resetCart());
     localStorage.removeItem("persist:cart");
-    // Purge persisted state (cart) from localStorage
     persistor.purge().then(() => {
-      // Optional: Flush any changes made to persisted state
       persistor.flush();
     });
+    setSidebarOpen(false); // Close sidebar after logout
   };
 
   return (
@@ -108,16 +104,6 @@ function Navbar() {
             Contact Us
           </a>
         </li>
-        {isAuthenticated && (
-          <li className="p-4 md:p-0">
-            <button
-              onClick={handleLogout}
-              className="text-gray-700 hover:text-black"
-            >
-              Logout
-            </button>
-          </li>
-        )}
       </ul>
 
       {/* Icons with Search */}
@@ -157,24 +143,9 @@ function Navbar() {
           </Link>
         </button>
 
-        {!isAuthenticated ? (
-          <>
-            <button>
-              <Link to="/signin" className="text-gray-700 hover:text-black">
-                Login
-              </Link>
-            </button>
-            <button>
-              <Link to="/signup" className="text-gray-700 hover:text-black">
-                Signup
-              </Link>
-            </button>
-          </>
-        ) : (
-          <button>
-            <AiOutlineUser />
-          </button>
-        )}
+        <button onClick={() => setSidebarOpen(!isSidebarOpen)}>
+          <AiOutlineUser className="text-gray-700 hover:text-black" />
+        </button>
       </div>
 
       {/* Mobile Menu Toggle */}
@@ -184,6 +155,47 @@ function Navbar() {
       >
         {isMobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
       </button>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed top-16 right-0  h-full bg-white shadow-lg z-50 w-full md:w-1/3 lg:w-1/4 transform transition-transform duration-300 ${
+          isSidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <button
+          className="absolute top-4 right-4 text-2xl text-gray-700 hover:text-black"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <AiOutlineClose />
+        </button>
+        <div className="flex flex-col items-center justify-center h-full gap-6 p-4 bg-white">
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                className="w-3/4 text-center bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-900"
+                onClick={() => setSidebarOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="w-3/4 text-center bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700"
+                onClick={() => setSidebarOpen(false)}
+              >
+                Signup
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
     </nav>
   );
 }
