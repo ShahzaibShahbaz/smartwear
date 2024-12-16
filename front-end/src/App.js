@@ -9,6 +9,7 @@ import Cart from "./pages/Cart";
 import Chatbot from "./pages/Chatbot";
 import ProductPage from "./pages/ProductPage";
 import PlaceOrder from "./pages/PlaceOrder";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
+        <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
     </div>
   );

@@ -7,6 +7,7 @@ import {
   AiOutlineUser,
   AiOutlineMenu,
   AiOutlineClose,
+  AiOutlineHeart,
 } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../store/authSlice"; // Import the logout action
@@ -147,6 +148,12 @@ function Navbar() {
         <button>
           <Link to="/cart">
             <AiOutlineShoppingCart />
+          </Link>
+        </button>
+
+        <button>
+          <Link to="/wishlist" className="text-gray-700 hover:text-black">
+            <AiOutlineHeart />
           </Link>
         </button>
 

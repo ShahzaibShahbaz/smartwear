@@ -10,27 +10,24 @@ import {
   updateQuantity,
   removeFromCart,
 } from "../store/cartSlice";
+import { AiOutlineDelete } from "react-icons/ai";
 
 function Cart() {
   const dispatch = useDispatch();
   const { items: products } = useSelector((state) => state.cart);
   const { user, token } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    console.log("Current cart items (in redux):", products);
-  }, [products]);
+  console.log(user);
 
   // Fetch cart data from backend if necessary (only when user is logged in)
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        console.log("Fetching cart for user:", user);
         const response = await axiosInstance.get("/cart", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Fetched cart items:", response.data.items);
+
         dispatch(setCartItems(response.data.items));
       } catch (error) {
         console.error("Error fetching cart:", error.response?.data || error);
@@ -43,14 +40,18 @@ function Cart() {
   }, [user, token, dispatch, products.length]);
 
   // Function to delete an item from the cart
-  const handleDeleteItem = async (productId) => {
+  const handleDeleteItem = async (product_id) => {
     try {
-      await axios.delete(`/cart/${productId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      dispatch(removeFromCart(productId));
+      const response = await axios.delete(
+        `http://localhost:8000/cart/${product_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      dispatch(removeFromCart(product_id));
     } catch (error) {
       console.error(
         "Error deleting item from cart:",
@@ -59,18 +60,18 @@ function Cart() {
     }
   };
 
-  const handleUpdateQuantity = async (productId, quantity, size) => {
+  const handleUpdateQuantity = async (product_id, quantity, size) => {
     try {
       await axiosInstance.put(
         "/cart",
-        { product_id: productId, quantity, size },
+        { product_id: product_id, quantity, size },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      dispatch(updateQuantity({ product_id: productId, quantity }));
+      dispatch(updateQuantity({ product_id: product_id, quantity }));
     } catch (error) {
       console.error("Error updating cart:", error.response?.data || error);
     }
@@ -87,19 +88,20 @@ function Cart() {
           </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-8">
-            <div className="flex-grow">
+            <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product) => (
                 <div key={product.product_id} className="relative">
                   <ProductCard
                     product={product}
                     updateQuantity={handleUpdateQuantity}
+                    className="max-w-[250px] mx-auto" // Limit max width
                   />
-                  {/* Delete button */}
                   <button
                     onClick={() => handleDeleteItem(product.product_id)}
-                    className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-full"
+                    className="absolute top-2 right-2 bg-black-500 hover:bg-black-500 text-black p-1 rounded-full transition-transform transform hover:scale-125"
+                    title="Delete this item" // Helper text shown when hovering
                   >
-                    delete kro ,ujhe
+                    <AiOutlineDelete className="text-3xl" />
                   </button>
                 </div>
               ))}

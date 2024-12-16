@@ -9,8 +9,7 @@ const ProductCard = ({ product }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [selectedSize, setSelectedSize] = useState(null);
-
-  const imageUrl = product.image_url || "https://via.placeholder.com/150";
+  const image_url = product.image_url || "https://via.placeholder.com/150";
 
   const handleCardClick = () => {
     const cleanedProductName = product.name.trim();
@@ -27,7 +26,7 @@ const ProductCard = ({ product }) => {
       onClick={handleCardClick}
     >
       <img
-        src={imageUrl}
+        src={image_url}
         alt={product.name}
         className="w-full h-48 object-cover"
         onError={(e) => {
@@ -38,7 +37,7 @@ const ProductCard = ({ product }) => {
         <h3 className="text-lg font-medium text-gray-800 truncate">
           {product.name}
         </h3>
-        <p className="text-gray-600 font-bold">{product.price}</p>
+        <p className="text-gray-600 font-bold">PKR{product.price}</p>
       </div>
     </div>
   );

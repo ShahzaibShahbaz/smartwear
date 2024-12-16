@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector
 import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
+import { AiOutlineHeart } from "react-icons/ai";
+import axios from "axios";
 
 function Buying() {
   const { state } = useLocation(); // Access the passed state
@@ -38,9 +40,7 @@ function Buying() {
         },
       ],
     };
-    console.log('Product Data:', product);
 
-    console.log("yooooooo", cartItem)
     try {
       // Send API request to add item to cart
       const response = await fetch("http://localhost:8000/cart/", {
@@ -51,21 +51,22 @@ function Buying() {
         },
         body: JSON.stringify(cartItem),
       });
-      console.log("ur mom", response)
+
       if (response.ok) {
         // Update Redux state after successful API call
-        console.log('yeh hai priud', product.price)
+
         dispatch(
           addToCart({
-              product_id: String(product._id || product.name.replace(/\s+/g, '-').toLowerCase()), // Generate a fallback ID if _id is missing
-              name: product.name.trim(),
-              price: product.price,
-              imageUrl: product.image_url, // Map `image_url` to `imageUrl`
-              quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
-              size: selectedSize, // User-selected size
+            product_id: String(
+              product._id || product.name.replace(/\s+/g, "-").toLowerCase()
+            ), // Generate a fallback ID if _id is missing
+            name: product.name.trim(),
+            price: product.price,
+            image_url: product.image_url, // Map `image_url` to `imageUrl`
+            quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
+            size: selectedSize, // User-selected size
           })
-      );
-      
+        );
 
         alert("Item added to cart successfully!");
       } else {
@@ -75,6 +76,49 @@ function Buying() {
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("An error occurred while adding to cart.");
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    if (!selectedSize) {
+      alert("Please select a size before adding to wishlist.");
+      return;
+    }
+
+    // Ensure user is authenticated
+    if (!user || !token) {
+      alert("Please log in to add items to your wishlist.");
+      return;
+    }
+    console.log(token);
+
+    try {
+      const product_id = product._id;
+
+      // Send the request using fetch
+      const response = await fetch("http://localhost:8000/wishlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ product_id }),
+      });
+
+      console.log("res in wihs", response);
+      // Check if the response is successful
+      if (response.ok) {
+        const data = await response.json();
+        console.log("API Response:", data);
+        alert("Product added to wishlist!");
+      } else {
+        const errorData = await response.json();
+        console.error("Server error:", errorData);
+        alert(`Failed to add to wishlist: ${errorData.detail}`);
+      }
+    } catch (error) {
+      console.error("Unknown error:", error.message);
+      alert("An unknown error occurred.");
     }
   };
 
@@ -113,7 +157,7 @@ function Buying() {
       <div className="max-w-lg flex flex-col">
         <h1 className="text-2xl md:text-3xl font-semibold">{product.name}</h1>
         <p className="text-xl md:text-2xl text-gray-700 mb-4">
-          ${product.price}
+          PKR {product.price}
         </p>
         <p className="text-gray-600 mb-6">{product.description}</p>
 
@@ -137,12 +181,24 @@ function Buying() {
           </div>
         </div>
 
-        <button
-          onClick={handleAddToCart}
-          className="w-full px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
-        >
-          Add to Cart
-        </button>
+        <div className="flex gap-4 items-center">
+          {/* Wishlist (Heart) Button */}
+          <button
+            className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
+            onClick={handleAddToWishlist}
+          >
+            <AiOutlineHeart className="text-xl text-red-500" />
+          </button>
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
+            style={{ flex: 1 }}
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
     </div>
   );
