@@ -10,6 +10,9 @@ import Chatbot from "./pages/Chatbot";
 import ProductPage from "./pages/ProductPage";
 import PlaceOrder from "./pages/PlaceOrder";
 import Wishlist from './pages/Wishlist';
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -27,6 +30,10 @@ function App() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </div>
   );

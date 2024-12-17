@@ -157,6 +157,14 @@ function SignUp() {
                   Already have an account? Click here to <b>login</b>
                 </a>
               </div>
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => navigate("/admin-login")}
+                  className="text-sm text-white underline"
+                >
+                  Admin? Click here to log in
+                </button>
+              </div>
             </form>
           </div>
         </div>
