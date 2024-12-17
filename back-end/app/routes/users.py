@@ -4,6 +4,12 @@ from app.schemas.user import UserCreate, UserResponse
 from app.services.auth import AuthService
 from app.database import get_database
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
+from passlib.context import CryptContext
+
+# Define the password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter()
 
@@ -21,7 +27,8 @@ async def signup(user: UserCreate, request: Request):
                 "id": result["id"],
                 "username": result["username"],
                 "email": result["email"],
-                "message": "User created successfully"
+                "message": "User created successfully",
+                "is_admin": False # Added for admin logic
             }
         )
     except Exception as e:
@@ -54,3 +61,25 @@ async def signin(
         }
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
+    
+
+SECRET_KEY = "secret_key"
+
+@router.post("/admin/login")
+async def admin_login(
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    request: Request = None
+):
+    db = await get_database(request)
+    users_collection = db["users"]  # Access users collection
+
+    user = await users_collection.find_one({"email": form_data.username})
+    if not user or not pwd_context.verify(form_data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials.")
+
+    if not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not an admin user.")
+
+    token_data = {"sub": user["email"], "role": "admin"}
+    token = jwt.encode(token_data, SECRET_KEY, algorithm="HS256")
+    return {"access_token": token, "token_type": "bearer"}

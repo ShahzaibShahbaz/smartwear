@@ -15,6 +15,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
     confirm_password: str
+    is_admin: Optional[bool] = Field(False, description="Admin status of the user")  
 
     @validator('password')
     def password_strength(cls, v):
@@ -32,6 +33,7 @@ class UserResponse(BaseModel):
     id: str
     username: str
     email: str
+    is_admin: bool
 
     class Config:
         from_attributes = True

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends, Request
 from jose import jwt, JWTError
 import bcrypt
 from bson import ObjectId
@@ -111,3 +111,20 @@ async def get_current_user(token: str = Depends(oauth2_scheme), database=Depends
     except Exception as e:
         print(f"Unexpected error in get_current_user: {e}")  # Debugging log
         raise HTTPException(status_code=500, detail="Internal server error")
+
+#For Route Protection
+async def verify_admin_token(request: Request):
+    token = request.headers.get("Authorization")
+    if not token:
+        raise HTTPException(status_code=401, detail="No token provided.")
+
+    try:
+        token = token.split(" ")[1]  # Remove 'Bearer' prefix
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        role = payload.get("role")
+        if role != "admin":
+            raise HTTPException(status_code=403, detail="Not authorized.")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token.")
+
+    return True

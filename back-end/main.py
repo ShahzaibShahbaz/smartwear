@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import users, cart, images, products
+from app.routes import users, cart, images, products, admin
 from app.database import connect_to_mongo  # Ensure this exists
 from app.routes import order
 from app.routes import wishlist
@@ -35,6 +35,7 @@ app.include_router(products.router, prefix="/products", tags=["products"])
 app.include_router(images.router, prefix="/images", tags=["images"])
 app.include_router(order.router)
 app.include_router(wishlist.router, prefix="/api", tags=["Wishlist"])
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
 
 @app.get("/health")
 async def health_check():
