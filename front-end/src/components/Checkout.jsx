@@ -77,7 +77,6 @@ function Checkout({ showButton = true }) {
             Proceed to Checkout
           </button>
         )}
-        <ToastContainer />
       </div>
     </>
   );

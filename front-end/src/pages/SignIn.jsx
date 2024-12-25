@@ -39,6 +39,8 @@ function SignIn() {
 
       if (response.status === 200 || response.status === 201) {
         const { access_token, token_type, user } = response.data;
+        console.log("Response:", response.data);
+
 
         // Dispatch user credentials
         dispatch(
@@ -65,18 +67,21 @@ function SignIn() {
           // Initialize with an empty cart if cart fetch fails
           dispatch(setCartItems([]));
         }
-        const { from, product } = location.state || {};
-        navigate(from, {
-          replace: true,
-          state: { product },
-        });
+        // Determine where to navigate
+      const { from } = location.state || {};
+      if (from) {
+        navigate(from, { replace: true }); // Go back to the product page
       } else {
-        setError(response.data.detail || "Invalid email or password");
+        navigate("/", { replace: true }); // Redirect to the homepage
       }
-    } catch (err) {
-      setError("An error occurred. Please try again later.");
+    } else {
+      setError(response.data.detail || "Invalid email or password");
     }
-  };
+  } catch (err) {
+    console.error("Sign-in error:", err);
+    setError("An error occurred. Please try again later.");
+  }
+};
 
   const handleSignUpClick = (e) => {
     e.preventDefault();
@@ -149,6 +154,7 @@ function SignIn() {
               <button
                 type="submit"
                 className="w-full lg:w-[50%] py-2 bg-black text-white rounded-md text-lg"
+                onclick= {handleSignIn}
               >
                 Login
               </button>

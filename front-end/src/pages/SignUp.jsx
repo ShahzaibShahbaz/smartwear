@@ -14,7 +14,7 @@ function SignUp() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || "/";
+  //const from = location.state?.from || "/";
 
   const handleSignUp = async (e) => {
     e.preventDefault();
