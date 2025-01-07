@@ -7,6 +7,12 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from passlib.context import CryptContext
+from bson import ObjectId
+from pydantic import BaseModel
+
+
+class StatusUpdate(BaseModel):
+    status: str
 
 # Define the password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -83,3 +89,38 @@ async def admin_login(
     token_data = {"sub": user["email"], "role": "admin"}
     token = jwt.encode(token_data, SECRET_KEY, algorithm="HS256")
     return {"access_token": token, "token_type": "bearer"}
+
+@router.get("/")
+async def fetch_users(db=Depends(get_database)):
+    """Fetch all users."""
+    collection = db["users"]
+    users = await collection.find().to_list(100)
+    for user in users:
+        user["_id"] = str(user["_id"])  # Convert ObjectId to string
+    return {"users": users}
+
+
+@router.delete("/{user_id}")
+async def delete_user(user_id: str, db=Depends(get_database)):
+    """Delete a user."""
+    collection = db["users"]
+    result = await collection.delete_one({"_id": ObjectId(user_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User deleted successfully"}
+
+
+@router.patch("/{user_id}/status")
+async def update_user_status(user_id: str, status_update: StatusUpdate, db=Depends(get_database)):
+    if status_update.status not in ["active", "suspended"]:
+        raise HTTPException(status_code=400, detail="Invalid status value")
+    
+    collection = db["users"]
+    result = await collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"status": status_update.status}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": f"User status updated to {status_update.status}"}

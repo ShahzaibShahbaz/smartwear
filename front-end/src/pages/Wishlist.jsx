@@ -20,7 +20,7 @@ const Wishlist = () => {
     }
     try {
       setLoading(true);
-      const response = await axios.get(`/wishlist?user_id=${userId}`);
+      const response = await axios.get(`/api/wishlist?user_id=${userId}`);
       setWishlist(response.data.items);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -54,13 +54,13 @@ const Wishlist = () => {
     );
   }
 
-  if (wishlist.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-700 text-2xl font-bold">Your wishlist is empty.</p>
-      </div>
-    );
-  }
+  // if (wishlist.length === 0) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <p className="text-gray-700 text-2xl font-bold">Your wishlist is empty.</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>

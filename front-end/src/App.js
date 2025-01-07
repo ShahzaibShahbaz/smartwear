@@ -13,7 +13,10 @@ import Wishlist from './pages/Wishlist';
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import AddProductForm from "./pages/AdminAddProduct.jsx";
+import ApproveDisapproveProducts from "./pages/AdminApproveProducts.jsx";
+import UserManagement from "./pages/AdminManageUsers.jsx";
+import ManageOrders from "./pages/AdminManageOrders.jsx";
 function App() {
   return (
     <div>
@@ -32,7 +35,11 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/add-product" element={<AddProductForm />} />
+          <Route path="/admin/approve-products" element={<ApproveDisapproveProducts />} />
+          <Route path="/admin/manage-users" element={<UserManagement />} />
+          <Route path="/admin/manage-orders" element={<ManageOrders />} />
         </Route>
       </Routes>
     </div>

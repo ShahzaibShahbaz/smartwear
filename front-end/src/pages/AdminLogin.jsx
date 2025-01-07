@@ -29,7 +29,7 @@ function AdminLogin() {
       localStorage.setItem("admin_token", response.data.access_token);
       console.log("Token saved:", localStorage.getItem("admin_token"));
 
-      navigate("/admin-dashboard");
+      navigate("/admin/dashboard");
     } catch (err) {
       setError("Invalid credentials or access denied.");
     }

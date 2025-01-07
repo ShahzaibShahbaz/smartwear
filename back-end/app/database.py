@@ -4,7 +4,7 @@ from fastapi import Request
 
 import certifi
 
-MONGO_DB_URL = "mongodb+srv://admin:shahzaib@smartwear-cluster.ksawq.mongodb.net/?retryWrites=true&w=majority&appName=smartwear-cluster"
+MONGO_DB_URL = "mongodb+srv://admin:iU2eMAqxgccAaUWY@smartwear-cluster.ksawq.mongodb.net/?retryWrites=true&w=majority&appName=smartwear-cluster"
 
 async def connect_to_mongo():
     """Establish connection to MongoDB Atlas."""
