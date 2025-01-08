@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminNavbar from "../components/AdminNavbar";
 
 const AdminApproveProducts = () => {
   const [pendingProducts, setPendingProducts] = useState([]);
   const [approvedProducts, setApprovedProducts] = useState([]);
   const [disapprovedProducts, setDisapprovedProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Fetch products by status
   const fetchProducts = async () => {
     try {
+      setLoading(true); // Start loader
       const [pendingRes, approvedRes, disapprovedRes] = await Promise.all([
         axios.get("http://localhost:8000/products/pending"),
         axios.get("http://localhost:8000/products/approved"),
@@ -19,8 +22,11 @@ const AdminApproveProducts = () => {
       setDisapprovedProducts(disapprovedRes.data);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false); // Stop loader
     }
   };
+  
 
   const handleApprove = async (productId) => {
     try {
@@ -75,41 +81,56 @@ const AdminApproveProducts = () => {
       </div>
     ));
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-bold mb-6">Product Approval Dashboard</h1>
-
-      {/* Pending Products */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Pending Products</h2>
-        {pendingProducts.length > 0 ? (
-          renderProducts(pendingProducts)
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <AdminNavbar />
+        {loading ? (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="loader border-t-4 border-blue-500 w-16 h-16 rounded-full animate-spin"></div>
+          </div>
         ) : (
-          <p className="text-gray-500">No pending products.</p>
-        )}
-      </div>
+          <div className="min-h-screen bg-gray-100 p-8">
+          <h1 className="text-2xl font-bold mb-6">
+            Product Approvals
+          </h1>
 
-      {/* Approved Products */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Approved Products</h2>
-        {approvedProducts.length > 0 ? (
-          renderProducts(approvedProducts, false) // No actions for approved products
-        ) : (
-          <p className="text-gray-500">No approved products.</p>
-        )}
-      </div>
+          {/* Grid layout for Pending and Approved Products */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Pending Products */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Pending Products</h2>
+              {pendingProducts.length > 0 ? (
+                renderProducts(pendingProducts)
+              ) : (
+                <p className="text-gray-500">No pending products.</p>
+              )}
+            </div>
 
-      {/* Disapproved Products */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Disapproved Products</h2>
-        {disapprovedProducts.length > 0 ? (
-          renderProducts(disapprovedProducts, false) // No actions for disapproved products
-        ) : (
-          <p className="text-gray-500">No disapproved products.</p>
+            {/* Approved Products */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Approved Products</h2>
+              {approvedProducts.length > 0 ? (
+                renderProducts(approvedProducts, false) // No actions for approved products
+              ) : (
+                <p className="text-gray-500">No approved products.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Disapproved Products */}
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">Disapproved Products</h2>
+            {disapprovedProducts.length > 0 ? (
+              renderProducts(disapprovedProducts, false) // No actions for disapproved products
+            ) : (
+              <p className="text-gray-500">No disapproved products.</p>
+            )}
+          </div>
+        </div>
         )}
+
+        
       </div>
-    </div>
-  );
+    );      
 };
-
 export default AdminApproveProducts;

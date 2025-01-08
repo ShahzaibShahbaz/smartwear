@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminNavbar from "../components/AdminNavbar";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -42,8 +43,10 @@ const UserManagement = () => {
   }, []);
 
   return (
+    <div className="min-h-screen bg-gray-100">
+      <AdminNavbar />
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-bold mb-6">User Management</h1>
+      <h1 className="text-2xl font-bold mb-6">Manage Users</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded shadow-lg">
           <thead>
@@ -96,6 +99,7 @@ const UserManagement = () => {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 };

@@ -90,3 +90,10 @@ async def get_disapproved_products(db=Depends(get_database)):
         product["_id"] = str(product["_id"])
     return products
 
+@router.get("/get")
+async def get_all_products(db=Depends(get_database)):
+    collection = db["products"]
+    products = await collection.find().to_list(100)
+    for product in products:
+        product["_id"] = str(product["_id"])  # Convert ObjectId to string
+    return {"products": products}

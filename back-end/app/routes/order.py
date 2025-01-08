@@ -48,26 +48,20 @@ async def get_orders(db=Depends(get_database)):
 @router.patch("/orders/{order_id}")
 async def update_order_status(
     order_id: str, 
-    status: str = Body(..., embed=True),  # Explicitly extract "status" from request body
+    status: str = Body(..., embed=True),
     db=Depends(get_database)
 ):
-    """
-    Update the status of an order in the 'orders' collection.
-    """
     collection: Collection = db["orders"]
 
-    # Validate the status input
     valid_statuses = ["pending", "confirmed", "shipped", "completed"]
     if status not in valid_statuses:
         raise HTTPException(status_code=400, detail="Invalid status")
 
     try:
-        # Convert the order_id to ObjectId
         object_id = ObjectId(order_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid order ID format")
 
-    # Update the status of the order
     result = await collection.update_one(
         {"_id": object_id}, {"$set": {"status": status}}
     )
