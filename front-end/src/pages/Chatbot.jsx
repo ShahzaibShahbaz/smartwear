@@ -1,43 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
-import { PaperClipIcon } from '@heroicons/react/20/solid'; // Heroicon for the arrow
+import { useState, useEffect, useRef } from "react";
+import { PaperClipIcon } from "@heroicons/react/20/solid"; // Heroicon for the arrow
 import Navbar from "../components/Navbar";
 
 function ChatbotPage() {
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Hello! How can I assist you today?' }
+    { sender: "bot", text: "Hello! How can I assist you today?" },
   ]);
-  const [userMessage, setUserMessage] = useState('');
+  const [userMessage, setUserMessage] = useState("");
 
-  // Reference to the message container to scroll to the bottom
   const messagesEndRef = useRef(null);
 
   // Scroll to the bottom of the chat whenever a new message is added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (userMessage.trim() === '') return;
+    if (userMessage.trim() === "") return;
 
-    // Add user message
     setMessages((prevMessages) => [
       ...prevMessages,
-      { sender: 'user', text: userMessage }
+      { sender: "user", text: userMessage },
     ]);
 
-    // Simulate bot response (you can replace this with API calls)
     setMessages((prevMessages) => [
       ...prevMessages,
-      { sender: 'bot', text: `You said: ${userMessage}` }
+      { sender: "bot", text: `You said: ${userMessage}` },
     ]);
+    // API implementation yet to be done and added
 
-    // Clear user input
-    setUserMessage('');
+    setUserMessage("");
   };
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSendMessage(); // Send the message when Enter is pressed
+    if (event.key === "Enter") {
+      handleSendMessage();
     }
   };
 
@@ -57,7 +54,9 @@ function ChatbotPage() {
               <div
                 key={index}
                 className={`p-2 rounded-lg ${
-                  msg.sender === 'user' ? 'bg-white self-end' : 'bg-white self-start'
+                  msg.sender === "user"
+                    ? "bg-white self-end"
+                    : "bg-white self-start"
                 }`}
               >
                 {msg.text}

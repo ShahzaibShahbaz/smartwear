@@ -30,7 +30,7 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="relative inline-block w-full h-screen">
+      <div className="relative inline-block w-full h-screen overflow-hidden">
         {/* Image container with fade transition */}
         <img
           src={images[currentImageIndex]}
@@ -53,7 +53,7 @@ function Home() {
 
         {/* Shop Now button */}
         <Link to="/collections">
-          <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black text-6xl font-bold ">
+          <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black-700 hover:text-gray-700 text-6xl font-bold ">
             Shop Now!
           </h1>
         </Link>

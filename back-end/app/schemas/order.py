@@ -1,6 +1,5 @@
-# schema/order.py
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 class Item(BaseModel):
     product_id: str
@@ -31,3 +30,8 @@ class OrderResponse(BaseModel):
     total: float
     items: List[Item]
     formData: FormData
+    status: Literal["pending", "confirmed", "shipped", "completed"]
+
+
+
+    

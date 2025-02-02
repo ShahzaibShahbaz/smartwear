@@ -3,12 +3,14 @@ from app.schemas.wishlist import WishlistItem, Wishlist
 from app.database import get_database
 from app.services.auth import get_current_user
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel,  HttpUrl
 from bson import ObjectId
 
 
 class AddToWishlistRequest(BaseModel):
     product_id: str
+    image_url: HttpUrl
+    price: int 
 
 router = APIRouter()
 
@@ -19,17 +21,19 @@ async def get_wishlist_collection(db=Depends(get_database)):
 async def get_products_collection (db = Depends(get_database)):
     return db["products"]
 
-# Add product to wishlist
 @router.post("/")
 async def add_to_wishlist(
     request: AddToWishlistRequest,
     current_user: dict = Depends(get_current_user),
     wishlist_collection=Depends(get_wishlist_collection),
 ):
-    
     try:
         username = current_user["username"]
         product_id = request.product_id
+        image_url = request.image_url
+        price = request.price  # Ensure price is retrieved from the request
+
+        print(image_url)
        
         # Find existing wishlist
         wishlist = await wishlist_collection.find_one({"username": username})
@@ -42,13 +46,21 @@ async def add_to_wishlist(
             # Update existing wishlist
             await wishlist_collection.update_one(
                 {"username": username},
-                {"$push": {"items": {"product_id": product_id, "added_at": datetime.utcnow()}}}
+                {
+                    "$push": {
+                        "items": {
+                            "product_id": product_id,
+                            "added_at": datetime.utcnow(),
+                            "price": price,  # Include price
+                        }
+                    }
+                }
             )
         else:
             # Create new wishlist
             new_wishlist = Wishlist(
                 username=username,
-                items=[WishlistItem(product_id=product_id)]
+                items=[WishlistItem(product_id=product_id, price=price)]  # Include price
             )
             await wishlist_collection.insert_one(new_wishlist.model_dump())
 
@@ -60,6 +72,7 @@ async def add_to_wishlist(
     except Exception as e:
         print(f"Unexpected error adding to wishlist: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.get("/")
@@ -80,15 +93,23 @@ async def get_wishlist(
         
         # Extract product_ids from the wishlist and convert to ObjectId
         product_ids = [ObjectId(item["product_id"]) for item in wishlist.get("items", [])]
+    
         
         # Fetch product details for all product_ids in one query
         product_details = await products_collection.find(
             {"_id": {"$in": product_ids}},
-            {"name": 1}
+            {"name": 1, "image_url": 1, "price": 1}
         ).to_list(length=None)
         
         # Create a dictionary of product details for quick lookup
-        product_map = {str(product["_id"]): product.get("name", "Unknown") for product in product_details}
+        product_map = {
+        str(product["_id"]): {
+        "name": product.get("name", "Unknown"),
+        "image_url": product.get("image_url", "No image available"),
+        "price": product.get("price", "no pricd")
+        }
+        for product in product_details
+        }
         
         # Return the items with product names
         return {
@@ -96,7 +117,8 @@ async def get_wishlist(
                 {
                     "product_id": item["product_id"], 
                     "name": product_map.get(str(item["product_id"]), "Unknown"),
-                    "added_at": item.get("added_at", datetime.utcnow())
+                    "added_at": item.get("added_at", datetime.utcnow()),
+                    
                 } for item in wishlist.get("items", [])
             ]
         }

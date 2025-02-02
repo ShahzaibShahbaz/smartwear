@@ -6,11 +6,15 @@ import { setCredentials } from "../store/authSlice";
 import { setCartItems } from "../store/cartSlice";
 import axiosInstance from "../api/axiosConfig";
 import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { ReducerType } from "@reduxjs/toolkit";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -18,18 +22,20 @@ function SignIn() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (!email || !password) {
       setError("All fields are required!");
       return;
     }
 
+    setLoading(true);
     try {
       const formData = new URLSearchParams();
       formData.append("username", email);
       formData.append("password", password);
 
-      const response = await axiosInstance.post(
+      const response = await axios.post(
         "http://localhost:8000/users/signin",
         formData,
         {
@@ -40,9 +46,8 @@ function SignIn() {
       if (response.status === 200 || response.status === 201) {
         const { access_token, token_type, user } = response.data;
         console.log("Response:", response.data);
+        setSuccess("Sign in successful. Enjoy :)");
 
-
-        // Dispatch user credentials
         dispatch(
           setCredentials({
             token_type: token_type,
@@ -51,37 +56,46 @@ function SignIn() {
           })
         );
 
-        // Fetch the cart for the logged-in user
         try {
-          const cartresponse = await axiosInstance.get("/cart", {
+          const cartresponse = await axios.get("http://localhost:8000/cart", {
             headers: {
               Authorization: `Bearer ${access_token}`,
             },
           });
 
-          // Handle empty cart response
           const cartItems = cartresponse.data.items || [];
           dispatch(setCartItems(cartItems));
         } catch (cartError) {
           console.error("Error fetching cart:", cartError);
-          // Initialize with an empty cart if cart fetch fails
           dispatch(setCartItems([]));
         }
-        // Determine where to navigate
-      const { from } = location.state || {};
-      if (from) {
-        navigate(from, { replace: true }); // Go back to the product page
+
+        const { from, product } = location.state || {};
+        if (from) {
+          setTimeout(() => {
+            navigate(from, { replace: true, state: { product } });
+          }, 1000);
+        } else {
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 1000);
+        }
       } else {
-        navigate("/", { replace: true }); // Redirect to the homepage
+        setError(response.data.detail || "Invalid email or password");
       }
-    } else {
-      setError(response.data.detail || "Invalid email or password");
+    } catch (err) {
+      if (err.response && err.response.status === 403) {
+        setError("Your account is suspended.");
+      } else if (err.response && err.response.status === 401) {
+        setError("Your account is not confirmed. ");
+      } else {
+        console.error("Sign-in error:", err);
+        setError("An error occurred. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Sign-in error:", err);
-    setError("An error occurred. Please try again later.");
-  }
-};
+  };
 
   const handleSignUpClick = (e) => {
     e.preventDefault();
@@ -115,6 +129,7 @@ function SignIn() {
         <div className="w-[90%] lg:w-[70%] flex flex-col gap-8 lg:gap-12 p-6 lg:p-8 bg-[#515151] text-white shadow-2xl rounded-md">
           <h1 className="text-3xl lg:text-4xl font-bold">Welcome.</h1>
           {error && <p className="text-red-500 text-sm -mt-6">{error}</p>}
+          {success && <p className="text-green-500 text-sm">{success}</p>}
           <form
             onSubmit={handleSignIn}
             className="flex flex-col gap-6 lg:gap-8"
@@ -154,9 +169,9 @@ function SignIn() {
               <button
                 type="submit"
                 className="w-full lg:w-[50%] py-2 bg-black text-white rounded-md text-lg"
-                onclick= {handleSignIn}
+                onclick={handleSignIn}
               >
-                Login
+                {loading ? <LoadingSpinner /> : "Login"}
               </button>
               <a
                 href="/signup"

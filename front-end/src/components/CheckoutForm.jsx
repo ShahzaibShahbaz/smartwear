@@ -76,6 +76,7 @@ const CheckoutForm = () => {
       setIsSubmitting(false);
       return;
     }
+
     const userID = user.id;
     const total = items.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -89,11 +90,12 @@ const CheckoutForm = () => {
         product_id: item.product_id,
         quantity: item.quantity,
         price: item.price,
-        size: item.size || null, // Include size if available
+        size: item.size || null,
+        name: item.name, // Make sure to include the item name
       })),
       formData,
     };
-
+    console.table(order);
     try {
       const orderResponse = await axios.post(
         "http://127.0.0.1:8000/orders",
@@ -103,21 +105,28 @@ const CheckoutForm = () => {
       // Clear cart after successful order
       dispatch(clearCart());
 
-      // Show success message and redirect
-
+      // Show success message
       toast.success(
         `Order placed successfully! Order ID: ${orderResponse.data.order_id}`
       );
+
+      // Navigate to order summary page with order data
+      navigate("/order-summary", {
+        state: {
+          orderData: {
+            ...order,
+            orderId: orderResponse.data.order_id,
+          },
+        },
+      });
     } catch (error) {
       if (error.response) {
         console.error("Checkout error response:", error.response.data);
-
         toast.error(
           `Failed to place order. Error: ${error.response.data.detail}`
         );
       } else {
         console.error("Checkout error:", error);
-
         toast.error("Failed to place order. Please try again.");
       }
     } finally {
@@ -127,11 +136,8 @@ const CheckoutForm = () => {
 
   return (
     <>
-      <Navbar />
       <div className="checkout-form-container max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Complete Your Order
-        </h2>
+        <h2 className="text-3xl font-bold text-center mb-6">Checkout</h2>
 
         {/* Tab Navigation */}
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -292,7 +298,7 @@ const SubmitButton = ({ isSubmitting }) => (
       }`}
       disabled={isSubmitting}
     >
-      {isSubmitting ? "Submitting..." : "Submit Order"}
+      {isSubmitting ? "Placing order..." : "Place Order"}
     </button>
     <ToastContainer />
   </div>

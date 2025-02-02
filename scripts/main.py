@@ -14,7 +14,7 @@ cloudinary.config(
 
 # Connect to MongoDB
 client = MongoClient(
-    "mongodb+srv://admin:shahzaib@smartwear-cluster.ksawq.mongodb.net/"
+    "mongodb+srv://admin:iU2eMAqxgccAaUWY@smartwear-cluster.ksawq.mongodb.net/"
     "?retryWrites=true&w=majority&appName=smartwear-cluster"
 )
 db = client["smartwear"]  # Database name
@@ -70,7 +70,7 @@ def load_json_from_file(file_path):
     :param file_path: Path to the JSON file.
     :return: List of product dictionaries.
     """
-    with open(file_path, "r") as file:
+    with open(file_path, encoding='utf-8') as file:
         return json.load(file)
 
 # Execute the process

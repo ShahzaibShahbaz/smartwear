@@ -9,7 +9,7 @@ import json
 driver = webdriver.Chrome() 
 
 # Open the URL
-url = "https://laam.pk/nodes/men-21"  # Replace with the actual URL
+url = "https://laam.pk/nodes/boy-clothing-55"  # Replace with the actual URL
 driver.get(url)
 
 # Wait for the page to load
@@ -28,7 +28,7 @@ if product_list:
     products = product_list.find_all('a')  # Find all links in the product list
 
     # Loop through each product link
-    for i, product in enumerate(products[:5]):
+    for i, product in enumerate(products[:20]):
         product_link = product.get('href')  # Extract the href attribute
         if product_link:
             
@@ -56,7 +56,7 @@ if product_list:
             # Extract details from the product page
             div_text = product_soup.find('div', class_="lg:col-span-6 gap-xl lg:gap-3xl flex flex-col")
             #title
-            product_title = div_text.find('h1', class_="text-md font-semibold text-gray-800 capitalize").text
+            product_title = div_text.find('span', class_="text-md font-semibold text-gray-800 capitalize").text
             
 
             # price
@@ -149,6 +149,7 @@ if product_list:
                     "subcategory": subcategory,
                     "color": color,
                     "product_type": product_type,
+                    "status": "pending"
                 }
             )
             print("data:", data)

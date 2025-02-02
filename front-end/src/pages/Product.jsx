@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Buying from "../components/Buying";
 
-// Mock data or replace with API call
-
 function Product() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -12,7 +10,7 @@ function Product() {
   return (
     <div>
       <Navbar />
-      <div className="p-8">
+      <div className="p-12">
         <Buying product={product} />
       </div>
     </div>

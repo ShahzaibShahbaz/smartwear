@@ -14,6 +14,8 @@ import Chatbot from "./pages/Chatbot";
 import ProductPage from "./pages/ProductPage";
 import PlaceOrder from "./pages/PlaceOrder";
 import Wishlist from "./pages/Wishlist";
+import OrderSummary from "./pages/OrderSummary";
+import OrdersPage from "./pages/Orders";
 
 function AppRoutes() {
   const location = useLocation();
@@ -41,6 +43,8 @@ function AppRoutes() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/order-summary" element={<OrderSummary />} />
+        <Route path="/your-orders" element={<OrdersPage />} />
       </Routes>
     </>
   );

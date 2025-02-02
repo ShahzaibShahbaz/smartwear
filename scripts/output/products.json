@@ -1,79 +1,407 @@
 [
     {
-        "name": "Iceberg Green (3 Pc) -  ",
-        "price": 8190.0,
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-172241850164593_b8634ed1-48e4-4f07-a4c9-2c3067eb621d.jpg?v=1722504169&width=300",
+        "name": "Mustard Waistcoat -  ",
+        "price": 4000.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/0037_UJS02114.jpg?v=1679740439&width=300",
         "size": [
-            "S",
-            "M",
-            "L",
-            "XL"
+            "2-3Y",
+            "5-6Y",
+            "0-3M",
+            "7-8Y",
+            "6-9M",
+            "3-4Y",
+            "9-10Y",
+            "4-5Y",
+            "1-2Y"
         ],
-        "description": "Men's Formal Jute Suiting Waistcoat with Matching Blended Kameez Shalwar having Band Collar and Cuff Sleeves.",
-        "gender": "Men",
+        "description": "NA",
+        "gender": "Boy",
         "subcategory": "Waistcoat",
-        "color": "Green",
-        "product_type": "Festive/Party Wear"
+        "color": "NA",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
     },
     {
-        "name": "TGM - Bone Black -  ",
-        "price": 10280.0,
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/0041_BoneBlack_3.jpg?v=1728474279&width=300",
+        "name": "powder blue waistcoat suit EW20 -  ",
+        "price": 3999.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/47f04c4a9baf31f6517e16137bc3fc53.jpg?v=1715060878&width=300",
         "size": [
-            "S",
-            "M",
-            "L",
-            "XL"
+            "8-9Y",
+            "10-11Y",
+            "4-5Y",
+            "13-14Y",
+            "5-6Y",
+            "12-13Y",
+            "3-4Y",
+            "6-7Y",
+            "7-8Y"
         ],
-        "description": "Men's Formal Kurta Pyjama on Maesuri with Computer Embroidery",
-        "gender": "Men",
+        "description": "The combination of blue and gold is always a classic and sophisticated choice. The white kurta adds a touch of elegance, while the jamawar blue and golden waistcoat with its intricate detailing and shimmering fabric takes the outfit to another level. It's a perfect choice for special occasions or formal events where you want to make a statement. You'll definitely turn heads and feel like a true fashion icon in this ensemble! \nPackage Includes :\n• Kurta \n• Trouser \n• Waistcoat \n\nFabric Details :\n• Kurta Trouser Fabric : Soft Wash and Wear \n• Waistcoat Fabric : Jamawar \nProduct Features : \n• Mandarin Collar \n• Cuff sleeves \n• Straight Kurta and Trouser\n• Patch pocket Waistcoat \n• This is a 3 Piece Stitched Outfit",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Powder Blue",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Black kameez shalwar - KS 20 -  ",
+        "price": 2399.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/d413f667dd9a44257525104b9f65af72_e5f66378-a7ec-4e25-8517-388793880282.jpg?v=1709537437&width=300",
+        "size": [
+            "5-6Y",
+            "13-14Y",
+            "8-9Y",
+            "7-8Y",
+            "12-13Y",
+            "10-11Y",
+            "3-4Y",
+            "4-5Y",
+            "2-3Y",
+            "6-7Y"
+        ],
+        "description": "Black Kameez shalwar\nBlended wash n wear fabric\nFor boys 2 - 14 years",
+        "gender": "Boy",
         "subcategory": "Kurta Set",
         "color": "Black",
-        "product_type": "Festive/Party Wear"
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
     },
     {
-        "name": "Off white Prince Coat Men YSP05 -  ",
-        "price": 10400.0,
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/d47e401ae1fad65d2287eaeddfe2c105.jpg?v=1721631005&width=300",
+        "name": "Black Kurta Trouser with Blended Waistcoat - Kids -  ",
+        "price": 6479.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-172163662017657_cc0f80d3-e6b4-465f-bfb4-f9dc865f65ab.jpg?v=1721636787&width=300",
         "size": [
-            "L",
-            "M",
-            "S",
-            "XL"
+            "7-8Y",
+            "3-4Y",
+            "5-6Y",
+            "9-10Y",
+            "11-12Y"
         ],
-        "description": "LUXURY OFF WHITE PRINCE COAT WITH SHALWAR SUIT",
-        "gender": "Men",
-        "subcategory": "Prince Coat",
-        "color": "Off-White",
-        "product_type": "Festive/Party Wear"
+        "description": "NA",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Black",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
     },
     {
-        "name": "Prince Coat 86 (3 Piece) -  ",
-        "price": 22015.0,
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/1c6e1dba73f2c61b548bf24485af9c1d.jpg?v=1702990274&width=300",
+        "name": "2pcs Toddler Boy Trendy Letter Print Tee and Shorts Set -  ",
+        "price": 2516.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/628dea87d9a69_4f64243c-f1c9-4df2-9dc5-1f31e0d2e36b.jpg?v=1735780652&width=300",
         "size": [
-            "S",
-            "M",
-            "L",
-            "XL"
-        ],
-        "description": "Men's Formal Prince Coat on Jamawar Fabric with Chikan Embroidery With Blended Kurta Pyjama",
-        "gender": "Men",
-        "subcategory": "Prince Coat",
-        "color": "Cream",
-        "product_type": "Wedding/Guest Wear - Formal"
-    },
-    {
-        "name": "Lux Wool Dyed Yarn | Camel -  ",
-        "price": 8500.0,
-        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/5_d93412de-1156-4560-b5c8-2767f63c0c56.jpg?v=1733122024&width=300",
-        "size": [
-            "Camel"
+            "Blue",
+            "Orange",
+            "Yellow"
         ],
         "description": "NA",
         "gender": "NA",
         "subcategory": "NA",
         "color": "NA",
-        "product_type": "NA"
+        "product_type": "NA",
+        "status": "pending"
+    },
+    {
+        "name": "Dark Blue Waistcoat Suit EW17 -  ",
+        "price": 3999.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/fc7a805e98a0d8f285f5ae35a2a21c30.jpg?v=1714992972&width=300",
+        "size": [
+            "7-8Y",
+            "13-14Y",
+            "10-11Y",
+            "4-5Y",
+            "3-4Y",
+            "12-13Y",
+            "6-7Y",
+            "5-6Y",
+            "8-9Y"
+        ],
+        "description": "The combination of blue and gold is always a classic and sophisticated choice. The blue kurta adds a touch of elegance, while the jamawar blue and golden waistcoat with its intricate detailing and shimmering fabric takes the outfit to another level. It's a perfect choice for special occasions or formal events where you want to make a statement. You'll definitely turn heads and feel like a true fashion icon in this ensemble! \nPackage Includes :\n• Kurta \n• Trouser \n• Waistcoat \n\nFabric Details :\n• Kurta Trouser Fabric : Soft Wash and Wear \n• Waistcoat Fabric : Jamawar \nProduct Features : \n• Mandarin Collar \n• Cuff sleeves \n• Straight Kurta and Trouser\n• Patch pocket Waistcoat \n• This is a 3 Piece Stitched Outfit",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Dark Blue",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Black Motif Embroidered Cotton Kurta Trouser - Kids - 2PC -  ",
+        "price": 5460.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/48e848a04d696c33dba41c1767f08161.jpg?v=1710738188&width=300",
+        "size": [
+            "9-10Y",
+            "3-4Y",
+            "11-12Y",
+            "5-6Y",
+            "7-8Y"
+        ],
+        "description": "- Front Back Motif Embroidered\n- Designer Cotton Formal Embroidered Kurta - Matching Moments with Daddy and Son.",
+        "gender": "Boy",
+        "subcategory": "Kurta Set",
+        "color": "Black",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Black shervani - S4 -  ",
+        "price": 4199.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-173477346265423_4ab7eadb-07ff-4f3e-8e70-1189c6826fe2.jpg?v=1735022373&width=300",
+        "size": [
+            "None"
+        ],
+        "description": "NA",
+        "gender": "Boy",
+        "subcategory": "Sherwani",
+        "color": "Black",
+        "product_type": "Wedding/Guest Wear - Formal",
+        "status": "pending"
+    },
+    {
+        "name": "2pcs Toddler Boy Letter Print Short-sleeve Black Tee and Dinosaur Print Colorblock Shorts Set -  ",
+        "price": 2244.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/627b9c05901c5.jpg?v=1735780750&width=300",
+        "size": [
+            "Colorful"
+        ],
+        "description": "NA",
+        "gender": "NA",
+        "subcategory": "NA",
+        "color": "NA",
+        "product_type": "NA",
+        "status": "pending"
+    },
+    {
+        "name": "Leaf Black Embroidered Waistcoat Suit - V26 -  ",
+        "price": 3599.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/0012_321A1812_80b68a2e-0d67-4bc6-b5ff-93e9b681beca.jpg?v=1735187353&width=300",
+        "size": [
+            "5-6Y",
+            "6-7Y",
+            "4-5Y",
+            "13-14Y",
+            "7-8Y",
+            "10-11Y",
+            "8-9Y",
+            "11-12Y"
+        ],
+        "description": "NA",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Black",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Grey Waistcoat Suit - WKS 018 -  ",
+        "price": 3999.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/e48ea479915741c4ba0e51dfdfc47b3f.jpg?v=1708168099&width=300",
+        "size": [
+            "12-13Y",
+            "5-6Y",
+            "10-11Y",
+            "7-8Y",
+            "8-9Y",
+            "4-5Y",
+            "3-4Y",
+            "6-7Y",
+            "13-14Y"
+        ],
+        "description": "Package Includes :\n• Kurta \n• Trouser \n• Waistcoat \n\nFabric Details :\n• Kurta Trouser Fabric : Soft Wash and Wear \n• Waistcoat Fabric : Jamawar \n\nThe grey color adds a touch of sophistication, and the jamawar waistcoat elevates the overall look with its intricate detailing. The kurta pajama is a classic and versatile outfit that can be dressed up or down depending on the occasion. Whether you're attending a wedding or a festive celebration, this ensemble will surely make you stand out. Plus, the comfort of the wash and wear fabric ensures that you'll feel great while looking fashionable. Rock that grey kurta pajama with confidence!\n\nProduct Features : \n• Mandarin Collar \n• Cuff sleeves \n• Straight Kurta and Trouser\n• Patch pocket Waistcoat \n• This is a 3 Piece Stitched Outfit",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Grey",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Cream Kurta Trouser -  ",
+        "price": 2500.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/Untitled-1_27ee7ee7-64c3-47eb-a8d0-8fcd6c125ece.jpg?v=1685948795&width=300",
+        "size": [
+            "0-3M",
+            "4-5Y",
+            "7-8Y",
+            "9-10Y",
+            "3-4Y",
+            "5-6Y",
+            "6-9M",
+            "2-3Y",
+            "1-2Y"
+        ],
+        "description": "NA",
+        "gender": "Boy",
+        "subcategory": "Kurta",
+        "color": "NA",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "AIRCRAFT MOOD -  ",
+        "price": 1075.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-172268759110261_37705bae-2616-4dce-9b25-bca77f2dbeb3.jpg?v=1723012560&width=300",
+        "size": [
+            "1-2Y",
+            "8-9Y",
+            "3-4Y",
+            "4-5Y",
+            "5-6Y",
+            "7-8Y",
+            "9-10Y",
+            "6-7Y"
+        ],
+        "description": "Kids cotton T-shirts are a popular choice for children's clothing due to their softness, breathability, and comfort. Cotton is a natural fiber that is gentle on the skin and suitable for kids with sensitive skin. It is also highly absorbent, making it a suitable fabric for warm weather or physical a",
+        "gender": "Boy",
+        "subcategory": "T Shirt",
+        "color": "Purple",
+        "product_type": "NA",
+        "status": "pending"
+    },
+    {
+        "name": "Off white Shervani - S6 -  ",
+        "price": 3599.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-173477439847761_8a937f99-00e2-4d96-9a2b-4ef5b7a4609e.jpg?v=1735021715&width=300",
+        "size": [
+            "1-2Y",
+            "8-9Y",
+            "7-8Y",
+            "4-5Y",
+            "6-7Y",
+            "3-4Y",
+            "5-6Y",
+            "10-11Y",
+            "2-3Y",
+            "6-9M"
+        ],
+        "description": "NA",
+        "gender": "Boy",
+        "subcategory": "Sherwani",
+        "color": "Off-White",
+        "product_type": "Wedding/Guest Wear - Formal",
+        "status": "pending"
+    },
+    {
+        "name": "Leaf Green Embroidered Waistcoat Suit - V25 -  ",
+        "price": 3999.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/0010_321A1915_84544edf-c81a-4ef7-b017-537e91fcefd0.jpg?v=1735043987&width=300",
+        "size": [
+            "13-14Y",
+            "7-8Y",
+            "8-9Y",
+            "5-6Y",
+            "10-11Y",
+            "6-7Y",
+            "11-12Y",
+            "4-5Y",
+            "3-4Y"
+        ],
+        "description": "Gender: Boy\nOutfit Type: Eastern\nSub-Category: Waistcoats\nPackage Includes: 3 Piece - Top Bottom & WaistCoat\nFabric: Silk\nColor Type: Green\nWork Technique: ﻿Embroidered \nDescription: Includes Leaf Green embroidered waistcoat & black kameez shalwar High quality imported fabric waistcoat  Premium quality kameez shalwar with embroidery on collar front For boys 5 - 14 years\nDisclaimer: Actual product color may vary slightly from the image.",
+        "gender": "Additional Description:  Boy\nOutfit Type: Eastern\nSub-Category: Waistcoats\nPackage Includes: 3 Piece - Top Bottom & WaistCoat\nFabric: Silk\nColor Type: Green\nWork Technique: ﻿Embroidered \nDescription: Includes Leaf Green embroidered waistcoat & black kameez shalwar High quality imported fabric waistcoat  Premium quality kameez shalwar with embroidery on collar front For boys 5 - 14 years\nDisclaimer: Actual product color may vary slightly from the image.",
+        "subcategory": "Additional Description: Gender: Boy\nOutfit Type: Eastern\n Waistcoats\nPackage Includes: 3 Piece - Top Bottom & WaistCoat\nFabric: Silk\nColor Type: Green\nWork Technique: ﻿Embroidered \nDescription: Includes Leaf Green embroidered waistcoat & black kameez shalwar High quality imported fabric waistcoat  Premium quality kameez shalwar with embroidery on collar front For boys 5 - 14 years\nDisclaimer: Actual product color may vary slightly from the image.",
+        "color": "Additional Description: Gender: Boy\nOutfit Type: Eastern\nSub-Category: Waistcoats\nPackage Includes: 3 Piece - Top Bottom & WaistCoat\nFabric: Silk\n Green\nWork Technique: ﻿Embroidered \nDescription: Includes Leaf Green embroidered waistcoat & black kameez shalwar High quality imported fabric waistcoat  Premium quality kameez shalwar with embroidery on collar front For boys 5 - 14 years\nDisclaimer: Actual product color may vary slightly from the image.",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Maroon Waistcoat Suit - WKS 017 -  ",
+        "price": 3999.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/8034802c50774e54a3f366bdef90b1a0.jpg?v=1708323653&width=300",
+        "size": [
+            "8-9Y",
+            "3-4Y",
+            "10-11Y",
+            "6-7Y",
+            "13-14Y",
+            "7-8Y",
+            "12-13Y",
+            "4-5Y",
+            "5-6Y"
+        ],
+        "description": "Package Includes :\n• Kurta \n• Trouser \n• Waistcoat \n\nFabric Details :\n• Kurta Trouser Fabric : Soft Wash and Wear \n• Waistcoat Fabric : Self Embroidred on Suiting Fabric \n\nThe maroon color adds a touch of sophistication, and the waistcoat elevates the overall look with its intricate detailing. The kurta pajama is a classic and versatile outfit that can be dressed up or down depending on the occasion. Whether you're attending a wedding or a festive celebration, this ensemble will surely make you stand out. Plus, the comfort of the wash and wear fabric ensures that you'll feel great while looking fashionable. Rock that maroon kurta pajama with confidence!\n\nProduct Features : \n• Mandarin Collar \n• Cuff sleeves \n• Straight Kurta and Trouser\n• Patch pocket Waistcoat \n• This is a 3 Piece Stitched Outfit",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Purple",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "OKW - 043 Maroon -  ",
+        "price": 3600.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/cropped_image-172968180642988_13fa4b23-56e3-49d9-b2eb-553abc3c2b93.jpg?v=1729748051&width=300",
+        "size": [
+            "2-3Y",
+            "3-4Y",
+            "4-5Y",
+            "5-6Y",
+            "6-7Y",
+            "7-8Y",
+            "8-9Y",
+            "9-10Y",
+            "10-11Y",
+            "12-13Y",
+            "14-15Y"
+        ],
+        "description": "Formal Style Waist Coat for Kids , Jamawar Fabric in Maroon Colour and Rich Green in Weaved Design , Special for Festive And Wedding Wear",
+        "gender": "Boy",
+        "subcategory": "Waistcoat",
+        "color": "Maroon",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Off White Embroidered Cotton Kurta Trouser - Kids - 2PC -  ",
+        "price": 5460.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/d1e68e1e89c6a37af3798d317c98863e.jpg?v=1710739250&width=300",
+        "size": [
+            "7-8Y",
+            "11-12Y",
+            "5-6Y",
+            "9-10Y",
+            "3-4Y"
+        ],
+        "description": "- Front Back All Over Embroidered \n\n- Designer Cotton Formal Embroidered Kurta - Matching Moments with Daddy and Son.",
+        "gender": "Boy",
+        "subcategory": "Kurta Set",
+        "color": "Off-White",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Light Grey Embroidered Cotton Kurta Trouser - Kids - 2PC -  ",
+        "price": 5460.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/products/3684a3844068b9930fae1f3048102aea.jpg?v=1710749335&width=300",
+        "size": [
+            "9-10Y",
+            "7-8Y",
+            "5-6Y",
+            "3-4Y",
+            "11-12Y"
+        ],
+        "description": "- Front Back All Over Embroidered \n- Designer Cotton Formal Embroidered Kurta - Matching Moments with Daddy and Son.",
+        "gender": "Boy",
+        "subcategory": "Kurta Set",
+        "color": "Pastel Grey",
+        "product_type": "Festive/Party Wear",
+        "status": "pending"
+    },
+    {
+        "name": "Golden Mysore Sequence Sherwani - S10 -  ",
+        "price": 2300.0,
+        "image_url": "https://cdn.shopify.com/s/files/1/2337/7003/files/abb6c759dd27fc521e016fbe7405a87c_847ddd88-0205-4a89-9c58-155a655d537d.jpg?v=1735020595&width=300",
+        "size": [
+            "6-7Y",
+            "5-6Y",
+            "2-3Y",
+            "7-8Y",
+            "1-2Y",
+            "8-9Y",
+            "10-11Y",
+            "4-5Y",
+            "3-4Y",
+            "1Y"
+        ],
+        "description": "This sherwani is made from luxurious fabric with intricate golden embroidery. The golden threadwork adds a touch of elegance and royalty to the outfit. The design is carefully crafted, showcasing traditional motifs and patterns.\n\nIncludes Golden Sherwani\nFor boys 1 - 11 years.\nThe Size Chart of The Article Is Given Below.",
+        "gender": "Boy",
+        "subcategory": "Sherwani",
+        "color": "White",
+        "product_type": "Wedding/Guest Wear - Formal",
+        "status": "pending"
     }
 ]

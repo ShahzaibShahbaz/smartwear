@@ -3,6 +3,7 @@ import modelsImage from "../Assets/photoshootaesthetic.jpeg";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import axiosInstance from "../api/axiosConfig";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ function SignUp() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
 
   //const from = location.state?.from || "/";
@@ -30,6 +32,8 @@ function SignUp() {
       setError("Passwords do not match!");
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await axiosInstance.post(
@@ -67,6 +71,8 @@ function SignUp() {
       }
     } catch (err) {
       setError("An error occurred. Please try again later.");
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -152,11 +158,15 @@ function SignUp() {
               <div className="mt-8 flex flex-col items-center">
                 <button
                   type="submit"
-                  className="w-full lg:w-[40%] py-2 bg-black text-white rounded-md"
+                  disabled={loading}
+                  className="w-full lg:w-[40%] py-2 bg-black text-white rounded-md flex justify-center items-center"
                 >
-                  Register
+                  {loading ? <LoadingSpinner /> : "Register"}
                 </button>
-                <a href="" className="mt-4 text-white text-sm">
+                <a
+                  href="/signin"
+                  className="mt-4 text-white text-sm text-center cursor-pointer"
+                >
                   Already have an account? Click here to <b>login</b>
                 </a>
               </div>

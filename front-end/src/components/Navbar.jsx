@@ -1,66 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-  AiOutlineShoppingCart,
-  AiOutlineSearch,
-  AiOutlineCamera,
-  AiOutlineUser,
-  AiOutlineMenu,
-  AiOutlineClose,
-  AiOutlineHeart,
-} from "react-icons/ai";
+import { Camera, ShoppingCart, Heart, User, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../store/authSlice"; // Import the logout action
+import { logout } from "../store/authSlice";
 import { resetCart } from "../store/cartSlice";
-import { persistor } from "../store/store"; // Import persistor
+import { persistor } from "../store/store";
 
-function Navbar() {
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+const Navbar = () => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [username, setUsername] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const cartItems = useSelector((state) => state.cart.items);
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Handle window resize
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth < 768);
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+      setPrevScrollPos(currentScrollPos);
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos]);
+
+  useEffect(() => {
+    const data = localStorage.getItem("user");
+    if (data) {
+      try {
+        const parsedData = JSON.parse(data);
+        if (parsedData.username) {
+          setUsername(parsedData.username);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
   }, []);
 
-  // Handle scroll
-  useEffect(() => {
-    const controlNavbar = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        setIsVisible(false);
-        setMobileMenuOpen(false);
-        setIsSearchOpen(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", controlNavbar);
-    return () => window.removeEventListener("scroll", controlNavbar);
-  }, [lastScrollY]);
-
-  // Handle search toggle
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-  };
-
-  // Handle logout
   const handleLogout = () => {
     dispatch(logout());
     dispatch(resetCart());
@@ -68,136 +49,139 @@ function Navbar() {
     persistor.purge().then(() => {
       persistor.flush();
     });
-    setSidebarOpen(false); // Close sidebar after logout
+    setSidebarOpen(false);
+    navigate("/");
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-4 bg-white shadow-md transition-transform duration-300 z-50 ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      }`}
-    >
-      <div className="text-2xl font-bold">
-        <Link to="/">
-          SMART <span className="font-normal">wear</span>
-        </Link>
-      </div>
-
-      {/* Menu (responsive) */}
-      <ul
-        className={`absolute top-16 left-0 w-full bg-white md:static md:flex md:gap-8 md:top-0 md:w-auto transition-transform duration-300 ${
-          isMobileMenuOpen ? "block" : "hidden"
+    <>
+      <nav
+        className={`fixed w-full bg-gray-100 shadow-sm transition-transform duration-300 z-50 ${
+          visible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <li className="p-4 md:p-0 border-b md:border-none">
-          <Link to="/" className="text-gray-700 hover:text-black">
-            Home
-          </Link>
-        </li>
-        <li className="p-4 md:p-0 border-b md:border-none">
-          <Link to="/collections" className="text-gray-700 hover:text-black">
-            Collections
-          </Link>
-        </li>
-        <li className="p-4 md:p-0">
-          <a href="/contact-us" className="text-gray-700 hover:text-black">
-            Contact Us
-          </a>
-        </li>
-      </ul>
+        <div className="w-full px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex-shrink-0 pl-0">
+              <div className="flex items-center">
+                <span className="font-bold text-3xl ">SMART</span>
+                <span className="ml-1 text-3xl font-normal">wear</span>
+              </div>
+            </Link>
 
-      {/* Icons with Search */}
-      <div className="flex gap-4 text-2xl items-center">
-        <div className="relative flex items-center">
-          {isSearchOpen && (
-            <input
-              type="text"
-              placeholder="Search..."
-              className={`
-                transition-all duration-300 ease-in-out
-                border border-gray-300 rounded-lg
-                ${isMobileView ? "absolute top-10 right-0 w-48" : "mr-2 w-48"}
-                ${isSearchOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}
-                p-2 text-sm
-              `}
-              autoFocus
-            />
-          )}
-          <button onClick={toggleSearch}>
-            <AiOutlineSearch />
-          </button>
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link
+                to="/"
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Home
+              </Link>
+              <Link
+                to="/collections"
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Collections
+              </Link>
+              <Link
+                to="/contact-us"
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Contact Us
+              </Link>
+            </div>
+
+            {/* Icons */}
+            <div className="flex items-center space-x-6 pr-0">
+              <Link to="/" className="w-8 h-8">
+                <Camera className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer " />
+              </Link>
+              <Link to="/cart" className="relative w-8 h-8">
+                <ShoppingCart className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+                {itemCount > 0 && (
+                  <span className="absolute top-0 right-0 text-xs text-white bg-red-600 rounded-full px-1">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+              <Link to="/wishlist" className="w-8 h-8">
+                <Heart className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+              </Link>
+              <User
+                className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer"
+                onClick={() => setSidebarOpen(true)}
+              />
+              {username && <span>hi, {username}</span>}
+            </div>
+          </div>
         </div>
-        <button>
-          <AiOutlineCamera />
-        </button>
-
-        <button>
-          <Link to="/cart">
-            <AiOutlineShoppingCart />
-          </Link>
-        </button>
-
-        <button>
-          <Link to="/wishlist" className="text-gray-700 hover:text-black">
-            <AiOutlineHeart />
-          </Link>
-        </button>
-
-        <button onClick={() => setSidebarOpen(!isSidebarOpen)}>
-          <AiOutlineUser className="text-gray-700 hover:text-black" />
-        </button>
-      </div>
-
-      {/* Mobile Menu Toggle */}
-      <button
-        className="block md:hidden text-2xl text-gray-700 hover:text-black"
-        onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        {isMobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
-      </button>
+      </nav>
 
       {/* Sidebar */}
       <div
-        className={`fixed top-16 right-0  h-full bg-white shadow-lg z-50 w-full md:w-1/3 lg:w-1/4 transform transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <button
-          className="absolute top-4 right-4 text-2xl text-gray-700 hover:text-black"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <AiOutlineClose />
-        </button>
-        <div className="flex flex-col items-center justify-center h-full gap-6 p-4 bg-white">
-          {isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
-            >
-              Logout
-            </button>
-          ) : (
-            <>
-              <Link
-                to="/signin"
-                className="w-3/4 text-center bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-gray-900"
-                onClick={() => setSidebarOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="w-3/4 text-center bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700"
-                onClick={() => setSidebarOpen(false)}
-              >
-                Signup
-              </Link>
-            </>
-          )}
+        <div className="p-4">
+          <button
+            className="absolute top-4 right-4 text-gray-500 hover:text-black"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          <div className="mt-12 space-y-4">
+            {isAuthenticated ? (
+              <>
+                <button
+                  className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-800"
+                  onClick={() => {
+                    navigate("/your-orders");
+                  }}
+                >
+                  Your Orders
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-800"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="block w-full text-center bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="block w-full text-center border border-black text-black py-2 px-4 rounded hover:bg-gray-100"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </nav>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-15 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+        </>
+      )}
+    </>
   );
-}
+};
 
 export default Navbar;
