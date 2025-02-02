@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Trash2Icon } from "lucide-react";
 import cartImage from "../Assets/wishlist.png";
+import { toast } from "react-toastify";
 
 const LoaderIcon = () => (
   <svg
@@ -146,7 +147,7 @@ function Wishlist() {
           />
 
           <button
-            onClick={() => navigate("/collections")}
+            onClick={() => navigate("/#collections")}
             className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
           >
             Start Shopping
@@ -189,6 +190,7 @@ function Wishlist() {
                   )}
                 </button>
               </div>
+
               <div className="p-4">
                 <h2 className="text-sm font-medium text-gray-900 mb-1 line-clamp-1">
                   {item.name.name || "Unnamed Product"}
@@ -196,6 +198,36 @@ function Wishlist() {
                 <p className="text-lg font-semibold text-black">
                   PKR {item.name.price || "Price Unavailable"}
                 </p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        `http://localhost:8000/products/${item.product_id}`
+                      );
+                      const productData = await response.json();
+                      navigate(`/product/${item.product_id}`, {
+                        state: {
+                          product: {
+                            _id: item.product_id,
+                            name: item.name.name,
+                            price: item.name.price,
+                            image_url: item.name.image_url,
+                            description: productData.description,
+                            size: productData.size,
+                            gender: productData.gender,
+                            images: productData.images || [item.name.image_url],
+                          },
+                        },
+                      });
+                    } catch (error) {
+                      toast.error("Error fetching product details:", error);
+                      toast.error("Error loading product details");
+                    }
+                  }}
+                  className="mt-2 w-full py-2 px-4 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-200"
+                >
+                  View Details
+                </button>
               </div>
             </div>
           ))}

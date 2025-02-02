@@ -5,8 +5,30 @@ from app.services.auth import AuthService
 from app.database import get_database
 from fastapi.responses import JSONResponse
 from app.services.email_service import EmailService
+from pydantic import BaseModel
+
+
+
+
 
 router = APIRouter()
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+@router.post("/refresh")
+async def refresh_token(
+    refresh_request: RefreshRequest,
+    request: Request
+):
+    try:
+        db = await get_database(request)
+        auth_service = AuthService(db)
+        
+        return await auth_service.refresh_access_token(refresh_request.refresh_token)
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
 
 @router.post("/signup")
 async def signup(user: UserCreate, request: Request):

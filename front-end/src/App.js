@@ -6,7 +6,6 @@ import Loader from "./components/Loader";
 
 import SignIn from "./pages/SignIn";
 import Product from "./pages/Product";
-import Collections from "./pages/Collections";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
@@ -26,7 +25,17 @@ function AppRoutes() {
     showLoader();
     const timeout = setTimeout(() => hideLoader(), 500); // Simulate a loading duration
     return () => clearTimeout(timeout); // Cleanup timeout
-  }, [location]);
+  }, [location.pathname]); // Only trigger on pathname changes, not hash changes
+
+  useEffect(() => {
+    // Handle hash changes without triggering loader
+    if (location.hash && location.pathname === "/") {
+      const element = document.querySelector(location.hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location.hash]);
 
   return (
     <>
@@ -34,7 +43,6 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/collections" element={<Collections />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/products/:category" element={<ProductPage />} />

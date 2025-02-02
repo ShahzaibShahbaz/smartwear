@@ -37,15 +37,11 @@ function SignIn() {
 
       const response = await axios.post(
         "http://localhost:8000/users/signin",
-        formData,
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        }
+        formData
       );
 
       if (response.status === 200 || response.status === 201) {
         const { access_token, token_type, user } = response.data;
-        console.log("Response:", response.data);
         setSuccess("Sign in successful. Enjoy :)");
 
         dispatch(
@@ -57,13 +53,13 @@ function SignIn() {
         );
 
         try {
-          const cartresponse = await axios.get("http://localhost:8000/cart", {
+          const cartResponse = await axios.get("http://localhost:8000/cart", {
             headers: {
               Authorization: `Bearer ${access_token}`,
             },
           });
 
-          const cartItems = cartresponse.data.items || [];
+          const cartItems = cartResponse.data.items || [];
           dispatch(setCartItems(cartItems));
         } catch (cartError) {
           console.error("Error fetching cart:", cartError);
@@ -71,9 +67,17 @@ function SignIn() {
         }
 
         const { from, product } = location.state || {};
-        if (from) {
+
+        if (from && product) {
           setTimeout(() => {
-            navigate(from, { replace: true, state: { product } });
+            navigate(from, {
+              replace: true,
+              state: { product: product },
+            });
+          }, 1000);
+        } else if (from) {
+          setTimeout(() => {
+            navigate(from, { replace: true });
           }, 1000);
         } else {
           setTimeout(() => {
@@ -169,7 +173,7 @@ function SignIn() {
               <button
                 type="submit"
                 className="w-full lg:w-[50%] py-2 bg-black text-white rounded-md text-lg"
-                onclick={handleSignIn}
+                onClick={handleSignIn}
               >
                 {loading ? <LoadingSpinner /> : "Login"}
               </button>

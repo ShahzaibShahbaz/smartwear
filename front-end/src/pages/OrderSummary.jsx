@@ -3,11 +3,44 @@ import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCart } from "../store/cartSlice";
+import { toast } from "react-toastify";
 
 const OrderSummary = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
   const orderData = location.state?.orderData;
+
+  useEffect(() => {
+    const clearCartData = async () => {
+      try {
+        // Clear cart on the server
+        await axios.post(
+          "http://localhost:8000/cart/sync",
+          { items: [] },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Clear cart in Redux
+        dispatch(clearCart());
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+        toast.error("Error clearing cart data");
+      }
+    };
+
+    if (orderData) {
+      clearCartData();
+    }
+  }, [dispatch, token, orderData]);
 
   if (!orderData) {
     return <Navigate to="/" replace />;
@@ -22,8 +55,10 @@ const OrderSummary = () => {
       console.log("Email sent:", response.data);
     } catch (error) {
       console.error("Error sending email:", error);
+      toast.error("Failed to send order confirmation email");
     }
   };
+
   return (
     <div>
       <Navbar />
@@ -132,7 +167,7 @@ const OrderSummary = () => {
               <button
                 onClick={() => {
                   sendOrderEmail();
-                  navigate("/collections");
+                  navigate("/#collections");
                 }}
                 className="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium 
                          rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 

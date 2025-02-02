@@ -30,7 +30,18 @@ function Buying() {
       toast.error("Please login to buy this product");
       setTimeout(() => {
         navigate("/signin", {
-          state: { from: window.location.pathname, product: state?.product },
+          state: {
+            from: window.location.pathname,
+            product: {
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              image_url: product.image_url || product.images?.[0],
+              description: product.description,
+              size: product.size,
+              gender: product.gender,
+            },
+          },
         });
       }, 2000);
       return;
@@ -43,6 +54,9 @@ function Buying() {
           product_id: String(product._id),
           quantity: parseInt(quantity),
           size: selectedSize,
+          name: product.name, // Adding name
+          price: product.price, // Adding price
+          image_url: product.image_url || product.images?.[0], // Adding image
         },
       ],
     };
@@ -60,13 +74,11 @@ function Buying() {
       if (response.ok) {
         dispatch(
           addToCart({
-            product_id: String(
-              product._id || product.name.replace(/\s+/g, "-").toLowerCase()
-            ),
-            name: product.name.trim(),
+            product_id: String(product._id),
+            name: product.name,
             price: product.price,
-            image_url: product.image_url,
-            quantity: parseInt(quantity, 10),
+            image_url: product.image_url || product.images?.[0],
+            quantity: parseInt(quantity),
             size: selectedSize,
           })
         );

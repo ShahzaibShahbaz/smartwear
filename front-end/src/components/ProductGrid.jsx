@@ -1,33 +1,74 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import ProductCard from "./ProductCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const ITEMS_PER_PAGE = 12;
 
 const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    pages: 0,
+    current_page: 1,
+    has_next: false,
+    has_previous: false,
+  });
+  const [observer, setObserver] = useState(null);
+
+  // Initialize Intersection Observer for lazy loading
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          observer.unobserve(img);
+        }
+      });
+    }, options);
+
+    setObserver(observer);
+
+    return () => observer.disconnect();
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `http://localhost:8000/products?gender=${category}`
-      );
+      const response = await axios.get(`http://localhost:8000/products`, {
+        params: {
+          gender: category,
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          ...filters,
+        },
+      });
 
       const productsWithImages = response.data.products.map((product) => ({
         ...product,
-
         name: product.name
-          .replace(/ - (Men|Women|Girls|Boys)\s*-\s*$/i, "") // Remove gender and trailing " - "
-          .replace(/\s*\d+\s*$/, "") // Remove trailing numbers
-          .replace(/\s*-\s*$/g, "") // Remove any trailing " - "
+          .replace(/ - (Men|Women|Girls|Boys)\s*-\s*$/i, "")
+          .replace(/\s*\d+\s*$/, "")
+          .replace(/\s*-\s*$/g, "")
           .replace(/\s*-\s*(?=\S)/g, " "),
-
-        image_url: product.image_url || "https://via.placeholder.com/150",
       }));
 
-      setProducts(productsWithImages);
-
+      setProducts((prevProducts) =>
+        currentPage === 1
+          ? productsWithImages
+          : [...prevProducts, ...productsWithImages]
+      );
+      setPagination(response.data.pagination);
       setError(null);
     } catch (err) {
       setError("Failed to fetch products. Please try again later.");
@@ -35,18 +76,20 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
     } finally {
       setLoading(false);
     }
-  }, [category]);
+  }, [category, currentPage, filters]);
 
   useEffect(() => {
-    if (category) {
-      fetchProducts();
-    }
-  }, [category, fetchProducts]);
+    setCurrentPage(1);
+    setProducts([]);
+  }, [category, filters]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const filterProducts = useCallback(() => {
     return products
       .filter((product) => {
-        // Search term filter
         if (
           searchTerm &&
           !product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,10 +97,6 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
           return false;
         }
 
-        console.log("filter sizes", filters.sizes);
-        console.log("product sizes", product.size);
-
-        // Price range filter
         if (
           filters.priceRange &&
           (product.price < filters.priceRange[0] ||
@@ -66,56 +105,37 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
           return false;
         }
 
-        // Size filter
         if (filters.sizes?.length > 0) {
           if (!product.size || !Array.isArray(product.size)) return false;
-          const hasMatchingSize = filters.sizes.every((selectedSize) =>
-            product.size.includes(selectedSize)
-          );
-          if (!hasMatchingSize) return false;
-        }
-
-        // Discount filter
-        if (
-          filters.discounts?.length > 0 &&
-          !filters.discounts.includes(product.discount)
-        ) {
-          return false;
-        }
-
-        // Express filter
-        if (filters.express && !product.express_delivery) {
-          return false;
+          return filters.sizes.every((size) => product.size.includes(size));
         }
 
         return true;
       })
       .sort((a, b) => {
-        // Sorting logic
-        if (filters.sort === "price_asc") {
-          return a.price - b.price;
-        }
-        if (filters.sort === "price_desc") {
-          return b.price - a.price;
-        }
-        return 0; // No sorting applied
+        if (filters.sort === "price_asc") return a.price - b.price;
+        if (filters.sort === "price_desc") return b.price - a.price;
+        return 0;
       });
   }, [products, searchTerm, filters]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  const handleLoadMore = () => {
+    if (!loading && pagination.has_next) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const filteredProducts = filterProducts();
 
   if (error) {
     return (
       <div className="text-center text-red-500 p-4">
         <p>{error}</p>
         <button
-          onClick={fetchProducts}
+          onClick={() => {
+            setCurrentPage(1);
+            fetchProducts();
+          }}
           className="mt-2 text-blue-500 hover:text-blue-700"
         >
           Try Again
@@ -124,28 +144,38 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
     );
   }
 
-  const filteredProducts = filterProducts();
-
   return (
     <div>
       <h1 className="text-xl font-bold">{category}</h1>
       <div className="mb-4 text-gray-600">
-        Found {filteredProducts.length} products
+        Found {filteredProducts.length} out of {pagination.total} products
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
         {filteredProducts.map((product) => (
-          <>
-            <ProductCard
-              key={product._id}
-              product={product}
-              isCartItem={false}
-            />
-          </>
+          <ProductCard
+            key={product._id}
+            product={product}
+            isCartItem={false}
+            observer={observer}
+          />
         ))}
       </div>
-      {filteredProducts.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
-          No products found matching your criteria
+
+      {loading && (
+        <div className="text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
+        </div>
+      )}
+
+      {!loading && pagination.has_next && (
+        <div className="text-center py-8">
+          <button
+            onClick={handleLoadMore}
+            className="px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+          >
+            Load More
+          </button>
         </div>
       )}
     </div>
