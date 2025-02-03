@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Trash2Icon } from "lucide-react";
 import cartImage from "../Assets/wishlist.png";
 import { toast } from "react-toastify";
+import Footer from "../components/Footer";
 
 const LoaderIcon = () => (
   <svg
@@ -115,6 +116,7 @@ function Wishlist() {
           </div>
           <p className="mt-4 text-lg text-gray-600">Loading your wishlist...</p>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -131,6 +133,7 @@ function Wishlist() {
             <span className="block sm:inline">{error}</span>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -153,6 +156,7 @@ function Wishlist() {
             Start Shopping
           </button>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -233,6 +237,7 @@ function Wishlist() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

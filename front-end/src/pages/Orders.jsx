@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
+import Footer from "../components/Footer";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -166,6 +167,7 @@ const OrdersPage = () => {
           )}
         </div>
       </div>
+      <Footer />
     </>
   );
 };

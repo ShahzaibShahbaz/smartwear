@@ -52,6 +52,7 @@ const Collections = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

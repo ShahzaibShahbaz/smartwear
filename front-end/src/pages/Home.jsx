@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag, Star, TrendingUp } from "lucide-react";
-
+import men from "../Assets/men_image_collection_1.png";
+import women from "../Assets/women_image_collection_1.jpg";
+import kids from "../Assets/kids_image_collection_1.jpg";
+import Footer from "../components/Footer";
+import men_slider from "../Assets/men_slider.png";
+import women_slider from "../Assets/women_slider.png";
+import kids_slider from "../Assets/kids_slider.png";
 const Home = () => {
   // Add ref for categories section
   const categoriesRef = useRef(null);
@@ -35,7 +41,7 @@ const Home = () => {
 
   const slides = [
     {
-      image: "/api/placeholder/1920/1080",
+      image: men_slider,
       title: "Summer Collection 2025",
       subtitle: "Discover the latest trends in fashion",
       cta: "Shop All",
@@ -43,14 +49,14 @@ const Home = () => {
       action: "navigate",
     },
     {
-      image: "/api/placeholder/1920/1080",
+      image: women_slider,
       title: "New Arrivals",
       subtitle: "Be the first to wear our latest designs",
       cta: "Browse Categories",
       action: "scroll",
     },
     {
-      image: "/api/placeholder/1920/1080",
+      image: kids_slider,
       title: "Exclusive Offers",
       subtitle: "Limited time deals on premium fashion",
       cta: "View Collections",
@@ -79,17 +85,17 @@ const Home = () => {
   const categories = [
     {
       name: "Men",
-      image: "/api/placeholder/600/800",
+      image: men,
       link: "/products/Men",
     },
     {
       name: "Women",
-      image: "/api/placeholder/600/800",
+      image: women,
       link: "/products/Women",
     },
     {
       name: "Kids",
-      image: "/api/placeholder/600/800",
+      image: kids,
       link: "/products/kids",
     },
   ];
@@ -247,6 +253,7 @@ const Home = () => {
           🗨️
         </button>
       </Link>
+      <Footer />
     </div>
   );
 };

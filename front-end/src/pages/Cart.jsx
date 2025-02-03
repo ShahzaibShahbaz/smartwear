@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ErrorBoundary from "../components/ErrorBoundary";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Footer from "../components/Footer";
 
 function CartContent() {
   const dispatch = useDispatch();
@@ -128,6 +129,7 @@ function CartContent() {
         <div className="flex justify-center items-center h-[calc(100vh-64px)]">
           <LoadingSpinner />
         </div>
+        <Footer />
       </div>
     );
   }
@@ -151,6 +153,7 @@ function CartContent() {
             </button>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -219,6 +222,7 @@ function CartContent() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

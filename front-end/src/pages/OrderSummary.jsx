@@ -6,6 +6,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../store/cartSlice";
 import { toast } from "react-toastify";
+import Footer from "../components/Footer";
 
 const OrderSummary = () => {
   const location = useLocation();
@@ -179,6 +180,7 @@ const OrderSummary = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
