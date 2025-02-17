@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import Footer from "../components/Footer";
+import { Package, Truck, CheckCircle, Clock, ChevronLeft } from "lucide-react";
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -53,113 +54,204 @@ const OrdersPage = () => {
     }
   };
 
+  const StatusIcon = ({ status }) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="w-5 h-5" />;
+      case "confirmed":
+        return <Package className="w-5 h-5" />;
+      case "shipped":
+        return <Truck className="w-5 h-5" />;
+      case "completed":
+        return <CheckCircle className="w-5 h-5" />;
+      default:
+        return <Clock className="w-5 h-5" />;
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "confirmed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "shipped":
-        return "bg-purple-100 text-purple-800";
+        return "bg-purple-100 text-purple-800 border-purple-200";
       case "completed":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex justify-center items-center h-[80vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 py-24">
+          <div className="text-center bg-red-50 p-6 rounded-lg border border-red-200">
+            <p className="text-red-600">{error}</p>
+            <button
+              onClick={() => fetchOrders()}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-24">
-          {loading && <div className="text-center py-4">Loading...</div>}
-          {error && (
-            <div className="text-red-600 text-center py-4">{error}</div>
-          )}
+      <div className="min-h-screen bg-gray-50 pt-20 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Your Orders</h1>
+            <p className="mt-2 text-gray-600">Track your orders here</p>
+          </div>
 
-          {/* Selected Order Card */}
+          {/* Selected Order Details */}
           {selectedOrder && (
-            <div className="mb-8 p-6 bg-white rounded-lg shadow-sm border">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    Order #{selectedOrder.order_id}
-                  </h3>
-                  <p className="text-gray-600">
-                    Total: PKR {selectedOrder.total}
-                  </p>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <button
+                      onClick={() => setSelectedOrder(null)}
+                      className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4"
+                    >
+                      <ChevronLeft className="w-5 h-5 mr-1" />
+                      Back to Orders
+                    </button>
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                      Order #{selectedOrder.order_id}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      Total: PKR {selectedOrder.total.toLocaleString()}
+                    </p>
+                  </div>
+                  <div
+                    className={`px-4 py-2 rounded-full ${getStatusColor(
+                      selectedOrder.status
+                    )} border flex items-center gap-2`}
+                  >
+                    <StatusIcon status={selectedOrder.status} />
+                    <span className="capitalize">{selectedOrder.status}</span>
+                  </div>
                 </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
-                    selectedOrder.status
-                  )}`}
-                >
-                  {selectedOrder.status}
-                </span>
-              </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-2">Items</h4>
-                  {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="mb-2">
-                      <p>Product ID: {item.product_id}</p>
-                      <p>Quantity: {item.quantity}</p>
-                      <p>Size: {item.size}</p>
-                      <p>Price: PKR {item.price}</p>
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Order Items */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Order Items
+                    </h3>
+                    <div className="space-y-4">
+                      {selectedOrder.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center p-4 bg-gray-50 rounded-lg"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {item.name || `Product #${item.product_id}`}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Quantity: {item.quantity} | Size: {item.size}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Price: PKR {item.price.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                <div>
-                  <h4 className="font-medium mb-2">Shipping Details</h4>
-                  <p>
-                    {selectedOrder.formData.firstName}{" "}
-                    {selectedOrder.formData.lastName}
-                  </p>
-                  <p>{selectedOrder.formData.address}</p>
-                  <p>
-                    {selectedOrder.formData.city},{" "}
-                    {selectedOrder.formData.country}
-                  </p>
-                  <p>ZIP: {selectedOrder.formData.zip}</p>
-                  <p>Phone: {selectedOrder.formData.phone}</p>
-                  <p>Email: {selectedOrder.formData.email}</p>
-                  <p>Payment Method: {selectedOrder.formData.paymentMethod}</p>
+                  {/* Shipping Details */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Shipping Details
+                    </h3>
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                      <p>
+                        <span className="font-medium">Name: </span>
+                        {selectedOrder.formData.firstName}{" "}
+                        {selectedOrder.formData.lastName}
+                      </p>
+                      <p>
+                        <span className="font-medium">Address: </span>
+                        {selectedOrder.formData.address}
+                      </p>
+                      <p>
+                        <span className="font-medium">City: </span>
+                        {selectedOrder.formData.city}
+                      </p>
+                      <p>
+                        <span className="font-medium">ZIP: </span>
+                        {selectedOrder.formData.zip}
+                      </p>
+                      <p>
+                        <span className="font-medium">Phone: </span>
+                        {selectedOrder.formData.phone}
+                      </p>
+                      <p>
+                        <span className="font-medium">Email: </span>
+                        {selectedOrder.formData.email}
+                      </p>
+                      <p>
+                        <span className="font-medium">Payment Method: </span>
+                        {selectedOrder.formData.paymentMethod}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="text-white  p-1 bg-black  rounded-md text-lg"
-              >
-                Back to All Orders
-              </button>
             </div>
           )}
 
-          {/* All Orders List */}
+          {/* Orders List */}
           {!selectedOrder && (
             <div className="grid gap-4">
               {orders.map((order) => (
                 <div
                   key={order.order_id}
                   onClick={() => handleOrderClick(order.order_id)}
-                  className="p-4 bg-white rounded-lg shadow-sm border cursor-pointer hover:border-blue-500 transition-colors"
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:border-blue-500 transition-colors cursor-pointer"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between">
                     <div>
-                      <h3 className="font-medium">Order #{order.order_id}</h3>
-                      <p className="text-gray-600">Total: ${order.total}</p>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Order #{order.order_id}
+                      </h3>
+                      <p className="text-gray-600">
+                        Total: PKR {order.total.toLocaleString()}
+                      </p>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm ${getStatusColor(
+                    <div
+                      className={`mt-4 sm:mt-0 self-start px-4 py-2 rounded-full ${getStatusColor(
                         order.status
-                      )}`}
+                      )} border flex items-center gap-2`}
                     >
-                      {order.status}
-                    </span>
+                      <StatusIcon status={order.status} />
+                      <span className="capitalize">{order.status}</span>
+                    </div>
                   </div>
                 </div>
               ))}

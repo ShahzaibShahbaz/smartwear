@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
-import { ArrowRight, ShoppingBag, Star, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  ShoppingBag,
+  Star,
+  TrendingUp,
+  BotMessageSquare,
+} from "lucide-react";
 import men from "../Assets/men_image_collection_1.png";
 import women from "../Assets/women_image_collection_1.jpg";
 import kids from "../Assets/kids_image_collection_1.jpg";
@@ -250,7 +256,7 @@ const Home = () => {
       {/* Chatbot Button */}
       <Link to="/chatbot">
         <button className="fixed bottom-8 right-8 bg-black text-white p-4 rounded-full shadow-lg hover:bg-gray-800 transition-colors">
-          🗨️
+          <BotMessageSquare />
         </button>
       </Link>
       <Footer />

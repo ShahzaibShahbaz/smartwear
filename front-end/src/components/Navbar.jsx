@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Camera, ShoppingCart, Heart, User, X } from "lucide-react";
+import {
+  Camera,
+  ShoppingCart,
+  Heart,
+  User,
+  X,
+  Package,
+  ShoppingBag,
+  Users,
+  LogOut,
+} from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
@@ -122,7 +132,7 @@ const Navbar = () => {
 
             {/* Icons */}
             <div className="flex items-center space-x-6 pr-0">
-              <Link to="/" className="w-8 h-8">
+              <Link to="image-search" className="w-8 h-8">
                 <Camera className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
               </Link>
               <Link to="/cart" className="relative w-8 h-8">
@@ -150,56 +160,146 @@ const Navbar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-4">
-          <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-black"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="w-6 h-6" />
-          </button>
-
-          <div className="mt-12 space-y-4">
-            {isAuthenticated ? (
-              <>
-                <button
-                  className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-800"
-                  onClick={() => {
-                    navigate("/your-orders");
-                    setSidebarOpen(false);
-                  }}
-                >
-                  Your Orders
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-2 px-4 bg-black text-white rounded hover:bg-gray-800"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/signin"
-                  className="block w-full text-center bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className="block w-full text-center border border-black text-black py-2 px-4 rounded hover:bg-gray-100"
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  Sign Up
-                </Link>
-              </>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold text-gray-900">Menu</h2>
+              <button
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            {username && (
+              <p className="mt-2 text-sm text-gray-600">
+                Welcome back, <span className="font-medium">{username}</span>
+              </p>
             )}
           </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-6 space-y-4">
+              {isAuthenticated ? (
+                <>
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Your Account
+                    </h3>
+                    <div className="space-y-2">
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/your-orders");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Package className="w-5 h-5 mr-3" />
+                        <span>Your Orders</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/wishlist");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Heart className="w-5 h-5 mr-3" />
+                        <span>Your Wishlist</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/cart");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <ShoppingBag className="w-5 h-5 mr-3" />
+                        <span>Your Cart</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Shop by Category
+                    </h3>
+                    <div className="space-y-2">
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/Men");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Men's Collection</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/Women");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Women's Collection</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/kids");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Kids Collection</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Sign in to view your orders, wishlist, and more.
+                  </p>
+                  <Link
+                    to="/signin"
+                    className="block w-full px-4 py-3 text-center bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block w-full px-4 py-3 text-center border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          {isAuthenticated && (
+            <div className="p-6 border-t border-gray-200">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-3 flex items-center justify-center text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5 mr-2" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

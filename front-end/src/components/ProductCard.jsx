@@ -5,12 +5,13 @@ import CartItemImage from "./CartItemImage";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import { Loader } from "lucide-react";
 const ProductCard = ({ product, isCartItem, observer }) => {
   const navigate = useNavigate();
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const { token, isAuthenticated } = useSelector((state) => state.auth);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Check if product is in wishlist on component mount
   useEffect(() => {
@@ -130,75 +131,99 @@ const ProductCard = ({ product, isCartItem, observer }) => {
   };
 
   return (
-    <div className="group relative">
+    <div
+      className="group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div
-        onClick={!isCartItem ? handleCardClick : undefined}
-        className={`relative w-full bg-white rounded-lg overflow-hidden transition-all duration-300 ${
-          !isCartItem ? "hover:shadow-md cursor-pointer" : "cursor-default"
-        }`}
+        onClick={
+          !isCartItem
+            ? () =>
+                navigate(`/product/${encodeURIComponent(getProductName())}`, {
+                  state: { product },
+                })
+            : undefined
+        }
+        className={`
+          relative w-full bg-white rounded-xl overflow-hidden 
+          transition-all duration-300 transform
+          ${
+            !isCartItem
+              ? "hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+              : "cursor-default"
+          }
+          ${isHovered ? "scale-[1.02]" : "scale-100"}
+        `}
       >
         {!isCartItem && (
           <button
-            className={`absolute z-10 top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full 
-                     opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                     hover:bg-white ${
-                       isAddingToWishlist ? "cursor-not-allowed" : ""
-                     }`}
+            className={`
+              absolute z-10 top-4 right-4 p-2.5
+              bg-white/90 backdrop-blur-sm rounded-full
+              shadow-sm transition-all duration-300
+              ${
+                isHovered
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-2"
+              }
+              hover:bg-white hover:scale-110
+              ${isAddingToWishlist ? "cursor-not-allowed" : ""}
+            `}
             onClick={handleWishlistToggle}
             disabled={isAddingToWishlist}
           >
             {isAddingToWishlist ? (
-              <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+              <Loader className="w-5 h-5 animate-spin text-gray-600" />
             ) : (
               <Heart
-                className={`w-4 h-4 transition-colors ${
-                  isInWishlist
-                    ? "text-red-500 fill-red-500"
-                    : "text-gray-600 hover:text-red-500"
-                }`}
+                className={`w-5 h-5 transition-colors
+                  ${
+                    isInWishlist
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-600 hover:text-red-500"
+                  }
+                `}
               />
             )}
           </button>
         )}
 
-        <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100">
+        <div className="aspect-[3/4] w-full overflow-hidden bg-gray-50">
           {isCartItem ? (
             <CartItemImage product={product} />
           ) : (
             <img
-              ref={
-                observer
-                  ? (node) => {
-                      if (node) observer.observe(node);
-                    }
-                  : null
-              }
+              ref={observer ? (node) => node && observer.observe(node) : null}
               data-src={product.image_url}
               alt={getProductName()}
-              className="w-full h-full object-cover object-center transition-transform duration-300 
-                       group-hover:scale-105"
+              className={`
+                w-full h-full object-cover object-center
+                transition-transform duration-500
+                ${isHovered ? "scale-110" : "scale-100"}
+              `}
               src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=="
-              onError={(e) => {
-                e.target.src = "/api/placeholder/400/400";
-              }}
+              onError={(e) => (e.target.src = "/api/placeholder/400/400")}
             />
           )}
         </div>
 
-        <div className="p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-1 line-clamp-1">
+        <div className="p-5">
+          <h3 className="text-base font-medium text-gray-900 mb-2 line-clamp-1">
             {getProductName()}
           </h3>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-lg font-semibold text-gray-900">
             PKR {getProductPrice()?.toLocaleString()}
           </p>
-          {isCartItem && product.size && (
-            <p className="text-xs text-gray-500 mt-1">Size: {product.size}</p>
-          )}
           {isCartItem && (
-            <p className="text-xs text-gray-500">
-              Quantity: {product.quantity}
-            </p>
+            <div className="mt-2 space-y-1">
+              {product.size && (
+                <p className="text-sm text-gray-500">Size: {product.size}</p>
+              )}
+              <p className="text-sm text-gray-500">
+                Quantity: {product.quantity}
+              </p>
+            </div>
           )}
         </div>
       </div>

@@ -107,3 +107,29 @@ async def sync_cart(
     except Exception as e:
         print(f"Error syncing cart: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.put("/update-quantity")
+async def update_cart_quantity(
+    product_id: str,
+    quantity: int,
+    size: str = None,
+    current_user: dict = Depends(get_current_user),
+    db=Depends(get_database)
+):
+    try:
+        username = current_user["username"]
+        
+        result = await db["carts"].update_one(
+            {
+                "username": username,
+                "items.product_id": product_id
+            },
+            {"$set": {"items.$.quantity": quantity}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Item not found in cart")
+            
+        return {"message": "Quantity updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -7,10 +7,6 @@ from fastapi.responses import JSONResponse
 from app.services.email_service import EmailService
 from pydantic import BaseModel
 
-
-
-
-
 router = APIRouter()
 
 class RefreshRequest(BaseModel):

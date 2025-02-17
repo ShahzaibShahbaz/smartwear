@@ -18,7 +18,8 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-black">SMART wear</h3>
             <p className="text-gray-600 text-sm">
-              Your one-stop destination for premium fashion and accessories.
+              Your one-stop destination for premium fashion without having to
+              leave your home.
             </p>
             <div className="flex space-x-4">
               <a
@@ -99,7 +100,14 @@ const Footer = () => {
                   FAQ
                 </Link>
               </li>
-              <li></li>
+              <li>
+                <Link
+                  to="/contact-us"
+                  className="text-gray-600 hover:text-gray-900 text-sm"
+                >
+                  Contact Us
+                </Link>
+              </li>
 
               <li>
                 <Link

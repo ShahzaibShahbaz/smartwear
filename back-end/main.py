@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import users, cart, images, products
 from app.database import connect_to_mongo  # Ensure this exists
-from app.routes import order, wishlist
+from app.routes import order, wishlist, contact, forgotpassword, chatbot
+
+
 
 app = FastAPI(title="SmartWear API", version="1.0.0")
 
@@ -34,6 +36,10 @@ app.include_router(products.router, prefix="/products", tags=["products"])
 app.include_router(images.router, prefix="/images", tags=["images"])
 app.include_router(order.router)
 app.include_router(wishlist.router, prefix="/wishlist", tags=["wishlist"])
+app.include_router(contact.router, tags=["contact"])
+app.include_router(forgotpassword.router, prefix="/pwd",tags=["forgotpassword"])
+app.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
+
 
 @app.get("/health")
 async def health_check():

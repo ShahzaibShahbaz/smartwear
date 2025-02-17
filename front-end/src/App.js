@@ -15,6 +15,9 @@ import PlaceOrder from "./pages/PlaceOrder";
 import Wishlist from "./pages/Wishlist";
 import OrderSummary from "./pages/OrderSummary";
 import OrdersPage from "./pages/Orders";
+import Contact from "./pages/Contact";
+import ForgotPassword from "./pages/ForgotPassword";
+import ImageSearchPage from "./pages/ImageSearch";
 
 function AppRoutes() {
   const location = useLocation();
@@ -53,6 +56,9 @@ function AppRoutes() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/your-orders" element={<OrdersPage />} />
+        <Route path="/contact-us" element={<Contact />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/image-search" element={<ImageSearchPage />} />
       </Routes>
     </>
   );

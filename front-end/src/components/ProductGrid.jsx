@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import ProductCard from "./ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader } from "lucide-react";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -145,13 +146,17 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold">{category}</h1>
-      <div className="mb-4 text-gray-600">
-        Found {filteredProducts.length} out of {pagination.total} products
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{category}</h1>
+          <p className="mt-2 text-gray-600">
+            Found {filteredProducts.length} out of {pagination.total} products
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10">
         {filteredProducts.map((product) => (
           <ProductCard
             key={product._id}
@@ -163,18 +168,26 @@ const ProductGrid = ({ searchTerm = "", filters = {}, category }) => {
       </div>
 
       {loading && (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
+        <div className="flex justify-center py-12">
+          <div className="flex items-center space-x-2 text-gray-600">
+            <Loader className="w-6 h-6 animate-spin" />
+            <span>Loading products...</span>
+          </div>
         </div>
       )}
 
       {!loading && pagination.has_next && (
-        <div className="text-center py-8">
+        <div className="flex justify-center py-8">
           <button
             onClick={handleLoadMore}
-            className="px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+            className="
+              px-8 py-3 bg-black text-white rounded-lg
+              transition-all duration-200
+              hover:bg-gray-900 hover:shadow-md
+              active:transform active:scale-95
+            "
           >
-            Load More
+            Load More Products
           </button>
         </div>
       )}
