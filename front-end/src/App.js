@@ -3,30 +3,27 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { LoaderProvider, useLoader } from "./components/LoaderContext";
 import Loader from "./components/Loader";
-
-import SignIn from "./pages/SignIn";
-import Product from "./pages/Product";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import Cart from "./pages/Cart";
-import Chatbot from "./pages/Chatbot";
-import ProductPage from "./pages/ProductPage";
-import PlaceOrder from "./pages/PlaceOrder";
-import Wishlist from './pages/Wishlist';
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard.jsx";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AddProductForm from "./pages/AdminAddProduct.jsx";
-import ApproveDisapproveProducts from "./pages/AdminApproveProducts.jsx";
-import UserManagement from "./pages/AdminManageUsers.jsx";
-import ManageOrders from "./pages/AdminManageOrders.jsx";
-function App() {
-import Wishlist from "./pages/Wishlist";
-import OrderSummary from "./pages/OrderSummary";
-import OrdersPage from "./pages/Orders";
-import Contact from "./pages/Contact";
-import ForgotPassword from "./pages/ForgotPassword";
-import ImageSearchPage from "./pages/ImageSearch";
+import SignIn from "./pages/auth/SignIn.jsx";
+import Product from "./pages/shopping/Product.jsx";
+import SignUp from "./pages/auth/SignUp.jsx";
+import Home from "./pages/shopping/Home.jsx";
+import Cart from "./pages/shopping/Cart.jsx";
+import Chatbot from "./pages/shopping/Chatbot.jsx";
+import ProductPage from "./pages/shopping/ProductPage.jsx";
+import PlaceOrder from "./pages/shopping/PlaceOrder.jsx";
+import AdminLogin from "./pages/admin/Login.jsx";
+import AdminDashboard from "./pages/admin/Dashboard.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AddProductForm from "./pages/admin/AddProduct.jsx";
+import ApproveDisapproveProducts from "./pages/admin/ApproveProducts.jsx";
+import UserManagement from "./pages/admin/ManageUsers.jsx";
+import ManageOrders from "./pages/admin/ManageOrders.jsx";
+import Wishlist from "./pages/shopping/Wishlist.jsx";
+import OrderSummary from "./pages/shopping/OrderSummary.jsx";
+import OrdersPage from "./pages/shopping/Orders.jsx";
+import Contact from "./pages/shopping/Contact.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
+import ImageSearchPage from "./pages/shopping/ImageSearch.jsx";
 
 function AppRoutes() {
   const location = useLocation();
@@ -63,13 +60,14 @@ function AppRoutes() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/add-product" element={<AddProductForm />} />
-          <Route path="/admin/approve-products" element={<ApproveDisapproveProducts />} />
-          <Route path="/admin/manage-users" element={<UserManagement />} />
-          <Route path="/admin/manage-orders" element={<ManageOrders />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/add-product" element={<AddProductForm />} />
+            <Route path="/admin/approve-products" element={<ApproveDisapproveProducts />} />
+            <Route path="/admin/manage-users" element={<UserManagement />} />
+            <Route path="/admin/manage-orders" element={<ManageOrders />} />
         </Route>
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/your-orders" element={<OrdersPage />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -9,13 +9,13 @@ import {
   TrendingUp,
   BotMessageSquare,
 } from "lucide-react";
-import men from "../Assets/men_image_collection_1.png";
-import women from "../Assets/women_image_collection_1.jpg";
-import kids from "../Assets/kids_image_collection_1.jpg";
-import Footer from "../components/Footer";
-import men_slider from "../Assets/men_slider.png";
-import women_slider from "../Assets/women_slider.png";
-import kids_slider from "../Assets/kids_slider.png";
+import men from "../../assets/men_image_collection_1.png";
+import women from "../../assets/women_image_collection_1.jpg";
+import kids from "../../assets/kids_image_collection_1.jpg";
+import Footer from "../../components/Footer";
+import men_slider from "../../assets/men_slider.png";
+import women_slider from "../../assets/women_slider.png";
+import kids_slider from "../../assets/kids_slider.png";
 const Home = () => {
   // Add ref for categories section
   const categoriesRef = useRef(null);
@@ -214,7 +214,7 @@ const Home = () => {
       </div>
 
       {/* Categories Section */}
-      <div ref={categoriesRef} className="py-16">
+      <div  id ="collections" ref={categoriesRef} className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
             Shop by Category

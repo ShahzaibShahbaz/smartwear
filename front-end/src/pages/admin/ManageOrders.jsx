@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Loader2, Package, Mail, DollarSign, Clock } from "lucide-react";
-import AdminNavbar from "../components/AdminNavbar";
+import AdminNavbar from "../../components/AdminNavbar";
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);

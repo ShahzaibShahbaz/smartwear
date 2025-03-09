@@ -153,7 +153,6 @@ async def update_order_status(
         raise HTTPException(status_code=404, detail="Order not found")
 
     return {"message": f"Order status updated to '{status}' successfully"}
-        raise HTTPException(status_code=500, detail=f"Error fetching order: {str(e)}")
     
 def send_email(order_data: OrderData):
     try:

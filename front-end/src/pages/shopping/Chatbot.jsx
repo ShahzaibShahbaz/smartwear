@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { SendHorizontal, Bot, User } from "lucide-react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 
 function ChatbotPage() {
   const [messages, setMessages] = useState([

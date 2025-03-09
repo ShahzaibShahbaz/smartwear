@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { clearCart } from "../store/cartSlice";
+import { clearCart } from "../../store/cartSlice";
 import { toast } from "react-toastify";
-import Footer from "../components/Footer";
+import Footer from "../../components/Footer";
 
 const OrderSummary = () => {
   const location = useLocation();

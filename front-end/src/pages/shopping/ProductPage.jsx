@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import TopFilterBar from "../components/TopFilterBar";
-import SearchBar from "../components/SearchBar";
-import ProductGrid from "../components/ProductGrid";
-import Navbar from "../components/Navbar";
+import TopFilterBar from "../../components/TopFilterBar";
+import SearchBar from "../../components/SearchBar";
+import ProductGrid from "../../components/ProductGrid";
+import Navbar from "../../components/Navbar";
 import { useParams } from "react-router-dom";
-import Footer from "../components/Footer";
+import Footer from "../../components/Footer";
 
 const ProductPage = () => {
   const [searchTerm, setSearchTerm] = useState("");

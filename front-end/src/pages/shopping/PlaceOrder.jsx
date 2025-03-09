@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Checkout from "../components/Checkout";
-import ConfirmOrder from "../components/CheckoutForm";
-import Navbar from "../components/Navbar";
+import Checkout from "../../components/Checkout";
+import ConfirmOrder from "../../components/CheckoutForm";
+import Navbar from "../../components/Navbar";
 
 const PlaceOrder = () => {
   const [orderData, setOrderData] = useState(null);

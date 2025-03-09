@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2 } from "lucide-react";
-import cartImage from "../Assets/wishlist.png";
+import cartImage from "../../assets/wishlist.png";
 import { toast } from "react-toastify";
-import Footer from "../components/Footer";
+import Footer from "../../components/Footer";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);

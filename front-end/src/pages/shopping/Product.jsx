@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Buying from "../components/Buying";
-import Footer from "../components/Footer";
+import Navbar from "../../components/Navbar";
+import Buying from "../../components/Buying";
+import Footer from "../../components/Footer";
 
 function Product() {
   const { id } = useParams();

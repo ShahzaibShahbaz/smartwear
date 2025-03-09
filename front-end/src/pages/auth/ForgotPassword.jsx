@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, ArrowLeft, Lock, Loader2 } from "lucide-react";
-import modelsImage from "../Assets/photoshootaesthetic.jpeg";
+import modelsImage from "../../assets/photoshootaesthetic.jpeg";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

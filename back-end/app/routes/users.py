@@ -60,7 +60,7 @@ async def signup(user: UserCreate, request: Request):
                 "id": result["id"],
                 "username": result["username"],
                 "email": result["email"],
-                "is_admin": False # Added for admin logic
+                "is_admin": False, # Added for admin logic
                 "status": result["status"],  # Include status in response
                 "message": "User created successfully"
             }

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import modelsImage from "../Assets/photoshootaesthetic.jpeg";
+import modelsImage from "../../assets/photoshootaesthetic.jpeg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../store/authSlice";
-import { setCartItems } from "../store/cartSlice";
+import { setCredentials } from "../../store/authSlice";
+import { setCartItems } from "../../store/cartSlice";
 import axios from "axios";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { Lock, Mail, ArrowRight } from "lucide-react";
 
 function SignIn() {

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import modelsImage from "../Assets/photoshootaesthetic.jpeg";
+import modelsImage from "../../assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import axiosInstance from "../api/axiosConfig";
-import LoadingSpinner from "../components/LoadingSpinner";
+import axiosInstance from "../../api/axiosConfig";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { User, Mail, Lock, ArrowRight } from "lucide-react";
 
 function SignUp() {

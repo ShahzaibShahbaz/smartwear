@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion"; // Changed from motion/react to framer-motion
 import { Link } from "react-router-dom"; // Added Link for proper routing
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import menImage from "../Assets/men.jpg";
 import womenImage from "../Assets/women.jpg";
 import kidsImage from "../Assets/kids.jpg";

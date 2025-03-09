@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
-import Footer from "../components/Footer";
+import Footer from "../../components/Footer";
 import { Package, Truck, CheckCircle, Clock, ChevronLeft } from "lucide-react";
 
 const OrdersPage = () => {

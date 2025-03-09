@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Camera, Upload, X, Search } from "lucide-react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ProductCard from "../components/ProductCard";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import ProductCard from "../../components/ProductCard";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
