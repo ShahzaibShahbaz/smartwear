@@ -1,1 +1,17 @@
+
+.codegpt
+
+back-end/__pycache__/main.cpython-311.pyc
+back-end/app/__pycache__/database.cpython-311.pyc
+back-end/app/routes/__pycache__/cart.cpython-311.pyc
+back-end/app/routes/__pycache__/images.cpython-311.pyc
+back-end/app/routes/__pycache__/order.cpython-311.pyc
+back-end/app/routes/__pycache__/products.cpython-311.pyc
+back-end/app/routes/__pycache__/users.cpython-311.pyc
+back-end/app/routes/__pycache__/wishlist.cpython-311.pyc
+back-end/app/schemas/__pycache__/cart.cpython-311.pyc
+back-end/app/schemas/__pycache__/order.cpython-311.pyc
+back-end/app/schemas/__pycache__/user.cpython-311.pyc
 back-end/app/schemas/__pycache__/wishlist.cpython-311.pyc
+back-end/app/services/__pycache__/auth.cpython-311.pyc
+

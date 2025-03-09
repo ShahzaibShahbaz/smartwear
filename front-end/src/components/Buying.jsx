@@ -1,208 +1,373 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux"; // Import useSelector
-import { addToCart } from "../store/cartSlice"; // Assuming this action is in cartSlice
-import {
-  AiOutlineHeart,
-} from "react-icons/ai";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../store/cartSlice";
+import { Heart, Minus, Plus, ShoppingBag } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
 
-function Buying() {
-  const { state } = useLocation(); // Access the passed state
-  const product = state?.product; // Retrieve the product object
-  const dispatch = useDispatch(); // Initialize dispatch
-  const { user, token } = useSelector((state) => state.auth); // Access user and token from Redux store
+const Buying = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { state } = useLocation();
+  const product = state?.product;
+  const { user, token } = useSelector((state) => state.auth);
 
-  const [selectedImage, setImage] = useState(
+  const [selectedImage, setSelectedImage] = useState(
     product?.images?.[0] || product?.image_url || ""
   );
-  const [selectedSize, setSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:8000/wishlist", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        const isItemInWishlist = data.items.some(
+          (item) => item.product_id === product._id
+        );
+        setIsInWishlist(isItemInWishlist);
+      } catch (error) {
+        console.error("Error checking wishlist status:", error);
+      }
+    };
+
+    checkWishlistStatus();
+  }, [product._id, token]);
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
-      alert("Please select a size before adding to cart.");
+      toast.warn("Please select a size before adding to cart!");
       return;
     }
 
-    // Ensure user is authenticated
-    if (!user || !token) {
-      alert("Please log in to add items to your cart.");
+    if (!token || !user) {
+      toast.error("Please login to buy this product");
+      setTimeout(() => {
+        navigate("/signin", {
+          state: {
+            from: window.location.pathname,
+            product: {
+              _id: product._id,
+              name: product.name,
+              price: product.price,
+              image_url: product.image_url || product.images?.[0],
+              description: product.description,
+              size: product.size,
+              gender: product.gender,
+            },
+          },
+        });
+      }, 2000);
       return;
     }
 
-    // Construct the cart item payload
-    const cartItem = {
-      user_id: String(user.id), // Use the user ID from Redux state
-      items: [
-        {
-          product_id: String(product._id), // Ensure product_id is a string
-          quantity: parseInt(quantity), // Ensure quantity is an integer
-          size: selectedSize, // Include size if necessary
-        },
-      ],
-    };
-    console.log("Product Data:", product);
-
-    console.log("yooooooo", cartItem);
     try {
-      // Send API request to add item to cart
       const response = await fetch("http://localhost:8000/cart/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include the token in the header for authentication
-        },
-        body: JSON.stringify(cartItem),
-      });
-      console.log("ur mom", response);
-      if (response.ok) {
-        // Update Redux state after successful API call
-        console.log("yeh hai priud", product.price);
-        dispatch(
-          addToCart({
-            product_id: String(
-              product._id || product.name.replace(/\s+/g, "-").toLowerCase()
-            ), // Generate a fallback ID if _id is missing
-            name: product.name.trim(),
-            price: product.price,
-            imageUrl: product.image_url, // Map `image_url` to `imageUrl`
-            quantity: parseInt(quantity, 10), // Ensure quantity is parsed as an integer
-            size: selectedSize, // User-selected size
-          })
-        );
-
-        alert("Item added to cart successfully!");
-      } else {
-        const error = await response.json();
-        alert(`Failed to add to cart: ${error.detail}`);
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("An error occurred while adding to cart.");
-    }
-  };
-
-  const handleAddToWishlist = async () => {
-    if (!user) {
-      alert("Please log in to add items to your wishlist.");
-      return;
-    }
-  
-    try {
-      console.log("User ID:", user.id);
-      console.log("Product ID:", product._id);
-      console.log("Payload:", {
-        user_id: user.id,
-        product_id: product._id,
-      });
-
-      const response = await fetch("http://localhost:8000/api/wishlist/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          user_id: user.id, // Pass the user ID from Redux
-          product_id: product._id, // Pass the product ID
+          user_id: String(user.id),
+          items: [
+            {
+              product_id: String(product._id),
+              quantity: parseInt(quantity),
+              size: selectedSize,
+              name: product.name,
+              price: product.price,
+              image_url: product.image_url || product.images?.[0],
+            },
+          ],
         }),
       });
 
-      console.log("API Response:", response); // Log the raw response
-  
       if (response.ok) {
-        alert("Product added to wishlist!");
+        dispatch(
+          addToCart({
+            product_id: String(product._id),
+            name: product.name,
+            price: product.price,
+            image_url: product.image_url || product.images?.[0],
+            quantity: parseInt(quantity),
+            size: selectedSize,
+          })
+        );
+        toast.success("Item added to cart successfully");
       } else {
         const error = await response.json();
-        alert(`Failed to add to wishlist: ${error.detail}`);
+        toast.error(`Failed to add to cart: ${error.detail}`);
       }
     } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      alert("An error occurred while adding to wishlist.");
+      console.error("Error adding to cart:", error);
+      toast.error("An error occurred while adding to cart.");
     }
   };
-  
 
-  // Render a fallback if the product is missing
+  const handleWishlistToggle = async () => {
+    if (!token) {
+      toast.error("Please sign in to manage your wishlist");
+      return;
+    }
+
+    setIsAddingToWishlist(true);
+    try {
+      if (isInWishlist) {
+        // Remove from wishlist
+        const response = await fetch(
+          `http://localhost:8000/wishlist/${product._id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          setIsInWishlist(false);
+          toast.success("Product removed from wishlist!");
+        } else {
+          throw new Error("Failed to remove from wishlist");
+        }
+      } else {
+        // Add to wishlist
+        const response = await fetch("http://localhost:8000/wishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            product_id: product._id,
+            image_url: product.image_url,
+            price: product.price,
+          }),
+        });
+
+        if (response.ok) {
+          setIsInWishlist(true);
+          toast.success("Product added to wishlist!");
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Failed to add to wishlist");
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "An unknown error occurred.");
+    } finally {
+      setIsAddingToWishlist(false);
+    }
+  };
+
   if (!product) {
-    return <p>Product not found. Please go back to the product page.</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-gray-600">
+          Product not found. Please return to the product page.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col lg:flex-row p-8 gap-10 justify-center">
-      {/* Main Image Section */}
-      <div className="flex-shrink-0 flex flex-col items-center lg:items-start">
-        <img
-          src={selectedImage}
-          alt={product.name}
-          className="w-80 md:w-96 rounded-lg shadow-lg"
-        />
-      </div>
+    <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <div className="lg:grid lg:grid-cols-2 lg:gap-x-12">
+        {/* Image Gallery Section */}
+        <div className="space-y-6">
+          <div className="aspect-w-1 aspect-h-1 bg-gray-100 rounded-2xl overflow-hidden">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              className="w-full h-full object-center object-cover"
+            />
+          </div>
 
-      {/* Thumbnails Section */}
-      <div className="flex flex-row lg:flex-col gap-2 mt-4 lg:mt-0 lg:ml-4">
-        {product.images?.map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt={`Thumbnail ${index + 1}`}
-            onClick={() => setImage(img)}
-            className={`w-16 h-16 md:w-20 md:h-20 rounded-lg cursor-pointer border ${
-              selectedImage === img ? "border-black" : "border-gray-300"
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Product Details Section */}
-      <div className="max-w-lg flex flex-col">
-        <h1 className="text-2xl md:text-3xl font-semibold">{product.name}</h1>
-        <p className="text-xl md:text-2xl text-gray-700 mb-4">
-          ${product.price}
-        </p>
-        <p className="text-gray-600 mb-6">{product.description}</p>
-
-        {/* Size Options */}
-        <div className="mb-6">
-          <p className="text-gray-700 font-semibold">Size</p>
-          <div className="flex flex-wrap gap-3 mt-2">
-            {product.size?.map((size, index) => (
+          <div className="grid grid-cols-4 gap-4">
+            {product.images?.map((img, index) => (
               <button
                 key={index}
-                onClick={() => setSize(size)}
-                className={`px-3 py-1 md:px-4 md:py-2 border rounded-md ${
-                  selectedSize === size
-                    ? "bg-gray-200 border-black"
-                    : "border-gray-300"
-                }`}
+                onClick={() => setSelectedImage(img)}
+                className={`
+                  relative aspect-square overflow-hidden rounded-lg
+                  transition-all duration-200
+                  ${
+                    selectedImage === img
+                      ? "ring-2 ring-black"
+                      : "ring-1 ring-gray-200 hover:ring-gray-400"
+                  }
+                `}
               >
-                {size}
+                <img
+                  src={img}
+                  alt={`View ${index + 1}`}
+                  className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+                />
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex gap-4 items-center">
-          {/* Wishlist (Heart) Button */}
-          <button
-            className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
-            onClick={handleAddToWishlist}
-          >
-            <AiOutlineHeart className="text-xl text-red-500" />
-          </button>
+        {/* Product Details Section */}
+        <div className="mt-10 lg:mt-0 lg:pl-8">
+          <div className="space-y-8">
+            {/* Header */}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {product.name}
+              </h1>
+              <p className="mt-2 text-sm text-gray-500">ID: {product._id}</p>
+              <p className="mt-4 text-2xl font-semibold text-gray-900">
+                PKR {product.price?.toLocaleString()}
+              </p>
+            </div>
 
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            className="px-4 py-2 bg-black text-white font-semibold rounded-lg hover:bg-gray-800"
-            style={{ flex: 1 }}
-          >
-            Add to Cart
-          </button>
+            {/* Description */}
+            <div className="prose prose-sm text-gray-600">
+              <p>{product.description}</p>
+            </div>
+
+            {/* Size Selection */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-900">
+                {product.gender}'s Size
+              </h3>
+              <div className="grid grid-cols-4 gap-3">
+                {product.size?.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`
+                      py-3 text-sm font-medium rounded-lg transition-all duration-200
+                      ${
+                        selectedSize === size
+                          ? "bg-black text-white ring-2 ring-black ring-offset-2"
+                          : "bg-white text-gray-900 border border-gray-200 hover:border-gray-400"
+                      }
+                    `}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quantity Selection */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-900">Quantity</h3>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => quantity > 1 && setQuantity((q) => q - 1)}
+                    className={`
+                      p-2 rounded-lg border transition-all duration-200
+                      ${
+                        quantity > 1
+                          ? "border-gray-300 hover:border-gray-400 text-gray-600"
+                          : "border-gray-200 text-gray-400 cursor-not-allowed"
+                      }
+                    `}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-12 text-center text-lg font-medium">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => quantity < 5 && setQuantity((q) => q + 1)}
+                    className={`
+                      p-2 rounded-lg border transition-all duration-200
+                      ${
+                        quantity < 5
+                          ? "border-gray-300 hover:border-gray-400 text-gray-600"
+                          : "border-gray-200 text-gray-400 cursor-not-allowed"
+                      }
+                    `}
+                    disabled={quantity >= 5}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <span className="text-sm text-gray-500">
+                  Maximum 5 pieces per order
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-4 pt-6">
+              <button
+                onClick={handleWishlistToggle}
+                disabled={isAddingToWishlist}
+                className={`
+                  p-4 rounded-full transition-all duration-200 relative
+                  ${
+                    isInWishlist
+                      ? "bg-red-50 hover:bg-red-100"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }
+                  ${isAddingToWishlist ? "cursor-not-allowed" : ""}
+                `}
+              >
+                <Heart
+                  className={`
+                    w-6 h-6 transition-colors
+                    ${
+                      isInWishlist
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-900"
+                    }
+                    ${isAddingToWishlist ? "opacity-50" : ""}
+                  `}
+                />
+                {isAddingToWishlist && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </button>
+
+              <button
+                onClick={handleAddToCart}
+                className="
+                  flex-1 bg-black text-white py-4 px-8 rounded-lg
+                  hover:bg-gray-900 transition-all duration-200
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black
+                  disabled:bg-gray-400 disabled:cursor-not-allowed
+                  flex items-center justify-center space-x-2
+                "
+              >
+                <ShoppingBag className="w-5 h-5" />
+                <span>Add to Cart</span>
+              </button>
+            </div>
+          </div>
         </div>
-
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
-}
+};
 
 export default Buying;

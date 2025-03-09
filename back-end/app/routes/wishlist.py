@@ -1,78 +1,158 @@
 from fastapi import APIRouter, HTTPException, Depends
+from app.schemas.wishlist import WishlistItem, Wishlist
 from app.database import get_database
-from bson.objectid import ObjectId
+from app.services.auth import get_current_user
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel,  HttpUrl
+from bson import ObjectId
+
+
+class AddToWishlistRequest(BaseModel):
+    product_id: str
+    image_url: HttpUrl
+    price: int 
 
 router = APIRouter()
 
-
-class WishlistItem(BaseModel):
-    user_id: str
-    product_id: str
-
-
-# Dependency to get the wishlist collection
-async def get_wishlist_collection(db=Depends(get_database)): 
+# Dependency to get wishlist collection
+async def get_wishlist_collection(db=Depends(get_database)):
     return db["wishlist"]
 
-# Add a product to the wishlist
-@router.post("/wishlist/add")
+async def get_products_collection (db = Depends(get_database)):
+    return db["products"]
+
+@router.post("/")
 async def add_to_wishlist(
-    item: WishlistItem,
-    wishlist_collection=Depends(get_wishlist_collection)
+    request: AddToWishlistRequest,
+    current_user: dict = Depends(get_current_user),
+    wishlist_collection=Depends(get_wishlist_collection),
 ):
-    wishlist = await wishlist_collection.find_one({"user_id": item.user_id})
-
-    if wishlist:
-        # Check if the product is already in the wishlist
-        if any(entry["product_id"] == item.product_id for entry in wishlist["items"]):
-            raise HTTPException(status_code=400, detail="Product already in wishlist")
-        
-        # Add the product to the wishlist
-        await wishlist_collection.update_one(
-            {"user_id": item.user_id},
-            {"$push": {"items": {"product_id": item.product_id, "added_at": datetime.utcnow()}}}
-        )
-    else:
-        # Create a new wishlist document
-        await wishlist_collection.insert_one({
-            "user_id": item.user_id,
-            "items": [{"product_id": item.product_id, "added_at": datetime.utcnow()}]
-        })
-
-    return {"message": "Product added to wishlist"}
-
-# Get all wishlist items for a user
-@router.get("/wishlist")
-async def get_wishlist(user_id: str, wishlist_collection=Depends(get_wishlist_collection)):
     try:
-        print(f"Fetching wishlist for user_id: {user_id}")  # Debug log
-        wishlist = await wishlist_collection.find_one({"user_id": user_id})
-        if not wishlist:
-            print("No wishlist found for the user.")  # Debug log
-            return {"items": []}
-        print(f"Wishlist retrieved: {wishlist['items']}")  # Debug log
-        return {"items": wishlist["items"]}
+        username = current_user["username"]
+        product_id = request.product_id
+        image_url = request.image_url
+        price = request.price  # Ensure price is retrieved from the request
+
+        print(image_url)
+       
+        # Find existing wishlist
+        wishlist = await wishlist_collection.find_one({"username": username})
+
+        if wishlist:
+            # Check if product already exists
+            if any(item["product_id"] == product_id for item in wishlist.get("items", [])):
+                raise HTTPException(status_code=400, detail="Product already in wishlist")
+            
+            # Update existing wishlist
+            await wishlist_collection.update_one(
+                {"username": username},
+                {
+                    "$push": {
+                        "items": {
+                            "product_id": product_id,
+                            "added_at": datetime.utcnow(),
+                            "price": price,  # Include price
+                        }
+                    }
+                }
+            )
+        else:
+            # Create new wishlist
+            new_wishlist = Wishlist(
+                username=username,
+                items=[WishlistItem(product_id=product_id, price=price)]  # Include price
+            )
+            await wishlist_collection.insert_one(new_wishlist.model_dump())
+
+        return {"message": "Product added to wishlist"}
+    
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
-        print(f"Error retrieving wishlist: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch wishlist")
+        print(f"Unexpected error adding to wishlist: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-# Remove a product from the wishlist
-@router.delete("/wishlist/remove")
+
+@router.get("/")
+async def get_wishlist(
+    current_user: dict = Depends(get_current_user),
+    wishlist_collection=Depends(get_wishlist_collection),
+    products_collection=Depends(get_products_collection)
+):
+    try:
+        username = current_user["username"]
+        
+        # Find the wishlist for the current user
+        wishlist = await wishlist_collection.find_one({"username": username})
+        
+        # If no wishlist exists, return an empty list
+        if not wishlist:
+            return {"items": []}
+        
+        # Extract product_ids from the wishlist and convert to ObjectId
+        product_ids = [ObjectId(item["product_id"]) for item in wishlist.get("items", [])]
+    
+        
+        # Fetch product details for all product_ids in one query
+        product_details = await products_collection.find(
+            {"_id": {"$in": product_ids}},
+            {"name": 1, "image_url": 1, "price": 1}
+        ).to_list(length=None)
+        
+        # Create a dictionary of product details for quick lookup
+        product_map = {
+        str(product["_id"]): {
+        "name": product.get("name", "Unknown"),
+        "image_url": product.get("image_url", "No image available"),
+        "price": product.get("price", "no pricd")
+        }
+        for product in product_details
+        }
+        
+        # Return the items with product names
+        return {
+            "items": [
+                {
+                    "product_id": item["product_id"], 
+                    "name": product_map.get(str(item["product_id"]), "Unknown"),
+                    "added_at": item.get("added_at", datetime.utcnow()),
+                    
+                } for item in wishlist.get("items", [])
+            ]
+        }
+    
+    except Exception as e:
+        print(f"Error retrieving wishlist: {e}")
+        raise HTTPException(status_code=500, detail="Could not retrieve wishlist")
+
+
+# Remove product from wishlist
+@router.delete("/{product_id}")
 async def remove_from_wishlist(
-    user_id: str,
     product_id: str,
+    current_user: dict = Depends(get_current_user),
     wishlist_collection=Depends(get_wishlist_collection)
 ):
-    wishlist = await wishlist_collection.find_one({"user_id": user_id})
-    if not wishlist:
-        raise HTTPException(status_code=404, detail="Wishlist not found")
+    try:
+        username = current_user["username"]
+        
+        # Remove the specific product from the wishlist
+        result = await wishlist_collection.update_one(
+            {"username": username},
+            {"$pull": {"items": {"product_id": product_id}}}
+        )
+        
+        # Check if the product was actually removed
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found in wishlist")
+        
+        return {"message": "Product removed from wishlist"}
     
-    # Remove the product from the wishlist
-    await wishlist_collection.update_one(
-        {"user_id": user_id},
-        {"$pull": {"items": {"product_id": product_id}}}
-    )
-    return {"message": "Product removed from wishlist"}
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        print(f"Error removing from wishlist: {e}")
+        raise HTTPException(status_code=500, detail="Could not remove product from wishlist")

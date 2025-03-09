@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Buying from "../components/Buying";
-
-// Mock data or replace with API call
+import Footer from "../components/Footer";
 
 function Product() {
   const { id } = useParams();
@@ -12,9 +11,10 @@ function Product() {
   return (
     <div>
       <Navbar />
-      <div className="p-8">
+      <div className="p-12">
         <Buying product={product} />
       </div>
+      <Footer />
     </div>
   );
 }

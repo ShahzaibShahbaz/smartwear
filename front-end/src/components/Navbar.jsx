@@ -1,193 +1,317 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import {
-  AiOutlineShoppingCart,
-  AiOutlineSearch,
-  AiOutlineCamera,
-  AiOutlineUser,
-  AiOutlineMenu,
-  AiOutlineClose,
-  AiOutlineHeart,
-} from "react-icons/ai";
+  Camera,
+  ShoppingCart,
+  Heart,
+  User,
+  X,
+  Package,
+  ShoppingBag,
+  Users,
+  LogOut,
+} from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../store/authSlice"; // Import the logout action
+import { logout } from "../store/authSlice";
 import { resetCart } from "../store/cartSlice";
-import { persistor } from "../store/store"; // Import persistor
+import { persistor } from "../store/store";
+import { toast } from "react-toastify";
 
-function Navbar() {
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Redux state
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+const Navbar = () => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [username, setUsername] = useState("");
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const cartItems = useSelector((state) => state.cart.items);
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Handle window resize
+  // Handle scroll behavior
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth < 768);
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+      setPrevScrollPos(currentScrollPos);
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos]);
 
-  // Handle scroll
+  // Update username from localStorage
   useEffect(() => {
-    const controlNavbar = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        // Scrolling UP or at top of page
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        // Scrolling DOWN and not at top
-        setIsVisible(false);
-        // Close mobile menu and search when hiding navbar
-        setMobileMenuOpen(false);
-        setIsSearchOpen(false);
+    const updateUsername = () => {
+      const data = localStorage.getItem("user");
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          setUsername(parsedData.username || "");
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          setUsername("");
+        }
+      } else {
+        setUsername("");
       }
-
-      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener("scroll", controlNavbar);
-    return () => window.removeEventListener("scroll", controlNavbar);
-  }, [lastScrollY]);
+    // Update username initially and whenever isAuthenticated changes
+    updateUsername();
+  }, [isAuthenticated]); // Depend on isAuthenticated state
 
-  // Handle search toggle
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-  };
+  const handleLogout = async () => {
+    try {
+      // Clear persisted state
+      await persistor.purge();
 
-  // Handle logout
-  const handleLogout = () => {
-    dispatch(logout()); // Dispatch logout action
-    dispatch(resetCart()); // Dispatch resetCart action to clear Redux cart state
-    localStorage.removeItem("persist:cart");
-    // Purge persisted state (cart) from localStorage
-    persistor.purge().then(() => {
-      // Optional: Flush any changes made to persisted state
-      persistor.flush();
-    });
+      // Dispatch logout actions
+      dispatch(logout());
+      dispatch(resetCart());
+
+      // Clear local state
+      setUsername("");
+
+      // Close sidebar
+      setSidebarOpen(false);
+
+      // Clear localStorage
+      localStorage.clear();
+
+      // Navigate to home
+      navigate("/", { replace: true });
+
+      toast.success("Logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Error during logout");
+    }
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-4 bg-white shadow-md transition-transform duration-300 z-50 ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      }`}
-    >
-      <div className="text-2xl font-bold">
-        <Link to="/">
-          SMART <span className="font-normal">wear</span>
-        </Link>
-      </div>
-
-      {/* Menu (responsive) */}
-      <ul
-        className={`absolute top-16 left-0 w-full bg-white md:static md:flex md:gap-8 md:top-0 md:w-auto transition-transform duration-300 ${
-          isMobileMenuOpen ? "block" : "hidden"
+    <>
+      <nav
+        className={`fixed w-full bg-gray-100 shadow-sm transition-transform duration-300 z-50 ${
+          visible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <li className="p-4 md:p-0 border-b md:border-none">
-          <Link to="/" className="text-gray-700 hover:text-black">
-            Home
-          </Link>
-        </li>
-        <li className="p-4 md:p-0 border-b md:border-none">
-          <Link to="/collections" className="text-gray-700 hover:text-black">
-            Collections
-          </Link>
-        </li>
-        <li className="p-4 md:p-0">
-          <a href="/contact-us" className="text-gray-700 hover:text-black">
-            Contact Us
-          </a>
-        </li>
-        {isAuthenticated && (
-          <li className="p-4 md:p-0">
-            <button
-              onClick={handleLogout}
-              className="text-gray-700 hover:text-black"
-            >
-              Logout
-            </button>
-          </li>
-        )}
-      </ul>
-
-      {/* Icons with Search */}
-      <div className="flex gap-4 text-2xl items-center">
-        <div className="relative flex items-center">
-          {isSearchOpen && (
-            <input
-              type="text"
-              placeholder="Search..."
-              className={`
-                transition-all duration-300 ease-in-out
-                border border-gray-300 rounded-lg
-                ${isMobileView ? "absolute top-10 right-0 w-48" : "mr-2 w-48"}
-                ${isSearchOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"}
-                p-2 text-sm
-              `}
-              autoFocus
-            />
-          )}
-          <button onClick={toggleSearch}>
-            <AiOutlineSearch />
-          </button>
-        </div>
-        <button>
-          <AiOutlineCamera />
-        </button>
-
-        <button>
-          <Link to="/cart">
-            <AiOutlineShoppingCart />
-          </Link>
-        </button>
-
-        {isAuthenticated && (
-          <button>
-            <Link to="/wishlist" className="text-gray-700 hover:text-black">
-              <AiOutlineHeart /> {/* Replace with your preferred wishlist icon */}
+        <div className="w-full px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex-shrink-0 pl-0">
+              <div className="flex items-center">
+                <span className="font-bold text-3xl">SMART</span>
+                <span className="ml-1 text-3xl font-normal">wear</span>
+              </div>
             </Link>
-          </button>
-        )}
 
-        {!isAuthenticated ? (
-          <>
-            <button>
-              <Link to="/signin" className="text-gray-700 hover:text-black">
-                Login
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link
+                to="/"
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Home
               </Link>
-            </button>
-            <button>
-              <Link to="/signup" className="text-gray-700 hover:text-black">
-                Signup
+              <Link
+                to={
+                  location.pathname === "/" ? "#collections" : "/#collections"
+                }
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Collections
               </Link>
-            </button>
-          </>
-        ) : (
-          <button>
-            <AiOutlineUser />
-          </button>
-        )}
+              <Link
+                to="/contact-us"
+                className="text-black-700 hover:text-gray-700 text-2xl font-medium"
+              >
+                Contact Us
+              </Link>
+            </div>
+
+            {/* Icons */}
+            <div className="flex items-center space-x-6 pr-0">
+              <Link to="image-search" className="w-8 h-8">
+                <Camera className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+              </Link>
+              <Link to="/cart" className="relative w-8 h-8">
+                <ShoppingCart className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+              <Link to="/wishlist" className="w-8 h-8">
+                <Heart className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+              </Link>
+              <User
+                className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer"
+                onClick={() => setSidebarOpen(true)}
+              />
+              {username && (
+                <span className="text-sm font-medium">Hi, {username}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold text-gray-900">Menu</h2>
+              <button
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            {username && (
+              <p className="mt-2 text-sm text-gray-600">
+                Welcome back, <span className="font-medium">{username}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-6 space-y-4">
+              {isAuthenticated ? (
+                <>
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Your Account
+                    </h3>
+                    <div className="space-y-2">
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/your-orders");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Package className="w-5 h-5 mr-3" />
+                        <span>Your Orders</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/wishlist");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Heart className="w-5 h-5 mr-3" />
+                        <span>Your Wishlist</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/cart");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <ShoppingBag className="w-5 h-5 mr-3" />
+                        <span>Your Cart</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Shop by Category
+                    </h3>
+                    <div className="space-y-2">
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/Men");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Men's Collection</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/Women");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Women's Collection</span>
+                      </button>
+                      <button
+                        className="w-full flex items-center px-4 py-3 text-left text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => {
+                          navigate("/products/kids");
+                          setSidebarOpen(false);
+                        }}
+                      >
+                        <Users className="w-5 h-5 mr-3" />
+                        <span>Kids Collection</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Sign in to view your orders, wishlist, and more.
+                  </p>
+                  <Link
+                    to="/signin"
+                    className="block w-full px-4 py-3 text-center bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block w-full px-4 py-3 text-center border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          {isAuthenticated && (
+            <div className="p-6 border-t border-gray-200">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-3 flex items-center justify-center text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5 mr-2" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile Menu Toggle */}
-      <button
-        className="block md:hidden text-2xl text-gray-700 hover:text-black"
-        onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        {isMobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
-      </button>
-    </nav>
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-15 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+    </>
   );
-}
+};
 
 export default Navbar;
