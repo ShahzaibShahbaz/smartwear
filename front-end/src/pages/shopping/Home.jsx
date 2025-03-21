@@ -7,7 +7,6 @@ import {
   ShoppingBag,
   Star,
   TrendingUp,
-  BotMessageSquare,
 } from "lucide-react";
 import men from "../../assets/men_image_collection_1.png";
 import women from "../../assets/women_image_collection_1.jpg";
@@ -16,6 +15,8 @@ import Footer from "../../components/Footer";
 import men_slider from "../../assets/men_slider.png";
 import women_slider from "../../assets/women_slider.png";
 import kids_slider from "../../assets/kids_slider.png";
+import ChatbotOverlay from "../../components/Chatbot"; // Import the new component
+
 const Home = () => {
   // Add ref for categories section
   const categoriesRef = useRef(null);
@@ -214,7 +215,7 @@ const Home = () => {
       </div>
 
       {/* Categories Section */}
-      <div  id ="collections" ref={categoriesRef} className="py-16">
+      <div id="collections" ref={categoriesRef} className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
             Shop by Category
@@ -253,12 +254,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Chatbot Button */}
-      <Link to="/chatbot">
-        <button className="fixed bottom-8 right-8 bg-black text-white p-4 rounded-full shadow-lg hover:bg-gray-800 transition-colors">
-          <BotMessageSquare />
-        </button>
-      </Link>
+      {/* Chatbot */}
+      <ChatbotOverlay />
+      
       <Footer />
     </div>
   );

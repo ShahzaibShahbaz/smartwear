@@ -81,7 +81,7 @@ function AdminLogin() {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-900"
           >
             Login as Admin
           </button>

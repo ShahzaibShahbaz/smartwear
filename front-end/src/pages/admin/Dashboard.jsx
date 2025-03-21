@@ -221,7 +221,7 @@ const AdminDashboard = () => {
         {/* Overview Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300 flex items-center space-x-4">
-            <FaShoppingCart className="text-3xl text-green-500" />
+            <FaShoppingCart className="text-3xl text-blue-500" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Products</h2>
               <p className="text-2xl font-bold text-gray-800">
@@ -230,7 +230,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300 flex items-center space-x-4">
-            <FaUsers className="text-3xl text-red-500" />
+            <FaUsers className="text-3xl text-green-500" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">
                 Pending Approvals
@@ -241,7 +241,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300 flex items-center space-x-4">
-            <FaUsers className="text-3xl text-blue-500" />
+            <FaUsers className="text-3xl text-red-500" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Users</h2>
               <p className="text-2xl font-bold text-gray-800">{usersCount}</p>
@@ -249,7 +249,7 @@ const AdminDashboard = () => {
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow hover:shadow-xl transition duration-300 flex items-center space-x-4">
-            <FaChartLine className="text-3xl text-yellow-500" />
+            <FaChartLine className="text-3xl text-purple-500" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Orders</h2>
               <p className="text-2xl font-bold text-gray-800">{ordersCount}</p>

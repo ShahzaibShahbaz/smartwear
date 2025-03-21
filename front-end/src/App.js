@@ -8,7 +8,6 @@ import Product from "./pages/shopping/Product.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
 import Home from "./pages/shopping/Home.jsx";
 import Cart from "./pages/shopping/Cart.jsx";
-import Chatbot from "./pages/shopping/Chatbot.jsx";
 import ProductPage from "./pages/shopping/ProductPage.jsx";
 import PlaceOrder from "./pages/shopping/PlaceOrder.jsx";
 import AdminLogin from "./pages/admin/Login.jsx";
@@ -57,7 +56,6 @@ function AppRoutes() {
         <Route path="/products/:category" element={<ProductPage />} />
         <Route path="/product/:productname" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/admin" element={<AdminLogin />} />

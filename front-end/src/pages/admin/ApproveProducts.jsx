@@ -27,7 +27,6 @@ const AdminApproveProducts = () => {
     }
   };
   
-
   const handleApprove = async (productId) => {
     try {
       await axios.patch(`http://localhost:8000/products/${productId}/approve`);
@@ -81,44 +80,41 @@ const AdminApproveProducts = () => {
       </div>
     ));
 
-    return (
-      <div className="min-h-screen bg-gray-100">
-        <AdminNavbar />
-        {loading ? (
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="loader border-t-4 border-blue-500 w-16 h-16 rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="min-h-screen bg-gray-100 p-8">
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <AdminNavbar />
+      {loading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="loader border-t-4 border-blue-500 w-16 h-16 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="min-h-screen bg-gray-100 p-8">
           <h1 className="text-2xl font-bold mb-6">
             Product Approvals
           </h1>
 
-          {/* Grid layout for Pending and Approved Products */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Pending Products */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Pending Products</h2>
-              {pendingProducts.length > 0 ? (
-                renderProducts(pendingProducts)
-              ) : (
-                <p className="text-gray-500">No pending products.</p>
-              )}
-            </div>
-
-            {/* Approved Products */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Approved Products</h2>
-              {approvedProducts.length > 0 ? (
-                renderProducts(approvedProducts, false) // No actions for approved products
-              ) : (
-                <p className="text-gray-500">No approved products.</p>
-              )}
-            </div>
+          {/* Pending Products - Now as a full-width section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Pending Products</h2>
+            {pendingProducts.length > 0 ? (
+              renderProducts(pendingProducts)
+            ) : (
+              <p className="text-gray-500">No pending products.</p>
+            )}
           </div>
 
-          {/* Disapproved Products */}
-          <div className="mt-8">
+          {/* Approved Products - Now as a full-width section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Approved Products</h2>
+            {approvedProducts.length > 0 ? (
+              renderProducts(approvedProducts, false) // No actions for approved products
+            ) : (
+              <p className="text-gray-500">No approved products.</p>
+            )}
+          </div>
+
+          {/* Disapproved Products - Already a full-width section */}
+          <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Disapproved Products</h2>
             {disapprovedProducts.length > 0 ? (
               renderProducts(disapprovedProducts, false) // No actions for disapproved products
@@ -127,10 +123,9 @@ const AdminApproveProducts = () => {
             )}
           </div>
         </div>
-        )}
-
-        
-      </div>
-    );      
+      )}
+    </div>
+  );      
 };
+
 export default AdminApproveProducts;
