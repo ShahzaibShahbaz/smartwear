@@ -3,8 +3,6 @@ import { X, Send, BotMessageSquare, Maximize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-
-
 const Chatbot = () => {
   const navigate = useNavigate();
 
@@ -56,7 +54,7 @@ const Chatbot = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
-    
+
     try {
       // Call the API endpoint with error handling
       const response = await fetch("http://localhost:8000/chatbot/chat", {
@@ -81,19 +79,23 @@ const Chatbot = () => {
       };
 
       setMessages((prev) => [...prev, botMessage]);
-      
+
       // Set recommended products if they exist
-      if (data.products && Array.isArray(data.products) && data.products.length > 0) {
+      if (
+        data.products &&
+        Array.isArray(data.products) &&
+        data.products.length > 0
+      ) {
         setRecommendedProducts(data.products);
-        
+
         // Add product recommendations as a bot message
         const productsMessage = {
           id: Date.now() + 2,
           isBot: true,
           isProductRecommendation: true,
-          products: data.products
+          products: data.products,
         };
-        
+
         setMessages((prev) => [...prev, productsMessage]);
       }
     } catch (error) {
@@ -121,25 +123,36 @@ const Chatbot = () => {
     return (
       <div className="flex-shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1 w-full sm:w-48 md:w-56">
         <div className="h-32 md:h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
-          <img 
-            src={product.image_url || '/placeholder-product.png'} 
-            alt={product.name || 'Product'} 
+          <img
+            src={product.image_url || "/placeholder-product.png"}
+            alt={product.name || "Product"}
             className="max-h-full max-w-full object-cover"
-            onError={(e) => {e.target.src = '/placeholder-product.png'}}
+            onError={(e) => {
+              e.target.src = "/placeholder-product.png";
+            }}
           />
         </div>
         <div className="p-3">
-          <h3 className="text-sm md:text-base font-medium truncate">{product.name || 'Product'}</h3>
-          <p className="text-xs text-gray-500 truncate">{product.product_type || 'Fashion Item'}</p>
-          <p className="text-xs text-gray-500">Color: {product.color || 'N/A'}</p>
-          <p className="text-sm font-semibold mt-2">PKR {product.price || '0.00'}</p>
-          <button onClick={
-              () =>
-                navigate(`/product/${encodeURIComponent(getProductName())}`, {
-                  state: { product },
-                })
-        }
-          className="w-full mt-2 bg-black text-white py-1 md:py-2 px-2 md:px-4 rounded hover:bg-gray-800 transition-colors text-xs md:text-sm">
+          <h3 className="text-sm md:text-base font-medium truncate">
+            {product.name || "Product"}
+          </h3>
+          <p className="text-xs text-gray-500 truncate">
+            {product.product_type || "Fashion Item"}
+          </p>
+          <p className="text-xs text-gray-500">
+            Color: {product.color || "N/A"}
+          </p>
+          <p className="text-sm font-semibold mt-2">
+            PKR {product.price || "0.00"}
+          </p>
+          <button
+            onClick={() =>
+              navigate(`/product/${encodeURIComponent(getProductName())}`, {
+                state: { product },
+              })
+            }
+            className="w-full mt-2 bg-black text-white py-1 md:py-2 px-2 md:px-4 rounded hover:bg-gray-800 transition-colors text-xs md:text-sm"
+          >
             View Product
           </button>
         </div>
@@ -150,7 +163,9 @@ const Chatbot = () => {
   const ProductRecommendation = ({ products }) => {
     return (
       <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700 mb-2">Here are some recommendations for you:</p>
+        <p className="text-sm font-medium text-gray-700 mb-2">
+          Here are some recommendations for you:
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-x-auto pb-2">
           {products.map((product, index) => (
             <ProductCard key={index} product={product} />

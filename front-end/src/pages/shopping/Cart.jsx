@@ -35,7 +35,8 @@ function CartContent() {
   const needsSync = useSelector(selectNeedsSyncing);
   const { user, token } = useSelector((state) => state.auth);
 
-  console.log("cccc", cartItems);
+  console.log("Cart items from Redux:", cartItems);
+  console.log("Cart items structure:", JSON.stringify(cartItems, null, 2));
 
   useEffect(() => {
     if (user && token && cartStatus === "idle") {
@@ -58,6 +59,36 @@ function CartContent() {
       return () => clearTimeout(syncTimer);
     }
   }, [needsSync, user, token, dispatch]);
+
+  useEffect(() => {
+    const cleanupCart = async () => {
+      if (cartItems.length > 0 && token) {
+        const itemsNeedingUpdate = cartItems.filter(
+          (item) => !item.name || !item.price || !item.image_url
+        );
+
+        if (itemsNeedingUpdate.length > 0) {
+          console.log("Found items needing update:", itemsNeedingUpdate);
+          // Trigger a cart refresh to get complete data
+          dispatch(fetchCart());
+        }
+      }
+    };
+
+    cleanupCart();
+  }, [cartItems, token, dispatch]);
+
+  useEffect(() => {
+    // Check for incomplete items and refresh cart
+    const hasIncompleteItems = cartItems.some(
+      (item) => !item.name || !item.price
+    );
+
+    if (hasIncompleteItems && token) {
+      console.log("Found incomplete cart items, refreshing...");
+      dispatch(fetchCart());
+    }
+  }, [cartItems, token, dispatch]);
 
   const handleQuantityChange = async (product_id, quantity, size) => {
     if (!token) {
@@ -89,7 +120,8 @@ function CartContent() {
         throw new Error(errorData.detail || "Failed to update quantity");
       }
 
-      dispatch(updateQuantity({ product_id, quantity }));
+      // After successful update, fetch the complete cart to get updated data
+      dispatch(fetchCart());
       toast.success("Cart updated successfully");
     } catch (error) {
       const errorMessage = error?.message || "Failed to update cart";
@@ -129,6 +161,8 @@ function CartContent() {
   };
 
   const QuantityControl = ({ product }) => {
+    if (!product || !product.product_id) return null;
+
     return (
       <div className="flex items-center justify-between bg-gray-100 rounded-lg p-2">
         <button
@@ -224,6 +258,12 @@ function CartContent() {
               {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
             </p>
           </div>
+          <button
+            onClick={() => dispatch(fetchCart())}
+            className="px-4 py-2 bg-black text-white rounded"
+          >
+            Refresh Cart
+          </button>
           <div className="flex items-center space-x-2">
             {needsSync && (
               <span className="text-sm text-black-600 flex items-center">
@@ -258,35 +298,51 @@ function CartContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="grid grid-cols-1 gap-6">
-                {cartItems.map((product) => (
-                  <div key={product.product_id} className="relative">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-24 h-24 flex-shrink-0">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="font-medium text-gray-900">
-                            {product.name}
-                          </h3>
-                          <p className="text-gray-600 text-sm">
-                            Size: {product.size}
-                          </p>
-                          <p className="text-gray-900 font-medium mt-1">
-                            PKR {product.price}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <QuantityControl product={product} />
+                {cartItems.map((product) => {
+                  console.log("Rendering product:", product);
+
+                  // Skip rendering if product is missing essential data
+                  if (!product.name || !product.price) {
+                    console.warn(
+                      "Skipping product due to missing data:",
+                      product
+                    );
+                    return null;
+                  }
+
+                  return (
+                    <div key={product.product_id} className="relative">
+                      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-24 h-24 flex-shrink-0">
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="w-full h-full object-cover rounded-lg"
+                              onError={(e) => {
+                                e.target.src = "/api/placeholder/96/96";
+                              }}
+                            />
+                          </div>
+                          <div className="flex-grow">
+                            <h3 className="font-medium text-gray-900">
+                              {product.name}
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                              Size: {product.size}
+                            </p>
+                            <p className="text-gray-900 font-medium mt-1">
+                              PKR {product.price}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <QuantityControl product={product} />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

@@ -13,7 +13,38 @@ export const fetchCart = createAsyncThunk(
       const response = await axios.get("http://localhost:8000/cart", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data.items || [];
+
+      const cartItems = response.data.items || [];
+
+      // Fetch product details for items that don't have complete information
+      const completeItems = await Promise.all(
+        cartItems.map(async (item) => {
+          if (!item.name || !item.price || !item.image_url) {
+            try {
+              const productResponse = await axios.get(
+                `http://localhost:8000/products/${item.product_id}`
+              );
+
+              return {
+                ...item,
+                name: productResponse.data.name,
+                price: productResponse.data.price,
+                image_url: productResponse.data.image_url,
+                size: item.size || productResponse.data.size?.[0] || "N/A",
+              };
+            } catch (error) {
+              console.error(
+                `Failed to fetch product ${item.product_id}:`,
+                error
+              );
+              return item;
+            }
+          }
+          return item;
+        })
+      );
+
+      return completeItems;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.detail || "Failed to fetch cart"
@@ -77,6 +108,7 @@ const cartSlice = createSlice({
   },
   reducers: {
     setCartItems: (state, action) => {
+      // Ensure we're getting complete product data from backend
       state.items = action.payload;
       state.total = calculateTotal(action.payload);
       state.lastSynced = new Date().toISOString();
@@ -89,7 +121,15 @@ const cartSlice = createSlice({
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
       } else {
-        state.items.push(action.payload);
+        // Store the complete product information
+        state.items.push({
+          product_id: action.payload.product_id,
+          quantity: action.payload.quantity,
+          name: action.payload.name,
+          price: action.payload.price,
+          image_url: action.payload.image_url,
+          size: action.payload.size,
+        });
       }
 
       state.total = calculateTotal(state.items);

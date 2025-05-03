@@ -1,3 +1,4 @@
+from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Dict, Any
 from app.schemas.cart import CartRequest
@@ -45,23 +46,34 @@ async def save_cart(cart: CartRequest, current_user: dict = Depends(get_current_
         print(f"Error saving cart: {e}")
         raise HTTPException(status_code=500, detail="Failed to save cart")
 
+# In your cart router
 @router.get("/")
 async def get_cart(current_user: dict = Depends(get_current_user), db=Depends(get_database)):
     try:
         username = current_user["username"]
-        print(f"Fetching cart for username: {username}")
-        
         cart = await db["carts"].find_one({"username": username})
         
         if not cart:
             return {"username": username, "items": []}
         
+        # Populate complete product details for each cart item
+        complete_items = []
+        for item in cart.get("items", []):
+            # If item lacks product details, fetch them
+            if "name" not in item or "price" not in item:
+                product = await db["products"].find_one({"_id": ObjectId(item["product_id"])})
+                if product:
+                    item["name"] = product.get("name", "Unnamed Product")
+                    item["price"] = product.get("price", 0)
+                    item["image_url"] = product.get("image_url", "")
+            complete_items.append(item)
+        
+        cart["items"] = complete_items
         cart["_id"] = str(cart["_id"])
         return cart
     except Exception as e:
-        print(f"Error fetching cart for username {username}: {e}")
+        print(f"Error fetching cart: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch cart")
-
 @router.delete("/{product_id}")
 async def delete_item_from_cart(product_id: str, current_user: dict = Depends(get_current_user), db=Depends(get_database)):
     try:
