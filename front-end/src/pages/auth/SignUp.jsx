@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import modelsImage from "../../assets/photoshootaesthetic.jpeg";
+import modelsImage from "../../Assets/photoshootaesthetic.jpeg";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosConfig";
 import LoadingSpinner from "../../components/LoadingSpinner";

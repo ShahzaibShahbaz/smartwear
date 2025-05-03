@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import modelsImage from "../../assets/photoshootaesthetic.jpeg";
+import modelsImage from "../../Assets/photoshootaesthetic.jpeg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../store/authSlice";

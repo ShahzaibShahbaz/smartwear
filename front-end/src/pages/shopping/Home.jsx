@@ -2,19 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  ShoppingBag,
-  Star,
-  TrendingUp,
-} from "lucide-react";
-import men from "../../assets/men_image_collection_1.png";
-import women from "../../assets/women_image_collection_1.jpg";
-import kids from "../../assets/kids_image_collection_1.jpg";
+import { ArrowRight, ShoppingBag, Star, TrendingUp } from "lucide-react";
+import men from "../../Assets/men_image_collection_1.png";
+import women from "../../Assets/women_image_collection_1.jpg";
+import kids from "../../Assets/kids_image_collection_1.jpg";
 import Footer from "../../components/Footer";
-import men_slider from "../../assets/men_slider.png";
-import women_slider from "../../assets/women_slider.png";
-import kids_slider from "../../assets/kids_slider.png";
+import men_slider from "../../Assets/men_slider.png";
+import women_slider from "../../Assets/women_slider.png";
+import kids_slider from "../../Assets/kids_slider.png";
 import ChatbotOverlay from "../../components/Chatbot"; // Import the new component
 
 const Home = () => {
@@ -256,7 +251,7 @@ const Home = () => {
 
       {/* Chatbot */}
       <ChatbotOverlay />
-      
+
       <Footer />
     </div>
   );

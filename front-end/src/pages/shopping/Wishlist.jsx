@@ -4,7 +4,7 @@ import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trash2, ShoppingBag, Loader2 } from "lucide-react";
-import cartImage from "../../assets/wishlist.png";
+import cartImage from "../../Assets/wishlist.png";
 import { toast } from "react-toastify";
 import Footer from "../../components/Footer";
 

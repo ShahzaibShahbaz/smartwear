@@ -19,9 +19,8 @@ import {
   Loader2,
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ProductCard from "../../components/ProductCard";
 import Checkout from "../../components/Checkout";
-import cartimage from "../../assets/image.png";
+import cartimage from "../../Assets/image.png";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import ErrorBoundary from "../../components/ErrorBoundary";
