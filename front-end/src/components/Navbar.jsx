@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Users,
   LogOut,
+  Image,
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -132,6 +133,9 @@ const Navbar = () => {
 
             {/* Icons */}
             <div className="flex items-center space-x-6 pr-0">
+              <Link to="/VTO" className="w-8 h-8">
+                <Image className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
+              </Link>
               <Link to="image-search" className="w-8 h-8">
                 <Camera className="w-8 h-8 text-black-700 hover:text-gray-700 cursor-pointer" />
               </Link>

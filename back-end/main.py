@@ -4,7 +4,7 @@ from app.routes import users, cart, images, products, admin
 from app.database import connect_to_mongo  # Ensure this exists
 from app.routes import order
 from app.routes import wishlist
-from app.routes import order, wishlist, contact, forgotpassword, chatbot , imagesearch
+from app.routes import order, wishlist, contact, forgotpassword, chatbot, imagesearch, virtual_tryon
 
 
 
@@ -44,6 +44,7 @@ app.include_router(contact.router, tags=["contact"])
 app.include_router(forgotpassword.router, prefix="/pwd",tags=["forgotpassword"])
 app.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
 app.include_router(imagesearch.router, prefix="/image-search", tags=["image-search"])
+app.include_router(virtual_tryon.router, prefix="/virtual-tryon", tags=["virtual-tryon"])
 
 
 @app.get("/health")

@@ -23,6 +23,7 @@ import OrdersPage from "./pages/shopping/Orders.jsx";
 import Contact from "./pages/shopping/Contact.jsx";
 import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 import ImageSearchPage from "./pages/shopping/ImageSearch.jsx";
+import VirtualTryOn from "./pages/VTO/virtual.jsx";
 
 function AppRoutes() {
   const location = useLocation();
@@ -61,17 +62,21 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route element={<ProtectedRoute />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/add-product" element={<AddProductForm />} />
-            <Route path="/admin/approve-products" element={<ApproveDisapproveProducts />} />
-            <Route path="/admin/manage-users" element={<UserManagement />} />
-            <Route path="/admin/manage-orders" element={<ManageOrders />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/add-product" element={<AddProductForm />} />
+          <Route
+            path="/admin/approve-products"
+            element={<ApproveDisapproveProducts />}
+          />
+          <Route path="/admin/manage-users" element={<UserManagement />} />
+          <Route path="/admin/manage-orders" element={<ManageOrders />} />
         </Route>
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/your-orders" element={<OrdersPage />} />
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/image-search" element={<ImageSearchPage />} />
+        <Route path="/VTO" element={<VirtualTryOn />} />
       </Routes>
     </>
   );
