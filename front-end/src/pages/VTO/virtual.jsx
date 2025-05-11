@@ -1,13 +1,25 @@
-// VirtualTryOn.jsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowLeft, X, Download } from "lucide-react";
 
 const VirtualTryOn = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [personImage, setPersonImage] = useState(null);
-  const [garmentImage, setGarmentImage] = useState(null);
   const [resultImage, setResultImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Get product from location state
+  const product = location.state?.product;
+
+  useEffect(() => {
+    // If no product is provided, redirect back to home
+    if (!product) {
+      navigate("/");
+    }
+  }, [product, navigate]);
 
   // Handle drag events
   const handleDragOver = (e) => {
@@ -19,102 +31,75 @@ const VirtualTryOn = () => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file) {
-      processImage(file, "person");
-    }
-  }, []);
-
-  // Handle drop for garment image
-  const handleGarmentDrop = useCallback((e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      processImage(file, "garment");
+      processImage(file);
     }
   }, []);
 
   // Handle file input change
-  const handleFileChange = (e, type) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      processImage(file, type);
+      processImage(file);
     }
   };
 
   // Process and validate the image
-  const processImage = (file, type) => {
+  const processImage = (file) => {
     // Check file type
     if (!file.type.startsWith("image/")) {
-      setError(`Please select an image file for the ${type}.`);
+      setError("Please select an image file.");
       return;
     }
 
     // Check file size (e.g., 25MB max)
     if (file.size > 25 * 1024 * 1024) {
-      // Make sure you have your file size check
-      setError(`${type} image exceeds maximum size of 25MB.`);
+      setError("Image exceeds maximum size of 25MB.");
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image(); // Create a new Image object
+      const img = new Image();
       img.onload = () => {
-        // This function executes once the image source is loaded
-        // CORRECT PLACE for dimension checks:
         // Now img.width and img.height have the actual dimensions of the loaded image.
-
-        // IMPORTANT: Verify these values (256, 1920) against the
-        // "Try On Diffusion" API's actual documentation for clothing images.
-        // The error "Clothing image: image_too_small" came from the external API.
-        const MIN_DIMENSION = 256; // Replace with actual minimum from API docs if different
-        const MAX_DIMENSION = 1920; // Replace with actual maximum from API docs if different
+        const MIN_DIMENSION = 256;
+        const MAX_DIMENSION = 1920;
 
         if (img.width < MIN_DIMENSION || img.height < MIN_DIMENSION) {
           setError(
-            `${type} image must be at least ${MIN_DIMENSION}x${MIN_DIMENSION} pixels. Current: ${img.width}x${img.height}`
+            `Image must be at least ${MIN_DIMENSION}x${MIN_DIMENSION} pixels. Current: ${img.width}x${img.height}`
           );
           return;
         }
         if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
           setError(
-            `${type} image must be no larger than ${MAX_DIMENSION}x${MAX_DIMENSION} pixels. Current: ${img.width}x${img.height}`
+            `Image must be no larger than ${MAX_DIMENSION}x${MAX_DIMENSION} pixels. Current: ${img.width}x${img.height}`
           );
           return;
         }
 
         // All validations passed, set the image
-        if (type === "person") {
-          setPersonImage({
-            file,
-            preview: e.target.result, // This is the data URL for the preview
-          });
-        } else {
-          setGarmentImage({
-            file,
-            preview: e.target.result, // This is the data URL for the preview
-          });
-        }
-        setError(""); // Clear any previous errors
+        setPersonImage({
+          file,
+          preview: e.target.result,
+        });
+        setError("");
       };
       img.onerror = () => {
-        // Handle cases where the image data is invalid
-        setError(`Invalid image file for ${type}. Could not load image.`);
+        setError("Invalid image file. Could not load image.");
       };
-      img.src = e.target.result; // Set the source of the Image object to the file's data URL
+      img.src = e.target.result;
     };
     reader.onerror = () => {
-      // Handle file reading errors
-      setError(`Error reading file for ${type}.`);
+      setError("Error reading file.");
     };
-    reader.readAsDataURL(file); // Read the file as a data URL
+    reader.readAsDataURL(file);
   };
-
-  // Function to convert data URL to a Blob for proper URL creation
 
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "unsigned_preset"); // Create in Cloudinary settings
+    formData.append("upload_preset", "unsigned_preset");
     formData.append("cloud_name", "dlkzoykwu");
 
     const response = await axios.post(
@@ -124,10 +109,11 @@ const VirtualTryOn = () => {
 
     return response.data.secure_url;
   };
-  // Submit the try-on request
+
+  // Submit the try-on request using product ID
   const handleSubmit = async () => {
-    if (!personImage || !garmentImage) {
-      setError("Please upload both a person and garment image.");
+    if (!personImage || !product) {
+      setError("Please upload your photo to continue.");
       return;
     }
 
@@ -135,32 +121,31 @@ const VirtualTryOn = () => {
     setError("");
 
     try {
-      // Upload both images to Cloudinary
+      // Upload person image to Cloudinary
       const personUrl = await uploadToCloudinary(personImage.file);
-      const garmentUrl = await uploadToCloudinary(garmentImage.file);
 
-      // Send the URLs to your backend
+      // Send the request to the backend
       const response = await fetch(
-        "http://localhost:8000/virtual-tryon/try-on", // This matches your FastAPI setup
+        "http://localhost:8000/virtual-tryon/try-on-product",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            person_image_url: personUrl, // Key name as expected by FastAPI TryOnURLRequest
-            garment_image_url: garmentUrl, // Key name as expected by FastAPI TryOnURLRequest
+            person_image_url: personUrl,
+            product_id: product._id,
           }),
         }
       );
 
       if (!response.ok) {
-        const errorData = await response.json(); // FastAPI sends {'detail': 'error message'}
-        throw new Error(errorData.detail || "Error processing try-on request."); // This is good
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Error processing try-on request.");
       }
 
-      const data = await response.json(); // Expects {'result_url': '...'}
-      setResultImage(data.result_url); // This is good
+      const data = await response.json();
+      setResultImage(data.result_url);
     } catch (err) {
       setError(`Try-on failed: ${err.message}`);
     } finally {
@@ -171,290 +156,220 @@ const VirtualTryOn = () => {
   // Reset all states
   const handleReset = () => {
     setPersonImage(null);
-    setGarmentImage(null);
     setResultImage(null);
     setError("");
   };
 
+  // Go back to previous page
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        {/* Header */}
-        <div className="p-6 bg-blue-600 text-white">
-          <h1 className="text-3xl font-bold">Virtual Try-On</h1>
-          <p className="mt-2">
-            Upload a person and a garment to see how they look together
-          </p>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div
-            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-6"
-            role="alert"
+      <div className="max-w-6xl mx-auto">
+        {/* Header with back button */}
+        <div className="flex items-center mb-6">
+          <button
+            onClick={handleBack}
+            className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <p>{error}</p>
-          </div>
-        )}
-
-        {/* Upload section */}
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Person Image Upload */}
-            <div>
-              <h2 className="text-lg font-medium mb-3">Person Image</h2>
-              <div
-                className={`border-2 border-dashed rounded-lg p-4 ${
-                  personImage
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-300 bg-gray-50"
-                } transition-colors`}
-                onDragOver={handleDragOver}
-                onDrop={handlePersonDrop}
-              >
-                {personImage ? (
-                  <div className="relative">
-                    <img
-                      src={personImage.preview}
-                      alt="Person preview"
-                      className="w-full h-64 object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPersonImage(null)}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="text-center py-10">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Drag and drop your person image here
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">or</p>
-                    <label className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
-                      Browse Files
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, "person")}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                )}
-              </div>
-              <div className="mt-2 text-sm text-gray-500">
-                <ul className="list-disc pl-5">
-                  <li>One person only</li>
-                  <li>Plain background preferred</li>
-                  <li>Person should face forward</li>
-                  <li>3/4 body view works best</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Garment Image Upload */}
-            <div>
-              <h2 className="text-lg font-medium mb-3">Garment Image</h2>
-              <div
-                className={`border-2 border-dashed rounded-lg p-4 ${
-                  garmentImage
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-300 bg-gray-50"
-                } transition-colors`}
-                onDragOver={handleDragOver}
-                onDrop={handleGarmentDrop}
-              >
-                {garmentImage ? (
-                  <div className="relative">
-                    <img
-                      src={garmentImage.preview}
-                      alt="Garment preview"
-                      className="w-full h-64 object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setGarmentImage(null)}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="text-center py-10">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Drag and drop your garment image here
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">or</p>
-                    <label className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
-                      Browse Files
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, "garment")}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                )}
-              </div>
-              <div className="mt-2 text-sm text-gray-500">
-                <ul className="list-disc pl-5">
-                  <li>Single garment only</li>
-                  <li>Stock photos work best</li>
-                  <li>Garment should fill most of the frame</li>
-                  <li>Works best with tops (shirts, blouses, etc.)</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="mt-8 flex justify-center space-x-4">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Reset
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!personImage || !garmentImage || loading}
-              className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
-                !personImage || !garmentImage || loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
-            >
-              {loading ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                "Try On Garment"
-              )}
-            </button>
-          </div>
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </button>
+          <h1 className="text-2xl font-bold text-center flex-grow">
+            Virtual Try-On
+          </h1>
         </div>
 
-        {/* Result section */}
-        {resultImage && (
-          <div className="p-6 border-t border-gray-200">
-            <h2 className="text-xl font-bold mb-4">Result</h2>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="relative">
-                <img
-                  src={resultImage}
-                  alt="Try-on result"
-                  className="mx-auto max-h-96 object-contain"
-                />
-              </div>
-              <div className="mt-4 flex justify-center">
-                <a
-                  href={resultImage}
-                  download="virtual-tryon-result.jpg"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-                >
-                  <svg
-                    className="mr-2 h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+        {/* Main content */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Error message */}
+          {error && (
+            <div
+              className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-6"
+              role="alert"
+            >
+              <p>{error}</p>
+            </div>
+          )}
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Product Preview Section */}
+              <div>
+                <h2 className="text-lg font-medium mb-4">Selected Garment</h2>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="aspect-square w-full overflow-hidden rounded-lg mb-4">
+                    <img
+                      src={product?.image_url}
+                      alt={product?.name || "Selected product"}
+                      className="w-full h-full object-cover object-center"
+                      onError={(e) =>
+                        (e.target.src = "/api/placeholder/400/400")
+                      }
                     />
-                  </svg>
-                  Download Result
-                </a>
+                  </div>
+                  <h3 className="text-lg font-medium">{product?.name}</h3>
+                  <p className="text-gray-600 mt-1">
+                    PKR {product?.price?.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Person Image Upload */}
+              <div>
+                <h2 className="text-lg font-medium mb-4">Your Photo</h2>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-4 ${
+                    personImage
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-300 bg-gray-50"
+                  } transition-colors`}
+                  onDragOver={handleDragOver}
+                  onDrop={handlePersonDrop}
+                >
+                  {personImage ? (
+                    <div className="relative">
+                      <img
+                        src={personImage.preview}
+                        alt="Person preview"
+                        className="w-full h-80 object-contain"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPersonImage(null)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-10">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <p className="mt-2 text-sm text-gray-600">
+                        Drag and drop your photo here
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">or</p>
+                      <label className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
+                        Browse Files
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-2 text-sm text-gray-500">
+                  <ul className="list-disc pl-5">
+                    <li>Plain background preferred</li>
+                    <li>Face forward, standing position</li>
+                    <li>3/4 body view works best</li>
+                    <li>Avoid loose/baggy clothing for best results</li>
+                  </ul>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!personImage || loading}
+                    className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
+                      !personImage || loading
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      "Try On Now"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Footer with info */}
-        <div className="p-4 bg-gray-50 border-t border-gray-200">
-          <p className="text-sm text-gray-500 text-center">
-            Virtual Try-On powered by PixelCut AI. Results are valid for 1 hour.
-          </p>
+          {/* Result section */}
+          {resultImage && (
+            <div className="p-6 border-t border-gray-200">
+              <h2 className="text-xl font-bold mb-4">Result</h2>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="relative">
+                  <img
+                    src={resultImage}
+                    alt="Try-on result"
+                    className="mx-auto max-h-96 object-contain"
+                  />
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <a
+                    href={resultImage}
+                    download="virtual-tryon-result.jpg"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    Download Result
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer with info */}
+          <div className="p-4 bg-gray-50 border-t border-gray-200">
+            <p className="text-sm text-gray-500 text-center">
+              Virtual Try-On powered by SMART Wear. Results are valid for 1
+              hour.
+            </p>
+          </div>
         </div>
       </div>
     </div>

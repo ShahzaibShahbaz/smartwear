@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, ScanFace } from "lucide-react";
 import CartItemImage from "./CartItemImage";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Loader } from "lucide-react";
+
 const ProductCard = ({ product, isCartItem, observer }) => {
   const navigate = useNavigate();
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
@@ -53,6 +54,13 @@ const ProductCard = ({ product, isCartItem, observer }) => {
         state: { product },
       });
     }
+  };
+
+  const handleTryOn = (e) => {
+    e.stopPropagation();
+    navigate(`/VTO`, {
+      state: { product },
+    });
   };
 
   const handleWishlistToggle = async (e) => {
@@ -157,36 +165,57 @@ const ProductCard = ({ product, isCartItem, observer }) => {
         `}
       >
         {!isCartItem && (
-          <button
-            className={`
-              absolute z-10 top-4 right-4 p-2.5
-              bg-white/90 backdrop-blur-sm rounded-full
-              shadow-sm transition-all duration-300
-              ${
-                isHovered
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 -translate-y-2"
-              }
-              hover:bg-white hover:scale-110
-              ${isAddingToWishlist ? "cursor-not-allowed" : ""}
-            `}
-            onClick={handleWishlistToggle}
-            disabled={isAddingToWishlist}
-          >
-            {isAddingToWishlist ? (
-              <Loader className="w-5 h-5 animate-spin text-gray-600" />
-            ) : (
-              <Heart
-                className={`w-5 h-5 transition-colors
-                  ${
-                    isInWishlist
-                      ? "text-red-500 fill-red-500"
-                      : "text-gray-600 hover:text-red-500"
-                  }
-                `}
-              />
-            )}
-          </button>
+          <>
+            <button
+              className={`
+                absolute z-10 top-4 right-4 p-2.5
+                bg-white/90 backdrop-blur-sm rounded-full
+                shadow-sm transition-all duration-300
+                ${
+                  isHovered
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 -translate-y-2"
+                }
+                hover:bg-white hover:scale-110
+                ${isAddingToWishlist ? "cursor-not-allowed" : ""}
+              `}
+              onClick={handleWishlistToggle}
+              disabled={isAddingToWishlist}
+            >
+              {isAddingToWishlist ? (
+                <Loader className="w-5 h-5 animate-spin text-gray-600" />
+              ) : (
+                <Heart
+                  className={`w-5 h-5 transition-colors
+                    ${
+                      isInWishlist
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-600 hover:text-red-500"
+                    }
+                  `}
+                />
+              )}
+            </button>
+
+            {/* Try-On Button */}
+            <button
+              className={`
+                absolute z-10 top-4 left-4 p-2.5
+                bg-white/90 backdrop-blur-sm rounded-full
+                shadow-sm transition-all duration-300
+                ${
+                  isHovered
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 -translate-y-2"
+                }
+                hover:bg-white hover:scale-110
+              `}
+              onClick={handleTryOn}
+              title="Virtual Try-On"
+            >
+              <ScanFace className="w-5 h-5 text-blue-600" />
+            </button>
+          </>
         )}
 
         <div className="aspect-[3/4] w-full overflow-hidden bg-gray-50">

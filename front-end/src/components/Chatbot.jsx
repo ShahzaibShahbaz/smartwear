@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Send, BotMessageSquare, Maximize2 } from "lucide-react";
+import {
+  X,
+  Send,
+  BotMessageSquare,
+  Maximize2,
+  Minimize2,
+  ChevronRight,
+  ShoppingBag,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +16,11 @@ const Chatbot = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi there! How can I help you today?", isBot: true },
+    {
+      id: 1,
+      text: "Hi there! How can I help you with your fashion needs today?",
+      isBot: true,
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -16,6 +28,7 @@ const Chatbot = () => {
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const messagesEndRef = useRef(null);
   const chatWindowRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Scroll to bottom of messages
   useEffect(() => {
@@ -23,6 +36,15 @@ const Chatbot = () => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current.focus();
+      }, 300);
+    }
+  }, [isOpen]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -120,8 +142,9 @@ const Chatbot = () => {
       if (product.name && product.name.name) return product.name.name;
       return "Unnamed Product";
     };
+
     return (
-      <div className="flex-shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1 w-full sm:w-48 md:w-56">
+      <div className="flex-shrink-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 w-full sm:w-48 md:w-56">
         <div className="h-32 md:h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
           <img
             src={product.image_url || "/placeholder-product.png"}
@@ -151,8 +174,9 @@ const Chatbot = () => {
                 state: { product },
               })
             }
-            className="w-full mt-2 bg-black text-white py-1 md:py-2 px-2 md:px-4 rounded hover:bg-gray-800 transition-colors text-xs md:text-sm"
+            className="w-full mt-2 bg-black text-white py-1 md:py-2 px-2 md:px-4 rounded hover:bg-gray-800 transition-colors text-xs md:text-sm flex items-center justify-center"
           >
+            <ShoppingBag className="w-3 h-3 mr-1" />
             View Product
           </button>
         </div>
@@ -175,6 +199,14 @@ const Chatbot = () => {
     );
   };
 
+  // Sample fashion-related quick questions
+  const quickQuestions = [
+    "What's trending in women's fashion?",
+    "Find me formal wear for men",
+    "Recommend casual outfits for summer",
+    "What are the popular colors this season?",
+  ];
+
   return (
     <>
       {/* Chat Button */}
@@ -186,10 +218,17 @@ const Chatbot = () => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
             onClick={toggleChat}
-            className="fixed bottom-8 right-8 bg-black text-white p-4 rounded-full shadow-lg hover:bg-gray-800 transition-colors z-40"
+            className="fixed bottom-8 right-8 bg-black text-white p-4 rounded-full shadow-xl hover:bg-gray-800 transition-colors z-40 flex items-center justify-center group"
             aria-label="Open chat"
           >
-            <BotMessageSquare className="w-6 h-6" />
+            <BotMessageSquare />
+            <motion.span
+              initial={{ width: 0, opacity: 0 }}
+              whileHover={{ width: "auto", opacity: 1 }}
+              className="overflow-hidden whitespace-nowrap ml-2"
+            >
+              Fashion Assistant
+            </motion.span>
           </motion.button>
         )}
       </AnimatePresence>
@@ -218,26 +257,35 @@ const Chatbot = () => {
             style={{
               maxWidth: isFullScreen ? "100%" : "calc(100vw - 4rem)",
               maxHeight: isFullScreen ? "100%" : "calc(100vh - 180px)",
-              width: !isFullScreen ? "min(96rem, 90vw)" : undefined,
+              width: !isFullScreen ? "min(24rem, 90vw)" : undefined,
             }}
           >
             {/* Chat Header */}
-            <div className="bg-black text-white p-4 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-black to-gray-800 text-white p-4 flex justify-between items-center">
               <div className="flex items-center">
-                <BotMessageSquare className="w-5 h-5 mr-2" />
-                <h3 className="font-medium truncate">Fashion Assistant</h3>
+                <div className="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mr-3">
+                  <BotMessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm">SMART wear</h3>
+                  <p className="text-xs text-white/70">AI Stylist</p>
+                </div>
               </div>
               <div className="flex items-center space-x-3 flex-shrink-0">
                 <button
                   onClick={toggleFullScreen}
-                  className="text-white hover:text-gray-300 transition-colors"
+                  className="text-white/80 hover:text-white transition-colors p-1"
                   aria-label={isFullScreen ? "Exit Full Screen" : "Full Screen"}
                 >
-                  <Maximize2 className="w-4 h-4" />
+                  {isFullScreen ? (
+                    <Minimize2 className="w-4 h-4" />
+                  ) : (
+                    <Maximize2 className="w-4 h-4" />
+                  )}
                 </button>
                 <button
                   onClick={toggleChat}
-                  className="text-white hover:text-gray-300 transition-colors"
+                  className="text-white/80 hover:text-white transition-colors p-1"
                   aria-label="Close chat"
                 >
                   <X className="w-4 h-4" />
@@ -246,24 +294,27 @@ const Chatbot = () => {
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 bg-gradient-to-b from-gray-50 to-white">
               {messages.map((message) => (
-                <div
+                <motion.div
                   key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                   className={`mb-4 flex ${
                     message.isBot ? "justify-start" : "justify-end"
                   }`}
                 >
                   {message.isProductRecommendation ? (
-                    <div className="bg-gray-200 text-black rounded-lg px-4 py-3 max-w-full md:max-w-2xl lg:max-w-3xl">
+                    <div className="bg-gradient-to-r from-gray-100 to-gray-200 text-black rounded-lg px-4 py-3 max-w-full md:max-w-2xl lg:max-w-3xl shadow-sm">
                       <ProductRecommendation products={message.products} />
                     </div>
                   ) : (
                     <div
-                      className={`rounded-lg px-4 py-2 break-words ${
+                      className={`rounded-lg px-4 py-2 break-words shadow-sm ${
                         message.isBot
-                          ? "bg-gray-200 text-black"
-                          : "bg-black text-white"
+                          ? "bg-white border border-gray-200 text-gray-800"
+                          : "bg-gradient-to-r from-black to-gray-800 text-white"
                       }`}
                       style={{ maxWidth: isFullScreen ? "50%" : "85%" }}
                     >
@@ -272,23 +323,20 @@ const Chatbot = () => {
                       </p>
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
               {isLoading && (
                 <div className="mb-4 flex justify-start">
-                  <div className="bg-gray-200 text-black rounded-lg px-4 py-2">
-                    <div className="flex space-x-1">
+                  <div className="bg-white border border-gray-200 shadow-sm text-black rounded-lg px-4 py-3">
+                    <div className="flex space-x-1 items-center">
+                      <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
                       <div
-                        className="w-2 h-2 rounded-full bg-gray-500 animate-bounce"
-                        style={{ animationDelay: "0s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 rounded-full bg-gray-500 animate-bounce"
-                        style={{ animationDelay: "0.1s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 rounded-full bg-gray-500 animate-bounce"
+                        className="w-2 h-2 rounded-full bg-gray-600 animate-pulse"
                         style={{ animationDelay: "0.2s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 rounded-full bg-gray-800 animate-pulse"
+                        style={{ animationDelay: "0.4s" }}
                       ></div>
                     </div>
                   </div>
@@ -297,14 +345,39 @@ const Chatbot = () => {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Quick Questions */}
+            {messages.length < 3 && (
+              <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                <p className="text-xs text-gray-500 mb-2">Try asking:</p>
+                <div className="flex flex-wrap gap-2">
+                  {quickQuestions.map((question, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setInputValue(question);
+                        setTimeout(() => {
+                          handleSendMessage();
+                        }, 100);
+                      }}
+                      className="bg-gray-100 text-gray-800 text-xs px-3 py-1.5 rounded-full hover:bg-gray-200 transition-colors flex items-center"
+                    >
+                      {question}
+                      <ChevronRight className="w-3 h-3 ml-1" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Chat Input */}
             <div className="p-3 border-t border-gray-200 bg-white">
               <div className="flex items-center">
                 <textarea
+                  ref={inputRef}
                   value={inputValue}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type your message..."
+                  placeholder="Ask about fashion, products, or outfits..."
                   className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none text-sm"
                   rows="1"
                   disabled={isLoading}
@@ -316,7 +389,7 @@ const Chatbot = () => {
                     inputValue.trim() && !isLoading
                       ? "bg-black text-white hover:bg-gray-800"
                       : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  } transition-colors`}
+                  } transition-colors shadow-sm`}
                   aria-label="Send message"
                 >
                   <Send className="w-5 h-5" />

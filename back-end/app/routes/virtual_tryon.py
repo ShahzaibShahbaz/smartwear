@@ -1,17 +1,18 @@
 import os
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl
-# from dotenv import load_dotenv # Not using .env as per your request
 import io # For handling bytes as a file-like object
 import uuid # For generating unique filenames
+from bson import ObjectId
+from app.database import get_database
 
 
 router = APIRouter()
 
 # Ensure these are strings
 RAPIDAPI_KEY = "1926b03207mshb018457d7685caep138dbdjsn44ad4d7598dd"
-RAPIDAPI_HOST = "try-on-diffusion.p.rapidapi.com"  # REMOVED THE TRAILING COMMA HERE
+RAPIDAPI_HOST = "try-on-diffusion.p.rapidapi.com"
 EXTERNAL_API_URL = f"https://{RAPIDAPI_HOST}/try-on-url"
 
 # Cloudinary settings for backend uploads
@@ -20,10 +21,15 @@ CLOUDINARY_UPLOAD_PRESET = "unsigned_preset"
 CLOUDINARY_API_URL_BASE = "https://api.cloudinary.com/v1_1/"
 
 
-# Pydantic models (remain the same)
+# Pydantic models
 class TryOnURLRequest(BaseModel):
     person_image_url: HttpUrl
     garment_image_url: HttpUrl
+
+# New model for product-based try-on
+class ProductTryOnRequest(BaseModel):
+    person_image_url: HttpUrl
+    product_id: str  # Product ID from MongoDB
 
 class TryOnURLResponse(BaseModel):
     result_url: HttpUrl
@@ -80,13 +86,12 @@ async def try_on_with_url(request_data: TryOnURLRequest):
     external_api_headers = {
         "content-type": "application/x-www-form-urlencoded",
         "X-RapidAPI-Key": RAPIDAPI_KEY,
-        "X-RapidAPI-Host": RAPIDAPI_HOST # This will now be a string
+        "X-RapidAPI-Host": RAPIDAPI_HOST
     }
 
     async with httpx.AsyncClient(timeout=60.0) as client:
         try:
             # Ensure EXTERNAL_API_URL is correctly formatted before this call
-            # With RAPIDAPI_HOST as a string, it should be.
             current_external_api_url = f"https://{RAPIDAPI_HOST}/try-on-url" # Recalculate to be sure if there was any doubt
 
             response_external_api = await client.post(
@@ -134,3 +139,42 @@ async def try_on_with_url(request_data: TryOnURLRequest):
             import traceback
             traceback.print_exc()
             raise HTTPException(status_code=500, detail=f"An unexpected server error occurred: {str(e)}")
+
+
+# New endpoint that accepts a product ID instead of a direct garment URL
+@router.post("/try-on-product", response_model=TryOnURLResponse)
+async def try_on_with_product(
+    request_data: ProductTryOnRequest,
+    db=Depends(get_database)
+):
+    try:
+        # Validate product ID format
+        if not ObjectId.is_valid(request_data.product_id):
+            raise HTTPException(status_code=400, detail="Invalid product ID format")
+        
+        # Fetch product from database
+        product = await db["products"].find_one({"_id": ObjectId(request_data.product_id)})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Get the image URL from the product
+        if "image_url" not in product or not product["image_url"]:
+            raise HTTPException(status_code=400, detail="Product does not have an image URL")
+        
+        # Create a new request with the product's image URL
+        tryon_request = TryOnURLRequest(
+            person_image_url=request_data.person_image_url,
+            garment_image_url=product["image_url"]
+        )
+        
+        # Call the existing try-on endpoint
+        return await try_on_with_url(tryon_request)
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        print(f"Unexpected error in try_on_with_product: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"An unexpected server error occurred: {str(e)}")
