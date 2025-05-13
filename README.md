@@ -136,9 +136,6 @@ This project was developed as a Final Year Project by Computer Science students 
 
 Under the supervision of Mr. Syed Uzair Hussain Naqvi.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgements
 
