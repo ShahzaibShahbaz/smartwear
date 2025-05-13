@@ -103,9 +103,7 @@ const ImageSearchPage = () => {
         <div className="relative mb-16 bg-gradient-to-r from-gray-900 to-black rounded-2xl overflow-hidden shadow-xl">
           <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1441986300917-64674bd600d8')] bg-cover bg-center mix-blend-overlay"></div>
           <div className="relative py-16 px-8 text-center">
-            <h1 className="text-4xl font-bold text-white mb-3">
-              Visual Search
-            </h1>
+            <h1 className="text-4xl font-bold text-white mb-3">Image Search</h1>
             <div className="w-24 h-1 bg-gray-400 mx-auto mb-6"></div>
             <p className="text-lg text-white/90 max-w-2xl mx-auto">
               Find the perfect match for any clothing item by uploading an

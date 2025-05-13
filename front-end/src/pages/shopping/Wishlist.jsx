@@ -3,7 +3,7 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Heart, Trash2, ShoppingBag, Loader2 } from "lucide-react";
+import { Heart, Trash2, ShoppingBag, Loader2, ArrowRight } from "lucide-react";
 import cartImage from "../../Assets/wishlist.png";
 import { toast } from "react-toastify";
 import Footer from "../../components/Footer";
@@ -75,8 +75,12 @@ function Wishlist() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="flex flex-col items-center justify-center h-[80vh]">
-          <Loader2 className="w-12 h-12 text-gray-900 animate-spin" />
-          <p className="mt-4 text-lg text-gray-600">Loading your wishlist...</p>
+          <div className="bg-white p-10 rounded-2xl shadow-lg flex flex-col items-center">
+            <Loader2 className="w-14 h-14 text-black animate-spin mb-4" />
+            <p className="text-lg font-medium text-gray-700">
+              Loading your wishlist...
+            </p>
+          </div>
         </div>
         <Footer />
       </div>
@@ -87,17 +91,17 @@ function Wishlist() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-24">
-          <div className="text-center bg-red-50 p-8 rounded-xl border border-red-200">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4">
-              <Heart className="w-6 h-6 text-red-600" />
+        <div className="max-w-5xl mx-auto px-4 py-24">
+          <div className="text-center bg-red-50 p-10 rounded-2xl border border-red-200 shadow-md">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+              <Heart className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-xl font-semibold text-red-900 mb-2">Oops!</h2>
-            <p className="text-red-600 mb-4">{error}</p>
+            <h2 className="text-2xl font-bold text-red-900 mb-3">Oops!</h2>
+            <p className="text-red-600 mb-6 max-w-md mx-auto">{error}</p>
             {!token && (
               <button
                 onClick={() => navigate("/signin")}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="px-8 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg font-medium"
               >
                 Sign In
               </button>
@@ -113,20 +117,22 @@ function Wishlist() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-24">
-          <div className="text-center">
+        <div className="max-w-5xl mx-auto px-4 py-24">
+          <div className="text-center bg-white rounded-2xl shadow-sm p-12 border border-gray-100">
             <img
               src={cartImage}
               alt="Empty wishlist"
-              className="w-48 h-48 object-contain mx-auto mb-6"
+              className="w-56 h-56 object-contain mx-auto mb-8"
             />
-
-            <p className="text-gray-600 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Your wishlist is empty
+            </h2>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
               Add items you love to your wishlist and revisit them later!
             </p>
             <button
               onClick={() => navigate("/#collections")}
-              className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <ShoppingBag className="w-5 h-5 mr-2" />
               Start Shopping
@@ -141,40 +147,49 @@ function Wishlist() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-24">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-            <p className="mt-2 text-gray-600">
-              {wishlist.length} {wishlist.length === 1 ? "item" : "items"}
-            </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="mb-12">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+                My Wishlist
+              </h1>
+              <p className="text-gray-600 text-lg">
+                {wishlist.length} {wishlist.length === 1 ? "item" : "items"}{" "}
+                saved for later
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate("/#collections")}
+              className="inline-flex items-center px-6 py-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow"
+            >
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              Continue Shopping
+            </button>
           </div>
-          <button
-            onClick={() => navigate("/#collections")}
-            className="inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            <ShoppingBag className="w-4 h-4 mr-2" />
-            Continue Shopping
-          </button>
+
+          <div className="mt-6 h-1 w-32 bg-black rounded"></div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {wishlist.map((item) => (
             <div
               key={item.product_id}
-              className="group bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300"
+              className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300"
             >
-              <div className="relative aspect-square">
+              <div className="relative aspect-square overflow-hidden">
                 <img
                   src={item.name.image_url || "/placeholder-image.jpg"}
                   alt={item.name.name || "Product Image"}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
                 <button
                   onClick={() => removeFromWishlist(item.product_id)}
                   disabled={deletingItems.has(item.product_id)}
-                  className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm 
-                           hover:bg-white hover:shadow-md transition-all duration-200 
+                  className="absolute top-3 right-3 p-2.5 bg-white rounded-full shadow-md 
+                           hover:bg-red-50 transition-all duration-200 
                            disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Remove from wishlist"
                 >
@@ -184,13 +199,18 @@ function Wishlist() {
                     <Trash2 className="w-5 h-5 text-red-600" />
                   )}
                 </button>
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-white font-medium line-clamp-1">
+                    {item.name.name || "Unnamed Product"}
+                  </p>
+                </div>
               </div>
 
-              <div className="p-4">
-                <h3 className="font-medium text-gray-900 mb-1 line-clamp-1">
+              <div className="p-5">
+                <h3 className="font-medium text-gray-900 mb-2 line-clamp-1 text-lg">
                   {item.name.name || "Unnamed Product"}
                 </h3>
-                <p className="text-lg font-semibold text-gray-900 mb-3">
+                <p className="text-lg font-bold text-gray-900 mb-4">
                   PKR {item.name.price?.toLocaleString() || "Price unavailable"}
                 </p>
                 <button
@@ -218,11 +238,11 @@ function Wishlist() {
                       toast.error("Error loading product details");
                     }
                   }}
-                  className="w-full py-2 bg-black text-white rounded-lg hover:bg-gray-800 
-                           transition-colors flex items-center justify-center"
+                  className="w-full py-3 bg-black text-white rounded-full hover:bg-gray-800 
+                           transition-all duration-300 flex items-center justify-center font-medium shadow-sm hover:shadow group"
                 >
-                  <ShoppingBag className="w-4 h-4 mr-2" />
-                  View Details
+                  <span>View Details</span>
+                  <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>

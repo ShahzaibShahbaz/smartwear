@@ -17,6 +17,7 @@ import {
   Minus,
   ArrowLeft,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Checkout from "../../components/Checkout";
@@ -164,7 +165,7 @@ function CartContent() {
     if (!product || !product.product_id) return null;
 
     return (
-      <div className="flex items-center justify-between bg-gray-100 rounded-lg p-2">
+      <div className="flex items-center justify-between bg-gray-100 rounded-full p-2 shadow-sm">
         <button
           onClick={() => {
             if (product.quantity === 1) {
@@ -177,7 +178,7 @@ function CartContent() {
               );
             }
           }}
-          className="p-1 hover:bg-gray-200 rounded-md transition-colors"
+          className="p-1 hover:bg-gray-200 rounded-full transition-all duration-200"
           aria-label={
             product.quantity === 1 ? "Remove item" : "Decrease quantity"
           }
@@ -185,11 +186,11 @@ function CartContent() {
           {product.quantity === 1 ? (
             <Trash2 className="w-5 h-5 text-red-600" />
           ) : (
-            <Minus className="w-5 h-5 text-gray-600" />
+            <Minus className="w-5 h-5 text-gray-700" />
           )}
         </button>
 
-        <span className="mx-4 font-medium text-gray-900">
+        <span className="mx-4 font-medium text-gray-900 min-w-8 text-center">
           {product.quantity}
         </span>
 
@@ -201,10 +202,10 @@ function CartContent() {
               product.size
             )
           }
-          className="p-1 hover:bg-gray-200 rounded-md transition-colors"
+          className="p-1 hover:bg-gray-200 rounded-full transition-all duration-200"
           aria-label="Increase quantity"
         >
-          <Plus className="w-5 h-5 text-gray-600" />
+          <Plus className="w-5 h-5 text-gray-700" />
         </button>
       </div>
     );
@@ -215,8 +216,12 @@ function CartContent() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="flex flex-col justify-center items-center h-[80vh]">
-          <Loader2 className="w-12 h-12 text-gray-900 animate-spin mb-4" />
-          <p className="text-lg text-gray-600">Loading your cart...</p>
+          <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center">
+            <Loader2 className="w-12 h-12 text-black animate-spin mb-4" />
+            <p className="text-lg text-gray-700 font-medium">
+              Loading your cart...
+            </p>
+          </div>
         </div>
         <Footer />
       </div>
@@ -227,16 +232,16 @@ function CartContent() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-24">
-          <div className="text-center bg-red-50 p-8 rounded-xl border border-red-200">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-4">
-              <ShoppingBag className="w-6 h-6 text-red-600" />
+        <div className="max-w-5xl mx-auto px-4 py-24">
+          <div className="text-center bg-red-50 p-8 rounded-2xl border border-red-200 shadow-md">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6">
+              <ShoppingBag className="w-8 h-8 text-red-600" />
             </div>
-            <h2 className="text-xl font-semibold text-red-900 mb-2">Oops!</h2>
-            <p className="text-red-600 mb-4">{cartError}</p>
+            <h2 className="text-2xl font-bold text-red-900 mb-3">Oops!</h2>
+            <p className="text-red-700 mb-6 max-w-md mx-auto">{cartError}</p>
             <button
               onClick={() => dispatch(fetchCart())}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="px-8 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-md hover:shadow-lg font-medium"
             >
               Try Again
             </button>
@@ -250,45 +255,47 @@ function CartContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-24">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-            <p className="mt-2 text-gray-600">
-              {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
-            </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="mb-12">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+                Your Cart
+              </h1>
+              <p className="text-gray-600 text-lg">
+                {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+              </p>
+            </div>
+
+            <button
+              onClick={() => dispatch(fetchCart())}
+              className="px-4 py-2 bg-black text-white rounded-full flex items-center gap-2 hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh</span>
+              {needsSync && <Loader2 className="w-4 h-4 animate-spin ml-1" />}
+            </button>
           </div>
-          <button
-            onClick={() => dispatch(fetchCart())}
-            className="px-4 py-2 bg-black text-white rounded"
-          >
-            Refresh Cart
-          </button>
-          <div className="flex items-center space-x-2">
-            {needsSync && (
-              <span className="text-sm text-black-600 flex items-center">
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              </span>
-            )}
-          </div>
+
+          <div className="mt-6 h-1 w-32 bg-black rounded"></div>
         </div>
 
         {cartItems.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
             <img
               src={cartimage}
               alt="Empty cart"
-              className="w-48 h-48 object-contain mx-auto mb-6"
+              className="w-56 h-56 object-contain mx-auto mb-8"
             />
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Your cart is empty
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
               Looks like you haven't added any items to your cart yet.
             </p>
             <button
               onClick={() => navigate("/#collections")}
-              className="inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Continue Shopping
@@ -297,7 +304,7 @@ function CartContent() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-6">
                 {cartItems.map((product) => {
                   console.log("Rendering product:", product);
 
@@ -311,38 +318,60 @@ function CartContent() {
                   }
 
                   return (
-                    <div key={product.product_id} className="relative">
-                      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-24 h-24 flex-shrink-0">
+                    <div key={product.product_id} className="relative group">
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 hover:shadow-md group-hover:border-gray-200">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                          <div className="w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden">
                             <img
                               src={product.image_url}
                               alt={product.name}
-                              className="w-full h-full object-cover rounded-lg"
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                               onError={(e) => {
-                                e.target.src = "/api/placeholder/96/96";
+                                e.target.src = "/api/placeholder/128/128";
                               }}
                             />
                           </div>
-                          <div className="flex-grow">
-                            <h3 className="font-medium text-gray-900">
+                          <div className="flex-grow text-center sm:text-left">
+                            <h3 className="font-semibold text-xl text-gray-900 mb-1">
                               {product.name}
                             </h3>
-                            <p className="text-gray-600 text-sm">
-                              Size: {product.size}
+                            <p className="text-gray-600 text-sm mb-3">
+                              Size:{" "}
+                              <span className="font-medium">
+                                {product.size}
+                              </span>
                             </p>
-                            <p className="text-gray-900 font-medium mt-1">
-                              PKR {product.price}
+                            <p className="text-gray-900 font-bold text-lg">
+                              PKR {product.price.toLocaleString()}
                             </p>
                           </div>
-                          <div className="flex-shrink-0">
+                          <div className="flex-shrink-0 mt-4 sm:mt-0">
                             <QuantityControl product={product} />
+                            <button
+                              onClick={() =>
+                                handleDeleteItem(product.product_id)
+                              }
+                              className="mt-4 w-full text-sm text-gray-500 hover:text-red-600 flex items-center justify-center gap-1 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span>Remove</span>
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
+              </div>
+
+              <div className="mt-8 flex justify-start">
+                <button
+                  onClick={() => navigate("/#collections")}
+                  className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span>Continue Shopping</span>
+                </button>
               </div>
             </div>
 

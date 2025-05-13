@@ -1,7 +1,16 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, X, Download } from "lucide-react";
+import {
+  X,
+  Download,
+  Camera,
+  Trash2,
+  RotateCw,
+  CheckCircle,
+} from "lucide-react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 const VirtualTryOn = () => {
   const location = useLocation();
@@ -160,111 +169,101 @@ const VirtualTryOn = () => {
     setError("");
   };
 
-  // Go back to previous page
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header with back button */}
-        <div className="flex items-center mb-6">
-          <button
-            onClick={handleBack}
-            className="flex items-center text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-center flex-grow">
+    <div className="flex flex-col min-h-screen bg-white">
+      <Navbar />
+
+      {/* Main content with top margin to avoid navbar overlap */}
+      <div className="flex-1 pt-24 pb-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-center mb-12 text-gray-800">
             Virtual Try-On
           </h1>
-        </div>
 
-        {/* Main content */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Error message */}
           {error && (
-            <div
-              className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-6"
-              role="alert"
-            >
-              <p>{error}</p>
+            <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <X className="h-5 w-5 text-red-500 mr-3 flex-shrink-0" />
+                <p className="text-red-700">{error}</p>
+              </div>
             </div>
           )}
 
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Product Preview Section */}
-              <div>
-                <h2 className="text-lg font-medium mb-4">Selected Garment</h2>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="aspect-square w-full overflow-hidden rounded-lg mb-4">
-                    <img
-                      src={product?.image_url}
-                      alt={product?.name || "Selected product"}
-                      className="w-full h-full object-cover object-center"
-                      onError={(e) =>
-                        (e.target.src = "/api/placeholder/400/400")
-                      }
-                    />
-                  </div>
-                  <h3 className="text-lg font-medium">{product?.name}</h3>
-                  <p className="text-gray-600 mt-1">
-                    PKR {product?.price?.toLocaleString()}
-                  </p>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* Product Card */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 h-full">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                  Selected Garment
+                </h2>
 
-              {/* Person Image Upload */}
-              <div>
-                <h2 className="text-lg font-medium mb-4">Your Photo</h2>
+                <div className="aspect-square w-full overflow-hidden rounded-lg mb-6">
+                  <img
+                    src={product?.image_url}
+                    alt={product?.name || "Selected product"}
+                    className="w-full h-full object-cover object-center"
+                    onError={(e) => (e.target.src = "/api/placeholder/400/400")}
+                  />
+                </div>
+
+                <h3 className="text-lg font-medium text-gray-800">
+                  {product?.name}
+                </h3>
+                <p className="text-xl font-medium text-gray-900 mt-2">
+                  PKR {product?.price?.toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {/* Photo Upload Card */}
+            <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 h-full">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                  Your Photo
+                </h2>
+
                 <div
-                  className={`border-2 border-dashed rounded-lg p-4 ${
+                  className={`border-2 border-dashed rounded-lg ${
                     personImage
-                      ? "border-green-500 bg-green-50"
-                      : "border-gray-300 bg-gray-50"
-                  } transition-colors`}
+                      ? "border-emerald-300 bg-emerald-50"
+                      : "border-gray-300 hover:border-blue-400 bg-gray-50"
+                  } transition-all duration-200 mb-4`}
                   onDragOver={handleDragOver}
                   onDrop={handlePersonDrop}
                 >
                   {personImage ? (
-                    <div className="relative">
+                    <div className="relative p-4">
                       <img
                         src={personImage.preview}
                         alt="Person preview"
-                        className="w-full h-80 object-contain"
+                        className="mx-auto max-h-80 object-contain rounded-md"
                       />
                       <button
                         type="button"
                         onClick={() => setPersonImage(null)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-6 right-6 bg-red-500 text-white rounded-full p-2 shadow-md hover:bg-red-600 transition-colors"
+                        aria-label="Remove image"
                       >
-                        <X className="h-5 w-5" />
+                        <X className="h-4 w-4" />
                       </button>
+
+                      <div className="mt-4 flex items-center justify-center text-emerald-600">
+                        <CheckCircle className="h-5 w-5 mr-2" />
+                        <span className="font-medium">
+                          Image uploaded successfully
+                        </span>
+                      </div>
                     </div>
                   ) : (
-                    <div className="text-center py-10">
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        stroke="currentColor"
-                        fill="none"
-                        viewBox="0 0 48 48"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <p className="mt-2 text-sm text-gray-600">
+                    <div className="p-8 text-center">
+                      <Camera className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <p className="text-base text-gray-600 mb-2">
                         Drag and drop your photo here
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">or</p>
-                      <label className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
+                      <p className="text-sm text-gray-500 mb-4">or</p>
+                      <label className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-sm">
+                        <Camera className="h-4 w-4 mr-2" />
                         Browse Files
                         <input
                           type="file"
@@ -276,60 +275,55 @@ const VirtualTryOn = () => {
                     </div>
                   )}
                 </div>
-                <div className="mt-2 text-sm text-gray-500">
-                  <ul className="list-disc pl-5">
+
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <h3 className="font-medium text-gray-700 mb-2 text-sm">
+                    Tips for best results:
+                  </h3>
+                  <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
                     <li>Plain background preferred</li>
                     <li>Face forward, standing position</li>
                     <li>3/4 body view works best</li>
-                    <li>Avoid loose/baggy clothing for best results</li>
+                    <li>Avoid loose/baggy clothing</li>
                   </ul>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-6 flex justify-end space-x-4">
+                <div className="flex justify-between items-center">
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                    disabled={!personImage}
+                    className={`inline-flex items-center px-4 py-2 rounded-lg ${
+                      !personImage
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    } transition-colors`}
                   >
+                    <Trash2 className="h-4 w-4 mr-2" />
                     Reset
                   </button>
+
                   <button
                     type="button"
                     onClick={handleSubmit}
                     disabled={!personImage || loading}
-                    className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
+                    className={`inline-flex items-center px-6 py-2.5 rounded-lg shadow-sm ${
                       !personImage || loading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                    }`}
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    } transition-colors`}
                   >
                     {loading ? (
                       <>
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
+                        <RotateCw className="h-4 w-4 mr-2 animate-spin" />
                         Processing...
                       </>
                     ) : (
-                      "Try On Now"
+                      <>
+                        <Camera className="h-4 w-4 mr-2" />
+                        Try On Now
+                      </>
                     )}
                   </button>
                 </div>
@@ -339,39 +333,40 @@ const VirtualTryOn = () => {
 
           {/* Result section */}
           {resultImage && (
-            <div className="p-6 border-t border-gray-200">
-              <h2 className="text-xl font-bold mb-4">Result</h2>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="relative">
-                  <img
-                    src={resultImage}
-                    alt="Try-on result"
-                    className="mx-auto max-h-96 object-contain"
-                  />
-                </div>
-                <div className="mt-4 flex justify-center">
-                  <a
-                    href={resultImage}
-                    download="virtual-tryon-result.jpg"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-                  >
-                    <Download className="mr-2 h-5 w-5" />
-                    Download Result
-                  </a>
+            <div className="mt-10 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+              <div className="border-b border-gray-100 bg-gray-50 py-3 px-6">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Try-On Result
+                </h2>
+              </div>
+
+              <div className="p-6">
+                <div className="bg-white rounded-lg p-4">
+                  <div className="flex justify-center">
+                    <img
+                      src={resultImage}
+                      alt="Try-on result"
+                      className="max-h-96 object-contain rounded-lg"
+                    />
+                  </div>
+
+                  <div className="mt-6 flex justify-center">
+                    <a
+                      href={resultImage}
+                      download="virtual-tryon-result.jpg"
+                      className="inline-flex items-center px-5 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Result
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Footer with info */}
-          <div className="p-4 bg-gray-50 border-t border-gray-200">
-            <p className="text-sm text-gray-500 text-center">
-              Virtual Try-On powered by SMART Wear. Results are valid for 1
-              hour.
-            </p>
-          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
