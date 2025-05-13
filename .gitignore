@@ -1,17 +1,100 @@
+# Environment variables and local configuration
 .env
 .codegpt
 
-back-end/__pycache__/main.cpython-311.pyc
-back-end/app/__pycache__/database.cpython-311.pyc
-back-end/app/routes/__pycache__/cart.cpython-311.pyc
-back-end/app/routes/__pycache__/images.cpython-311.pyc
-back-end/app/routes/__pycache__/order.cpython-311.pyc
-back-end/app/routes/__pycache__/products.cpython-311.pyc
-back-end/app/routes/__pycache__/users.cpython-311.pyc
-back-end/app/routes/__pycache__/wishlist.cpython-311.pyc
-back-end/app/schemas/__pycache__/cart.cpython-311.pyc
-back-end/app/schemas/__pycache__/order.cpython-311.pyc
-back-end/app/schemas/__pycache__/user.cpython-311.pyc
-back-end/app/schemas/__pycache__/wishlist.cpython-311.pyc
-back-end/app/services/__pycache__/auth.cpython-311.pyc
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
 
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+*/venv/
+*/venv.bak/
+*/venv/*
+*/.venv/
+back-end/venv/
+back-end/.venv/
+front-end/venv/
+front-end/.venv/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node.js dependencies
+node_modules/
+jspm_packages/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnp/
+.pnp.js
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+coverage/
+.coverage.*
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Build files
+*.log
+.DS_Store
+
+# Backend specific
+back-end/__pycache__/
+back-end/app/__pycache__/
+back-end/app/routes/__pycache__/
+back-end/app/schemas/__pycache__/
+back-end/app/services/__pycache__/
+
+# Frontend specific
+front-end/build/
+front-end/coverage/
+front-end/.DS_Store
+front-end/.env.local
+front-end/.env.development.local
+front-end/.env.test.local
+front-end/.env.production.local
+
+# Debug log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Stack dumps
+bash.exe.stackdump
+
+# Local Netlify folder
+.netlify

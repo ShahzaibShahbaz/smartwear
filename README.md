@@ -1,5 +1,7 @@
 # Smart Wear
 
+# Smart Wear
+
 ## 📋 Overview
 
 Smart Wear is an innovative online clothing platform that revolutionizes the e-commerce shopping experience through cutting-edge AI and AR technologies. The platform enables users to search for clothing using images, try on items virtually with AR, and receive personalized styling recommendations through an AI-powered chatbot.
@@ -56,7 +58,7 @@ Smart Wear is an innovative online clothing platform that revolutionizes the e-c
 
 ```bash
 # Clone the repository
-git clone https://github.com/ShahzaibShahbaz/smartwear.git
+git clone https://github.com/yourusername/smartwear.git
 cd smartwear/back-end
 
 # Create and activate a virtual environment
@@ -98,32 +100,32 @@ npm start
 
 ```
 smartwear/
-├── back-end/                 # FastAPI backend
-│   ├── app/                  # Application modules
-│   │   ├── routes/           # API endpoints including admin, cart, chatbot, etc.
-│   │   ├── schemas/          # Data schemas for validation
-│   │   └── services/         # Services for auth, image search, etc.
-│   ├── venv/                 # Virtual environment
-│   ├── database.py           # Database connection
-│   ├── main.py               # Entry point for the application
-│   └── requirements.txt      # Python dependencies
-├── front-end/                # React frontend
-│   ├── node_modules/         # Node.js modules
-│   ├── public/               # Static files
-│   ├── src/                  # Source code
-│   │   ├── api/              # API integration
-│   │   ├── Assets/           # Image assets
-│   │   ├── components/       # Reusable UI components
-│   │   ├── pages/            # Page components
-│   │   │   ├── admin/        # Admin dashboard pages
-│   │   │   ├── auth/         # Authentication pages
-│   │   │   ├── shopping/     # Main shopping pages
-│   │   │   └── VTO/          # Virtual Try-On pages
-│   │   ├── store/            # Redux store with slices
-│   │   └── utils/            # Utility functions
-│   ├── .gitignore            # Git ignore file
-│   └── package.json          # Node.js dependencies
-└── README.md                 # Project documentation
+├── .codegpt/                # CodeGPT configuration
+├── .venv/                   # Virtual environment
+├── back-end/                # FastAPI backend
+│   ├── app/                 # Application modules
+│   │   ├── routes/          # API endpoints (admin, cart, chatbot, etc.)
+│   │   ├── schemas/         # Data schemas (cart, chat, order, user, wishlist)
+│   │   └── services/        # Services (auth, cart, image search, etc.)
+│   ├── venv/                # Backend virtual environment
+│   ├── database.py          # Database connection
+│   ├── main.py              # Entry point for the application
+│   └── requirements.txt     # Python dependencies
+├── front-end/               # React frontend
+│   ├── node_modules/        # Node.js modules
+│   ├── public/              # Static files
+│   ├── src/                 # Source code
+│   ├── .gitignore           # Frontend git ignore file
+│   ├── package-lock.json    # Dependency lock file
+│   ├── package.json         # Node.js dependencies
+│   ├── postcss.config.js    # PostCSS configuration
+│   └── tailwind.config.js   # Tailwind CSS configuration
+├── scripts/                 # Utility scripts
+├── venv/                    # Project-level virtual environment
+├── .gitignore               # Git ignore file
+├── bash.exe.stackdump       # Stack dump file
+├── README.md                # Project documentation
+└── requirements.txt         # Top-level Python dependencies
 ```
 
 ## 👥 Team
@@ -136,10 +138,6 @@ This project was developed as a Final Year Project by Computer Science students 
 
 Under the supervision of Mr. Syed Uzair Hussain Naqvi.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgements
 
 - Special thanks to our project supervisor and department faculty for their guidance
@@ -147,3 +145,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Inspired by the SDG goal of Industry, Innovation, and Infrastructure
 
 ---
+
+For any inquiries, please contact us at [your-email@example.com](mailto:your-email@example.com)
