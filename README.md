@@ -1,7 +1,5 @@
 # Smart Wear
 
-# Smart Wear
-
 ## 📋 Overview
 
 Smart Wear is an innovative online clothing platform that revolutionizes the e-commerce shopping experience through cutting-edge AI and AR technologies. The platform enables users to search for clothing using images, try on items virtually with AR, and receive personalized styling recommendations through an AI-powered chatbot.
